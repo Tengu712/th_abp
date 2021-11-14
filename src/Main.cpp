@@ -2,7 +2,7 @@
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPInst, LPSTR pCmd, int cmdShow) {
     App app = App();
-    if (!app.init(hInst, cmdShow))
+    if (!app.init(hInst, pCmd, cmdShow))
         return 1;
     MSG msg;
     while (true) {

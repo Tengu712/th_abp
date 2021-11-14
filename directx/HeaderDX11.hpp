@@ -101,6 +101,7 @@ enum struct GAMEPAD_KEYTYPE : char {
 
 struct KeyInf {
     char state;
+    char statePrev;
     char codeKey;
     char codeKeyboard;
     GAMEPAD_KEYTYPE typeGamepadKey;
@@ -109,15 +110,16 @@ struct KeyInf {
 
 class InputManager {
 private:
+    int maxNumKey;
     int numRegistered;
-    char statePrev[64];
-    KeyInf inf[64];
+    KeyInf* infs;
 public:
     InputManager();
+    ~InputManager();
+    bool init(int maxNumKey);
     bool addKeycode(char codeKey, char codeKeyboard, GAMEPAD_KEYTYPE typeGamepadKey, short codeGamepad);
     void inspect();
     char getKey(char codeKey);
 };
 
 #endif
-
