@@ -42,4 +42,5 @@ public:
     bool update();
     bool createConsole();
     void debug(const char* msg);
+    void debug(const int msg);
 };
