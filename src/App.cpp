@@ -1,12 +1,13 @@
-#include "HeaderApp.hpp"
+﻿#include "HeaderApp.hpp"
 
 App::App() : dmanager(D3DManager()) {}
 
-bool App::init(HINSTANCE hInst, int cmdShow, LPCWSTR wndName, LPCWSTR wndClassName, unsigned int width,
-        unsigned int height, bool windowed)
+bool App::init(HINSTANCE hInst, int cmdShow)
 {
     bool res = true;
-    res = res && dmanager.init(hInst, cmdShow, wndName, wndClassName, width, height, windowed);
+    res = res && dmanager.init(hInst, cmdShow,
+            L"射命丸文の弾幕稽古", L"TH_ABP", 1280U, 960U,
+            MessageBoxW(nullptr, L"フルスクリーンで起動しますか", L"確認", MB_YESNO) == IDNO);
     return res;
 }
 

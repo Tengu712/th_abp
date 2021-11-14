@@ -7,7 +7,6 @@ private:
 
 public:
     App();
-    bool init(HINSTANCE hInst, int cmdShow, LPCWSTR wndName, LPCWSTR wndClassName, unsigned int width,
-        unsigned int height, bool windowed);
+    bool init(HINSTANCE hInst, int cmdShow);
     bool update();
 };

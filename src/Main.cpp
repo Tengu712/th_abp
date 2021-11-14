@@ -1,9 +1,8 @@
-﻿#include "HeaderApp.hpp"
+#include "HeaderApp.hpp"
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPInst, LPSTR pCmd, int cmdShow) {
     App app = App();
-    if (!app.init(hInst, cmdShow, L"射命丸文の弾幕稽古", L"TH_ABP", 1280U, 960U,
-                MessageBoxW(nullptr, L"フルスクリーンで起動しますか", L"確認", MB_YESNO) == IDNO))
+    if (!app.init(hInst, cmdShow))
         return 1;
     MSG msg;
     while (true) {
@@ -17,7 +16,5 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPInst, LPSTR pCmd, int cmdShow) {
         if (app.update())
             break;
     }
-    UnregisterClassW(L"TH_ABP", hInst);
     return 0;
 }
-
