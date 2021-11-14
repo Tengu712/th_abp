@@ -1,5 +1,4 @@
-#include "../include/HeaderDX11.hpp"
-#include "../include/resource.hpp"
+#include "HeaderDX11.hpp"
 
 #include <wincodec.h>
 #pragma comment(lib, "Windowscodecs.lib")

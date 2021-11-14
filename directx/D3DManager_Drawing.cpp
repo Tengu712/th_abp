@@ -1,4 +1,4 @@
-#include "../include/HeaderDX11.hpp"
+#include "HeaderDX11.hpp"
 
 void D3DManager::drawBegin(FrameBuffer* pFBuffer) {
     _pImContext->OMSetRenderTargets(1U, 

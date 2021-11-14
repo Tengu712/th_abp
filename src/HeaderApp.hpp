@@ -1,4 +1,4 @@
-#include "./HeaderDX11.hpp"
+#include "../directx/HeaderDX11.hpp"
 #pragma comment(lib, "mydx.lib")
 
 class App {

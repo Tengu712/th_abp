@@ -1,4 +1,4 @@
-#include "../include/HeaderDX11.hpp"
+#include "HeaderDX11.hpp"
 
 InputManager::InputManager() : numRegistered(0) {
     for(int i = 0; i < 64; ++i) {

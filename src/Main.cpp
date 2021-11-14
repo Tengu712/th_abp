@@ -1,4 +1,4 @@
-﻿#include "../include/HeaderApp.hpp"
+﻿#include "HeaderApp.hpp"
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPInst, LPSTR pCmd, int cmdShow) {
     App app = App();

@@ -1,4 +1,4 @@
-#include "../include/HeaderApp.hpp"
+#include "HeaderApp.hpp"
 
 App::App() : dmanager(D3DManager()) {}
 

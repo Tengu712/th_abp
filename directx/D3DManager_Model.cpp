@@ -1,4 +1,4 @@
-#include "../include/HeaderDX11.hpp"
+#include "HeaderDX11.hpp"
 
 bool D3DManager::createModelBuffers(unsigned int numVtx, Vertex* dataPCU, unsigned int* dataIdx, ModelInf* minf) {
     D3D11_BUFFER_DESC descVBuffer = {
