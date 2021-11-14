@@ -2,4 +2,5 @@
 /build/*.lib
 /res/*.res
 /res/*.png
-/uml/
+/uml/*.jar
+/uml/*.txt
