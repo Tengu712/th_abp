@@ -12,3 +12,7 @@
 ### 初期化
 
 ![Initialize](uml/uml.png)
+
+### 描画
+
+![Draw](uml/uml_001.png)

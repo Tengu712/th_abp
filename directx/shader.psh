@@ -4,9 +4,32 @@ SamplerState diffuseTextureSampler;
 struct PS_IN {
     float4 pos : SV_Position;
     float4 col : COLOR0;
-    float2 img : TEXCOORD0;
+    float2 tex : TEXCOORD0;
+    float4 prm : COLOR1;
 };
 
 float4 ps_main(PS_IN input) : SV_Target {
-    return input.col * diffuseTexture.Sample(diffuseTextureSampler, input.img);
+    // With image
+    if (input.prm.x == 1) {
+        // Overlay
+        if (input.prm.y == 1) {
+            float4 col = diffuseTexture.Sample(diffuseTextureSampler, input.tex);
+            if (col.x + col.y + col.z < 1.5)
+                return input.col * col;
+            else
+                return
+                    float4(1.0, 1.0, 1.0, 1.0)
+                    - 2.0 * (float4(1.0, 1.0, 1.0, 1.0) - col)
+                          * (float4(1.0, 1.0, 1.0, 1.0) - input.col);
+        }
+        // Multiply
+        else
+            return input.col * diffuseTexture.Sample(diffuseTextureSampler, input.tex);
+    }
+    // Mosaic
+    else if (input.prm.x == 2)
+        return input.col * diffuseTexture.Sample(diffuseTextureSampler, floor(input.tex * 200.0) / 200.0);
+    // No image
+    else
+        return input.col;
 }
