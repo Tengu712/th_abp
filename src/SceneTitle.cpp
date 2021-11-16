@@ -1,4 +1,4 @@
-#include "HeaderApp.hpp"
+#include "_app.hpp"
 
 bool SceneTitle::init() {
     pApp->createCamera((float)kSceWidth, (float)kSceHeight, &camera);

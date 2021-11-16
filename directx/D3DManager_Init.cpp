@@ -1,6 +1,6 @@
-#include "HeaderDX11.hpp"
-#include "pshader.h"
-#include "vshader.h"
+#include "_dx11private.hpp"
+#include "_pshader.h"
+#include "_vshader.h"
 
 LRESULT WINAPI WndProc(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {

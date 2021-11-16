@@ -1,4 +1,4 @@
-#include "HeaderDX11.hpp"
+#include "_dx11private.hpp"
 
 #include <wincodec.h>
 #pragma comment(lib, "Windowscodecs.lib")

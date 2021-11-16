@@ -1,21 +1,19 @@
 #pragma once
-#ifndef _HEADER_HPP_
-#define _HEADER_HPP_
+#ifndef _DX11_PRIVATE_
+#define _DX11_PRIVATE_
 
 #include <DirectXMath.h>
 #include <d3d11.h>
-#include <windows.h>
 #include <wrl/client.h>
 #include <xinput.h>
 
-#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment (lib, "xinput.lib")
 
-using Microsoft::WRL::ComPtr;
+#include "_dx11public.hpp"
 
-#define ErrorMessage(m) MessageBoxA(nullptr, m, "Error", MB_OK)
+using Microsoft::WRL::ComPtr;
 
 struct Vertex {
     float pcnu[12];
@@ -30,14 +28,6 @@ struct ConstantBuffer {
     DirectX::XMFLOAT4 vecColor;
     DirectX::XMFLOAT4 vecLight;
     DirectX::XMFLOAT4 params;
-};
-
-struct Camera {
-    float width, height;
-    float angle, nearZ, farZ;
-    float posX, posY, posZ;
-    float dirX, dirY, dirZ;
-    float uppX, uppY, uppZ;
 };
 
 struct Image {

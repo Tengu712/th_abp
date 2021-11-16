@@ -1,7 +1,9 @@
-#include "../directx/HeaderDX11.hpp"
-#pragma comment(lib, "mydx.lib")
+#pragma once
+#ifndef _APP_
+#define _APP_
 
-#include "resource.hpp"
+#include "../directx/_dx11public.hpp"
+#pragma comment(lib, "mydx.lib")
 
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
@@ -49,27 +51,14 @@ public:
     void update();
 };
 
+class AppInf;
+
 class App {
 private:
-    D3DManager dmanager;
-    InputManager imanager;
-    bool ableDebug;
-    ModelInf idea;
-    Scene* pScene;
-
+    AppInf* pInf;
 public:
-    App() : 
-        dmanager(D3DManager()),
-        imanager(InputManager()),
-        ableDebug(false),
-        idea(ModelInf()),
-        pScene(nullptr)
-    {}
-    ~App()
-    {
-        if (pScene != nullptr)
-            delete pScene;
-    }
+    App();
+    ~App();
     bool init(HINSTANCE hInst, LPSTR pCmd, int cmdShow);
     bool update();
     void drawIdea();
@@ -80,3 +69,5 @@ public:
     void debug(const char* msg);
     void debug(const int msg);
 };
+
+#endif
