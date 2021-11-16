@@ -1,5 +1,6 @@
-﻿#include "_app.hpp"
-#include "../directx/_dx11private.hpp"
+﻿#include "../directx/_dx11private.hpp"
+#include "_app.hpp"
+
 
 struct AppInf {
     D3DManager dmanager;
@@ -7,28 +8,24 @@ struct AppInf {
     bool ableDebug;
     ModelInf idea;
     Scene* pScene;
-    AppInf() :
-        dmanager(D3DManager()),
-        imanager(InputManager()),
-        ableDebug(false),
-        idea(ModelInf()),
-        pScene(nullptr)
-    {}
+    AppInf() : dmanager(D3DManager()), imanager(InputManager()), ableDebug(false), idea(ModelInf()), pScene(nullptr) {
+    }
     ~AppInf() {
         if (pScene != nullptr)
             delete pScene;
     }
 };
 
-App::App() : pInf(nullptr) {}
+App::App() : pInf(nullptr) {
+}
 
 App::~App() {
     if (pInf != nullptr)
         delete pInf;
 }
 
-int str_cmp(char *p1, char *p2) {
-    for(; *p1 == *p2; p1++, p2++) {
+int str_cmp(char* p1, char* p2) {
+    for (; *p1 == *p2; p1++, p2++) {
         if (*p1 == '\0')
             return 0;
     }
@@ -41,7 +38,7 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
         return false;
 
     const bool kWindowed = MessageBoxW(nullptr, L"フルスクリーンで起動しますか", L"確認", MB_YESNO) == IDNO;
-    if (kWindowed && str_cmp(pCmd, "debug") == 0 && !createConsole()) 
+    if (kWindowed && str_cmp(pCmd, "debug") == 0 && !createConsole())
         return false;
 
     debug("\n==================================================\n");
@@ -65,7 +62,7 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
             {+0.5f, -0.5f, +0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f},
         };
         unsigned int dataIdx[6U] = {0, 1, 2, 0, 2, 3};
-        if (!pInf->dmanager.createModelBuffers(pInf->idea.numIdx, dataPCNU, dataIdx, &pInf->idea)) 
+        if (!pInf->dmanager.createModelBuffers(pInf->idea.numIdx, dataPCNU, dataIdx, &pInf->idea))
             throw "Failed to create pInf->idea.";
         debug(" - Idea : Success\n");
         pInf->pScene = new SceneTitle(this);
@@ -92,28 +89,27 @@ void App::drawIdea() {
     pInf->dmanager.drawModel(&pInf->idea);
 }
 
-void App::applyFact(Fact* pFact) {
-    pInf->idea.posX = pFact->posX;
-    pInf->idea.posY = pFact->posY;
-    pInf->idea.posZ = pFact->posZ;
-    pInf->idea.degX = pFact->degX;
-    pInf->idea.degY = pFact->degY;
-    pInf->idea.degZ = pFact->degZ;
-    pInf->idea.sclX = pFact->sclX;
-    pInf->idea.sclY = pFact->sclY;
-    pInf->idea.sclZ = pFact->sclZ;
-    pInf->idea.colR = pFact->colR;
-    pInf->idea.colG = pFact->colG;
-    pInf->idea.colB = pFact->colB;
-    pInf->idea.colA = pFact->colA;
+void App::applyModel(Model* pFact) {
+    pInf->dmanager.setMatrixScale(pFact->sclX, pFact->sclY, pFact->sclZ);
+    pInf->dmanager.setMatrixRotate(pFact->degX, pFact->degY, pFact->degZ);
+    pInf->dmanager.setMatrixTranslate(pFact->posX, pFact->posY, pFact->posZ);
+    pInf->dmanager.setVectorColor(pFact->colR, pFact->colG, pFact->colB, pFact->colA);
 }
 
-void App::createCamera(float width, float height, Camera* pCamera) {
-    pInf->dmanager.createCamera(width, height, pCamera);
+void App::applyCamera(Camera* pCamera) {
+    pInf->dmanager.setMatrixView(pCamera->posX, pCamera->posY, pCamera->posZ, pCamera->dirX, pCamera->dirY,
+        pCamera->dirZ, pCamera->uppX, pCamera->uppY, pCamera->uppZ);
+    pInf->dmanager.setMatrixProject(pCamera->width, pCamera->height, pCamera->angle, pCamera->nearZ, pCamera->farZ, pCamera->parse);
 }
 
-void App::applyCamera(Camera* pCamera, bool parse) {
-    pInf->dmanager.applyCamera(pCamera, parse);
+FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
+    FrameBuffer* res = new FrameBuffer();
+    pInf->dmanager.createFrameBuffer(width, height, res);
+    return res;
+}
+
+void App::applyFrameBuffer(FrameBuffer* pFBuffer) {
+    pInf->dmanager.drawBegin(pFBuffer);
 }
 
 #include <stdio.h>

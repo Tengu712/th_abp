@@ -1,7 +1,7 @@
-#include "_dx11public.hpp"
+#include <wincodec.h>
+
 #include "_dx11private.hpp"
 
-#include <wincodec.h>
 #pragma comment(lib, "Windowscodecs.lib")
 #pragma comment(lib, "Ole32.lib")
 
@@ -29,7 +29,7 @@ bool D3DManager::createImage(HMODULE hModule, unsigned int id, Image* pImage) {
 
         ComPtr<IWICImagingFactory> pFactory = nullptr;
         if (FAILED(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory,
-                        (LPVOID*)pFactory.GetAddressOf())))
+                (LPVOID*)pFactory.GetAddressOf())))
             throw "Failed to create wic factory.";
 
         ComPtr<IWICStream> pStream = nullptr;
@@ -41,7 +41,7 @@ bool D3DManager::createImage(HMODULE hModule, unsigned int id, Image* pImage) {
 
         ComPtr<IWICBitmapDecoder> pDecoder = nullptr;
         if (FAILED(pFactory->CreateDecoderFromStream(
-                        pStream.Get(), nullptr, WICDecodeMetadataCacheOnLoad, pDecoder.GetAddressOf())))
+                pStream.Get(), nullptr, WICDecodeMetadataCacheOnLoad, pDecoder.GetAddressOf())))
             throw "Failed to load file.";
 
         ComPtr<IWICBitmapFrameDecode> pFrame = nullptr;
@@ -53,7 +53,7 @@ bool D3DManager::createImage(HMODULE hModule, unsigned int id, Image* pImage) {
             throw "Failed to create format converter.";
 
         if (FAILED(pFormatConverter->Initialize(pFrame.Get(), GUID_WICPixelFormat32bppRGBA, WICBitmapDitherTypeNone,
-                        nullptr, 1.0f, WICBitmapPaletteTypeMedianCut)))
+                nullptr, 1.0f, WICBitmapPaletteTypeMedianCut)))
             throw "Failed to initialize format.";
 
         unsigned int width, height;
@@ -89,43 +89,7 @@ bool D3DManager::createImage(HMODULE hModule, unsigned int id, Image* pImage) {
     return true;
 }
 
-bool D3DManager::createFrameBuffer(unsigned int width, unsigned int height, FrameBuffer* pFBuffer) {
-    try {
-        if (pFBuffer == nullptr)
-            throw "Nullptr gained when create a frame buffer.";
-        
-        D3D11_TEXTURE2D_DESC descTex = {
-            width, height, 1U, 1U, DXGI_FORMAT_R8G8B8A8_UNORM, {1U, 0U}, D3D11_USAGE_DEFAULT,
-            D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0U, 0U,
-        };
-        ComPtr<ID3D11Texture2D> pTex = nullptr;
-        if (FAILED(_pDevice->CreateTexture2D(&descTex, nullptr, pTex.GetAddressOf())))
-            throw "Failed to create texture2D for frame buffer.";
-
-        D3D11_RENDER_TARGET_VIEW_DESC descRTView;
-        ZeroMemory(&descRTView, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-        descRTView.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        descRTView.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-        if (FAILED(_pDevice->CreateRenderTargetView(pTex.Get(), &descRTView, pFBuffer->pRTView.GetAddressOf())))
-            throw "Failed to create render target view for frame buffer.";
-
-        D3D11_SHADER_RESOURCE_VIEW_DESC descSRView;
-        ZeroMemory(&descSRView, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-        descSRView.Format = descRTView.Format;
-        descSRView.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-        descSRView.Texture2D.MipLevels = 1U;
-        if (FAILED(_pDevice->CreateShaderResourceView(pTex.Get(), &descSRView, pFBuffer->image.pSRView.GetAddressOf())))
-            throw "Failed to create shader resource view for frame buffer.";
-
-    } catch (const char* error) {
-        ErrorMessage(error);
-        return false;
-    }
-
-    return true;
-}
-
-void D3DManager::applyImage(Image* pImage){
+void D3DManager::applyImage(Image* pImage) {
     if (pImage == nullptr || pImage->pSRView == nullptr) {
         _cbuffer.params.x = 0.0f;
     } else {

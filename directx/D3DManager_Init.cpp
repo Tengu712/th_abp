@@ -1,4 +1,3 @@
-#include "_dx11public.hpp"
 #include "_dx11private.hpp"
 #include "_pshader.h"
 #include "_vshader.h"
@@ -12,27 +11,9 @@ LRESULT WINAPI WndProc(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam
     return DefWindowProcW(hWnd, msg, wParam, lParam);
 }
 
-D3DManager::D3DManager(): 
-    _hWnd(nullptr),
-    _pDevice(nullptr),
-    _pImContext(nullptr),
-    _pSwapChain(nullptr),
-    _isDepth(true),
-    _pRTView(nullptr),
-    _pDSView(nullptr),
-    _pVShader(nullptr),
-    _pPShader(nullptr),
-    _pILayout(nullptr),
-    _pCBuffer(nullptr),
-    _cbuffer(ConstantBuffer())
-{
-    ZeroMemory(&_cbuffer, sizeof(ConstantBuffer));
-}
-
 bool D3DManager::init(HINSTANCE hInst, int cmdShow, LPCWSTR nameWnd, LPCWSTR nameWndClass, unsigned int width,
     unsigned int height, bool windowed) {
     try {
-
         // Create Window
         {
             const DWORD kDwStyle = windowed ? WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX : WS_POPUP;
@@ -150,22 +131,15 @@ bool D3DManager::init(HINSTANCE hInst, int cmdShow, LPCWSTR nameWnd, LPCWSTR nam
             if (FAILED(_pDevice->CreateBuffer(&descCB, nullptr, _pCBuffer.GetAddressOf())))
                 throw "Failed to create constant buffer.";
 
-            DirectX::XMStoreFloat4x4(&_cbuffer.matScl, DirectX::XMMatrixTranspose(
-                DirectX::XMMatrixScaling(1.0f, 1.0f, 1.0f)));
-            DirectX::XMStoreFloat4x4(&_cbuffer.matRot, DirectX::XMMatrixTranspose(
-                DirectX::XMMatrixRotationRollPitchYaw(0.0f, 0.0f, 0.0f)));
-            DirectX::XMStoreFloat4x4(&_cbuffer.matTrs, DirectX::XMMatrixTranspose(
-                DirectX::XMMatrixTranslation(0.0f, 0.0f, 0.0f)));   
-            DirectX::XMStoreFloat4x4(&_cbuffer.matView, DirectX::XMMatrixTranspose(
-                DirectX::XMMatrixLookToLH(
-                    DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-                    DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f),
-                    DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f))));
-            DirectX::XMStoreFloat4x4(&_cbuffer.matProj, DirectX::XMMatrixTranspose(
-                DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, (float)width / (float)height, 1.0f, 2000.0f)));
-            DirectX::XMStoreFloat4(&_cbuffer.vecColor, DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
-            DirectX::XMStoreFloat4(&_cbuffer.vecLight, DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f));
-            DirectX::XMStoreFloat4(&_cbuffer.params, DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+            ZeroMemory(&_cbuffer, sizeof(ConstantBuffer));
+            setMatrixScale(1.0f, 1.0f, 1.0f);
+            setMatrixRotate(0.0f, 0.0f, 0.0f);
+            setMatrixTranslate(0.0f, 0.0f, 0.0f);
+            setMatrixView(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f);
+            setMatrixProject(width, height, DirectX::XM_PIDIV4, 1.0f, 2000.0f, true);
+            setVectorColor(1.0f, 1.0f, 1.0f, 1.0f);
+            setVectorLight(0.0f, 0.0f, 1.0f, 0.0f);
+            setVectorParams(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
         // Set render configure

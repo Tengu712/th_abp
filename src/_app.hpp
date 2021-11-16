@@ -2,7 +2,7 @@
 #ifndef _APP_
 #define _APP_
 
-#include "../directx/_dx11public.hpp"
+#include "../directx/_dx11.hpp"
 #pragma comment(lib, "mydx.lib")
 
 constexpr unsigned int kSceWidth = 1280U;
@@ -10,12 +10,38 @@ constexpr unsigned int kSceHeight = 960U;
 
 class App;
 
-struct Fact {
+struct Camera {
+    float width, height;
+    float angle, nearZ, farZ;
+    float posX, posY, posZ;
+    float dirX, dirY, dirZ;
+    float uppX, uppY, uppZ;
+    bool parse;
+    Camera() :
+        width(kSceWidth),
+        height(kSceHeight),
+        angle(0.7853981853f),
+        nearZ(1.0f),
+        farZ(2000.0f),
+        posX(0.0f),
+        posY(0.0f),
+        posZ(0.0f),
+        dirX(0.0f),
+        dirY(0.0f),
+        dirZ(1.0f),
+        uppX(0.0f),
+        uppY(1.0f),
+        uppZ(0.0f),
+        parse(false)
+    {}
+};
+
+struct Model {
     float posX, posY, posZ;
     float degX, degY, degZ;
     float sclX, sclY, sclZ;
     float colR, colG, colB, colA;
-    Fact() :
+    Model() :
         posX(0.0f),
         posY(0.0f),
         posZ(0.0f),
@@ -61,9 +87,10 @@ public:
     bool init(HINSTANCE hInst, LPSTR pCmd, int cmdShow);
     bool update();
     void drawIdea();
-    void applyFact(Fact* pFact);
-    void createCamera(float width, float height, Camera* pCamera);
-    void applyCamera(Camera* pCamera, bool parse);
+    void applyModel(Model* pFact);
+    void applyCamera(Camera* pCamera);
+    FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
+    void applyFrameBuffer(FrameBuffer* pFBuffer);
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
