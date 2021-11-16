@@ -1,3 +1,4 @@
+#include "_dx11public.hpp"
 #include "_dx11private.hpp"
 #include "_pshader.h"
 #include "_vshader.h"

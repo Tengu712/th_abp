@@ -1,8 +1,7 @@
-﻿#include "../directx/_dx11private.hpp"
-#include "_app.hpp"
+﻿#include "_app.hpp"
+#include "../directx/_dx11private.hpp"
 
-class AppInf {
-public:
+struct AppInf {
     D3DManager dmanager;
     InputManager imanager;
     bool ableDebug;
@@ -52,14 +51,12 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
     debug("Start up ...\n");
 
     try {
-        // Initialize API
         if (!pInf->dmanager.init(hInst, cmdShow, L"射命丸文の弾幕稽古", L"TH_ABP", 1280U, 960U, kWindowed))
             throw "Failed to initialize D3DManager.";
         debug(" - Direct3D11 : Success\n");
         if (!pInf->imanager.init(64))
             throw "Failed to initialize InputManager.";
         debug(" - XInput : Success\n");
-        // Create idea
         pInf->idea.numIdx = 6U;
         struct Vertex dataPCNU[4U] = {
             {-0.5f, -0.5f, +0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f},
@@ -71,12 +68,10 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
         if (!pInf->dmanager.createModelBuffers(pInf->idea.numIdx, dataPCNU, dataIdx, &pInf->idea)) 
             throw "Failed to create pInf->idea.";
         debug(" - Idea : Success\n");
-        // Initialize scene
         pInf->pScene = new SceneTitle(this);
         if (!pInf->pScene->init())
             throw "Failed to initialize title.";
         debug(" - Title : Success\n");
-        // Finish
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
     } catch (const char* error) {
         ErrorMessage(error);

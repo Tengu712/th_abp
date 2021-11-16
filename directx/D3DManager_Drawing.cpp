@@ -1,3 +1,4 @@
+#include "_dx11public.hpp"
 #include "_dx11private.hpp"
 
 void D3DManager::drawBegin(FrameBuffer* pFBuffer) {

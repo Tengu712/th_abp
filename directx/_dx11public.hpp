@@ -15,6 +15,8 @@ struct Camera {
     float uppX, uppY, uppZ;
 };
 
+struct Image;
+
 struct FrameBuffer;
 
 #endif

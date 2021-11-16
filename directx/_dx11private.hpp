@@ -11,8 +11,6 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment (lib, "xinput.lib")
 
-#include "_dx11public.hpp"
-
 using Microsoft::WRL::ComPtr;
 
 struct Vertex {

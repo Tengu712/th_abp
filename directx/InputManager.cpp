@@ -1,3 +1,4 @@
+#include "_dx11public.hpp"
 #include "_dx11private.hpp"
 
 InputManager::InputManager() : maxNumKey(0), numRegistered(0), infs(nullptr) {}

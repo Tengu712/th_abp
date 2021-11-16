@@ -10,8 +10,7 @@ constexpr unsigned int kSceHeight = 960U;
 
 class App;
 
-class Fact {
-public:
+struct Fact {
     float posX, posY, posZ;
     float degX, degY, degZ;
     float sclX, sclY, sclZ;
@@ -51,7 +50,7 @@ public:
     void update();
 };
 
-class AppInf;
+struct AppInf;
 
 class App {
 private:

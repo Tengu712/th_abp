@@ -1,3 +1,4 @@
+#include "_dx11public.hpp"
 #include "_dx11private.hpp"
 
 bool D3DManager::createModelBuffers(unsigned int numVtx, Vertex* dataPCU, unsigned int* dataIdx, ModelInf* minf) {
