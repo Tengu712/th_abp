@@ -69,9 +69,10 @@ public:
 
 class SceneTitle : public Scene {
 private:
+    unsigned int cnt;
     Camera camera;
 public:
-    SceneTitle(App* pApp) : Scene(pApp), camera(Camera()) {}
+    SceneTitle(App* pApp) : Scene(pApp), cnt(0U), camera(Camera()) {}
     bool init();
     void update();
 };

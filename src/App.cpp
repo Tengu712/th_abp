@@ -1,7 +1,6 @@
 ﻿#include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
-
 struct AppInf {
     D3DManager dmanager;
     InputManager imanager;
@@ -99,7 +98,8 @@ void App::applyModel(Model* pFact) {
 void App::applyCamera(Camera* pCamera) {
     pInf->dmanager.setMatrixView(pCamera->posX, pCamera->posY, pCamera->posZ, pCamera->dirX, pCamera->dirY,
         pCamera->dirZ, pCamera->uppX, pCamera->uppY, pCamera->uppZ);
-    pInf->dmanager.setMatrixProject(pCamera->width, pCamera->height, pCamera->angle, pCamera->nearZ, pCamera->farZ, pCamera->parse);
+    pInf->dmanager.setMatrixProject(
+        pCamera->width, pCamera->height, pCamera->angle, pCamera->nearZ, pCamera->farZ, pCamera->parse);
 }
 
 FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
