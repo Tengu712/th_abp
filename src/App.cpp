@@ -15,7 +15,7 @@ struct AppInf {
     }
 };
 
-App::App() : pInf(nullptr) {
+App::App() : pInf(nullptr), cameraUI(Camera()) {
 }
 
 App::~App() {
@@ -67,13 +67,19 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
         pInf->pScene = new SceneTitle(this);
         if (!pInf->pScene->init())
             throw "Failed to initialize title.";
-        debug(" - Title : Success\n");
+        debug(" - Title Scene : Success\n");
+        cameraUI.posZ = -10.0f;
+        cameraUI.parse = false;
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
     } catch (const char* error) {
         ErrorMessage(error);
         return false;
     }
     return true;
+}
+
+bool App::isIconic() {
+    return pInf->dmanager.isIconic();
 }
 
 bool App::update() {
@@ -89,6 +95,8 @@ void App::drawIdea() {
 }
 
 void App::applyModel(Model* pFact) {
+    if (pFact == nullptr)
+        return;
     pInf->dmanager.setMatrixScale(pFact->sclX, pFact->sclY, pFact->sclZ);
     pInf->dmanager.setMatrixRotate(pFact->degX, pFact->degY, pFact->degZ);
     pInf->dmanager.setMatrixTranslate(pFact->posX, pFact->posY, pFact->posZ);
@@ -96,6 +104,11 @@ void App::applyModel(Model* pFact) {
 }
 
 void App::applyCamera(Camera* pCamera) {
+    if (pCamera == nullptr) {
+        pInf->dmanager.enableDepthStencil(false);
+        applyCamera(&cameraUI);
+        return;
+    }
     pInf->dmanager.setMatrixView(pCamera->posX, pCamera->posY, pCamera->posZ, pCamera->dirX, pCamera->dirY,
         pCamera->dirZ, pCamera->uppX, pCamera->uppY, pCamera->uppZ);
     pInf->dmanager.setMatrixProject(

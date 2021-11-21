@@ -70,9 +70,8 @@ public:
 class SceneTitle : public Scene {
 private:
     unsigned int cnt;
-    Camera camera;
 public:
-    SceneTitle(App* pApp) : Scene(pApp), cnt(0U), camera(Camera()) {}
+    SceneTitle(App* pApp) : Scene(pApp), cnt(0U) {}
     bool init();
     void update();
 };
@@ -82,10 +81,12 @@ struct AppInf;
 class App {
 private:
     AppInf* pInf;
+    Camera cameraUI;
 public:
     App();
     ~App();
     bool init(HINSTANCE hInst, LPSTR pCmd, int cmdShow);
+    bool isIconic();
     bool update();
     void drawIdea();
     void applyModel(Model* pFact);

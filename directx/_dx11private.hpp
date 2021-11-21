@@ -80,6 +80,7 @@ public:
     }
     bool init(HINSTANCE hInst, int cmdShow, LPCWSTR wndName, LPCWSTR wndClassName, unsigned int width,
         unsigned int height, bool windowed);
+    bool isIconic();
     bool createModelBuffers(unsigned int numVtx, Vertex* data, unsigned int* dataIdx, ModelInf* minf);
     bool createFrameBuffer(unsigned int width, unsigned int height, FrameBuffer* pFBuffer);
     bool createImage(HMODULE hModule, unsigned int id, Image* pImage);

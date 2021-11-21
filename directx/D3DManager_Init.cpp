@@ -181,3 +181,7 @@ bool D3DManager::init(HINSTANCE hInst, int cmdShow, LPCWSTR nameWnd, LPCWSTR nam
 
     return true;
 }
+
+bool D3DManager::isIconic() {
+    return IsIconic(_hWnd);
+}
