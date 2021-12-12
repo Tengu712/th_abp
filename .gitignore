@@ -1,8 +1,8 @@
 /build/*.exe
 /build/*.lib
+/build/*.dll
 /res/*.res
 /res/*.png
 /uml/*.jar
-/uml/*.txt
 /.vscode/
 .clang-format

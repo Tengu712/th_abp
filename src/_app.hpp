@@ -2,11 +2,14 @@
 #ifndef _APP_
 #define _APP_
 
+#include "./_resource.hpp"
+
 #include "../directx/_dx11.hpp"
 #pragma comment(lib, "mydx.lib")
 
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
+constexpr unsigned int kNumImage = 30U;
 
 class App;
 
@@ -82,15 +85,22 @@ class App {
 private:
     AppInf* pInf;
     Camera cameraUI;
+    Image* imgs;
 public:
-    App();
-    ~App();
+    App() : pInf(nullptr), cameraUI(Camera()), imgs(nullptr) {}
+    ~App() {
+        if (pInf != nullptr)
+            delete pInf;
+        if (imgs != nullptr)
+            delete imgs;
+    }
     bool init(HINSTANCE hInst, LPSTR pCmd, int cmdShow);
     bool isIconic();
     bool update();
     void drawIdea();
     void applyModel(Model* pFact);
     void applyCamera(Camera* pCamera);
+    void applyImage(unsigned int id);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* pFBuffer);
     bool createConsole();

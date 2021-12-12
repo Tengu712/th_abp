@@ -1,3 +1,4 @@
-#include "resource.hpp"
+#include "../src/_resource.hpp"
 
-TEX_TEST IMAGE "./testtex.png"
+IMG_BG_LOAD IMAGE "./bg_load.png"
+IMG_BG_TITLE IMAGE "./bg_title.png"

@@ -15,14 +15,6 @@ struct AppInf {
     }
 };
 
-App::App() : pInf(nullptr), cameraUI(Camera()) {
-}
-
-App::~App() {
-    if (pInf != nullptr)
-        delete pInf;
-}
-
 int str_cmp(char* p1, char* p2) {
     for (; *p1 == *p2; p1++, p2++) {
         if (*p1 == '\0')
@@ -68,6 +60,35 @@ bool App::init(HINSTANCE hInst, LPSTR pCmd, int cmdShow) {
         if (!pInf->pScene->init())
             throw "Failed to initialize title.";
         debug(" - Title Scene : Success\n");
+        HMODULE h_module = LoadLibraryA("./resource.dll");
+        if (h_module == nullptr)
+            throw "Failed to load resource.dll.";
+        Image img_load = Image();
+        memset(&img_load, 0, sizeof(Image));
+        if (!pInf->dmanager.createImage(h_module, IMG_BG_LOAD, &img_load))
+            throw "Failed to load an image.";
+        pInf->dmanager.applyImage(&img_load);
+        Model model_load = Model();
+        model_load.sclX = 1280.0f;
+        model_load.sclY = 960.0f;
+        applyModel(&model_load);
+        imgs = new Image[kNumImage];
+        if (imgs == nullptr)
+            throw "Failed to create array of images.";
+        memset(imgs, 0, sizeof(Image) * kNumImage);
+        auto loadImage = [&](unsigned int id) {
+            for (int i = 0; i < kNumImage; ++i) {
+                if (imgs[i].id != 0U)
+                    continue;
+                return pInf->dmanager.createImage(h_module, id, &imgs[i]);
+            }
+            return false;
+        };
+        bool flg = true;
+        flg = flg && loadImage(IMG_BG_TITLE);
+        if (!flg)
+            throw "Failed to load some images.";
+        debug(" - Images : Success\n");
         cameraUI.posZ = -10.0f;
         cameraUI.parse = false;
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
@@ -113,6 +134,14 @@ void App::applyCamera(Camera* pCamera) {
         pCamera->dirZ, pCamera->uppX, pCamera->uppY, pCamera->uppZ);
     pInf->dmanager.setMatrixProject(
         pCamera->width, pCamera->height, pCamera->angle, pCamera->nearZ, pCamera->farZ, pCamera->parse);
+}
+
+void App::applyImage(unsigned int id) {
+    for (int i = 0; i < kNumImage; ++i) {
+        if (imgs[i].id == id)
+            return pInf->dmanager.applyImage(&imgs[i]);
+    }
+    pInf->dmanager.applyImage(nullptr);
 }
 
 FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
