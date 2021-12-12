@@ -12,6 +12,9 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "xinput.lib")
+#pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "Ole32.lib")
+#pragma comment(lib, "Windowscodecs.lib")
 
 using Microsoft::WRL::ComPtr;
 
@@ -84,14 +87,15 @@ public:
     bool createModelBuffers(unsigned int num_vtx, Vertex* data, unsigned int* data_indx, ModelInf* p_minf);
     bool createFrameBuffer(unsigned int width, unsigned int height, FrameBuffer* p_fbuf);
     bool createImage(HMODULE h_module, unsigned int id, Image* p_image);
+    bool createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* p_image);
     void applyImage(Image* p_image);
     void enableDepthStencil(bool enable);
     void setViewport(D3D11_VIEWPORT* p_viewport);
     void setMatrixScale(float scl_x, float scl_y, float scl_z);
     void setMatrixRotate(float deg_x, float deg_y, float deg_z);
-    void setMatrixTranslate(float pos_x, float pos_Y, float pos_z);
+    void setMatrixTranslate(float pos_x, float pos_y, float pos_z);
     void setMatrixView(
-        float pos_x, float pos_Y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z);
+        float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z);
     void setMatrixProject(float width, float height, float angle, float near_z, float far_z, bool parse);
     void setVectorColor(float col_r, float col_g, float col_b, float col_a);
     void setVectorLight(float x, float y, float z, float w);

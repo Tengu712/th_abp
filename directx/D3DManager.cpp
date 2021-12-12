@@ -40,15 +40,15 @@ void D3DManager::setMatrixRotate(float deg_x, float deg_y, float deg_z) {
             DirectX::XMConvertToRadians(deg_x), DirectX::XMConvertToRadians(deg_y), DirectX::XMConvertToRadians(deg_z))));
 }
 
-void D3DManager::setMatrixTranslate(float pos_x, float pos_Y, float pos_z) {
+void D3DManager::setMatrixTranslate(float pos_x, float pos_y, float pos_z) {
     DirectX::XMStoreFloat4x4(
-        &_cbuf.mat_trs, DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(pos_x, pos_Y, pos_z)));
+        &_cbuf.mat_trs, DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(pos_x, pos_y, pos_z)));
 }
 
 void D3DManager::setMatrixView(
-    float pos_x, float pos_Y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z) {
+    float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z) {
     DirectX::XMStoreFloat4x4(&_cbuf.mat_view,
-        DirectX::XMMatrixTranspose(DirectX::XMMatrixLookToLH(DirectX::XMVectorSet(pos_x, pos_Y, pos_z, 0.0f),
+        DirectX::XMMatrixTranspose(DirectX::XMMatrixLookToLH(DirectX::XMVectorSet(pos_x, pos_y, pos_z, 0.0f),
             DirectX::XMVectorSet(dir_x, dir_y, dir_z, 0.0f), DirectX::XMVectorSet(upp_x, upp_y, upp_z, 0.0f))));
 }
 
@@ -155,8 +155,6 @@ bool D3DManager::createFrameBuffer(unsigned int width, unsigned int height, Fram
 }
 
 #include <wincodec.h>
-#pragma comment(lib, "Windowscodecs.lib")
-#pragma comment(lib, "Ole32.lib")
 
 bool D3DManager::createImage(HMODULE h_module, unsigned int id, Image* p_image) {
     try {
@@ -239,6 +237,80 @@ bool D3DManager::createImage(HMODULE h_module, unsigned int id, Image* p_image) 
         return false;
     }
 
+    return true;
+}
+
+bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* p_image) {
+    try {
+        if (p_image == nullptr)
+            throw "Nullptr gained when creating a font image.";
+        p_image->id = code;
+
+        HFONT h_font = CreateFontIndirectA(p_logfont);
+        HDC hdc = GetDC(nullptr);
+        HFONT h_font_old = (HFONT)SelectObject(hdc, h_font);
+
+        TEXTMETRICA met_text;
+        GetTextMetricsA(hdc, &met_text);
+        GLYPHMETRICS met_glyph;
+        const MAT2 mat = {{0,1}, {0,0}, {0,0}, {0,1}};
+        DWORD dw_res = GetGlyphOutlineA(hdc, code, GGO_GRAY4_BITMAP, &met_glyph, 0, nullptr, &mat);
+
+        unsigned char* p_mono = new unsigned char[dw_res];
+        GetGlyphOutlineA(hdc, code, GGO_GRAY4_BITMAP, &met_glyph, dw_res, p_mono, &mat);
+    
+        SelectObject(hdc, h_font_old);
+        DeleteObject(h_font);
+        ReleaseDC(nullptr, hdc);
+
+        const unsigned int kWidth = (unsigned int)met_glyph.gmCellIncX;
+        const unsigned int kHeight = (unsigned int)met_text.tmHeight;
+        const int kOfsX = met_glyph.gmptGlyphOrigin.x;
+        const int kOfsY = met_text.tmAscent - met_glyph.gmptGlyphOrigin.y;
+        const int kWidthBmp = met_glyph.gmBlackBoxX + (4 - (met_glyph.gmBlackBoxX % 4)) % 4;
+        const int kHeightBmp = met_glyph.gmBlackBoxY;
+
+        D3D11_TEXTURE2D_DESC desc_tex = {
+            kWidth, kHeight, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, {1, 0}, D3D11_USAGE_DYNAMIC,
+            D3D11_BIND_SHADER_RESOURCE, D3D11_CPU_ACCESS_WRITE, 0, 
+        };
+        ComPtr<ID3D11Texture2D> p_layer = nullptr;
+        if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_layer.GetAddressOf())))
+            throw "Failed to create font texture.";
+    
+        D3D11_MAPPED_SUBRESOURCE res_mapped;
+        _p_context->Map(p_layer.Get(), 0U, D3D11_MAP_WRITE_DISCARD, 0U, &res_mapped);
+        unsigned char* p_bits = (unsigned char*)res_mapped.pData;
+        for (int y = 0; y < kHeight; ++y) {
+            for (int x = 0; x < kWidth; ++x) {
+                if (x < kOfsX || y < kOfsY || x >= kOfsX + kWidthBmp || y >= kOfsY + kHeightBmp) {
+                    DWORD col = 0x00000000;
+                    memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
+                }
+                else {
+                    DWORD alp = (255 * p_mono[x - kOfsX + kWidthBmp * (y - kOfsY)]) / 16;
+                    DWORD col = 0x00ffffff | (alp << 24);
+                    memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
+                }
+            }
+        }
+        _p_context->Unmap(p_layer.Get(), 0U);
+
+        delete p_mono;
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC desc_srview;
+        ZeroMemory(&desc_srview, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+        desc_srview.Format = desc_tex.Format;
+        desc_srview.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+        desc_srview.Texture2D.MostDetailedMip = 0;
+        desc_srview.Texture2D.MipLevels = desc_tex.MipLevels;
+        if (FAILED(_p_device->CreateShaderResourceView(p_layer.Get(), &desc_srview, p_image->p_srview.GetAddressOf()))) 
+            throw "Failed to create shader resource view.";
+
+    } catch (const char* error) {
+        ErrorMessage(error);
+        return false;
+    }
     return true;
 }
 
