@@ -5,12 +5,12 @@ bool SceneTitle::init() {
 }
 
 void SceneTitle::update() {
-    pApp->applyCamera(nullptr);
+    p_app->applyCamera(nullptr);
     Model f = Model();
-    f.sclX = 1280.0f;
-    f.sclY = 960.0f;
-    pApp->applyModel(&f);
-    pApp->applyImage(IMG_BG_TITLE);
-    pApp->drawIdea();
+    f.scl_x = 1280.0f;
+    f.scl_y = 960.0f;
+    p_app->applyModel(&f);
+    p_app->applyImage(IMG_BG_TITLE);
+    p_app->drawIdea();
     cnt++;
 }

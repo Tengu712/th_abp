@@ -1,8 +1,8 @@
 #include "_app.hpp"
 
-int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPInst, LPSTR pCmd, int cmdShow) {
+int WINAPI WinMain(HINSTANCE h_inst, HINSTANCE h_pinst, LPSTR p_cmd, int cmd_show) {
     App app = App();
-    if (!app.init(hInst, pCmd, cmdShow))
+    if (!app.init(h_inst, p_cmd, cmd_show))
         return 1;
     MSG msg;
     while (true) {

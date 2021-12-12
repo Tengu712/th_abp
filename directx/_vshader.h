@@ -5,16 +5,16 @@
 //
 // Buffer Definitions: 
 //
-// cbuffer mats
+// cbuf mats
 // {
 //
-//   float4x4 matScl;                   // Offset:    0 Size:    64
-//   float4x4 matRot;                   // Offset:   64 Size:    64
-//   float4x4 matTrs;                   // Offset:  128 Size:    64
-//   float4x4 matView;                  // Offset:  192 Size:    64
-//   float4x4 matProj;                  // Offset:  256 Size:    64
-//   float4 vecColor;                   // Offset:  320 Size:    16
-//   float4 vecLight;                   // Offset:  336 Size:    16
+//   float4x4 mat_scl;                   // Offset:    0 Size:    64
+//   float4x4 mat_rot;                   // Offset:   64 Size:    64
+//   float4x4 mat_trs;                   // Offset:  128 Size:    64
+//   float4x4 mat_view;                  // Offset:  192 Size:    64
+//   float4x4 mat_proj;                  // Offset:  256 Size:    64
+//   float4 vec_color;                   // Offset:  320 Size:    16
+//   float4 vec_light;                   // Offset:  336 Size:    16
 //   float4 params;                     // Offset:  352 Size:    16
 //
 // }
@@ -24,7 +24,7 @@
 //
 // Name                                 Type  Format         Dim      HLSL Bind  Count
 // ------------------------------ ---------- ------- ----------- -------------- ------
-// mats                              cbuffer      NA          NA            cb0      1 
+// mats                              cbuf      NA          NA            cb0      1 
 //
 //
 //
@@ -49,7 +49,7 @@
 //
 vs_5_0
 dcl_globalFlags refactoringAllowed
-dcl_constantbuffer CB0[23], immediateIndexed
+dcl_constantbuf CB0[23], immediateIndexed
 dcl_input v0.xyzw
 dcl_input v1.xyzw
 dcl_input v2.xyzw

@@ -1,11 +1,11 @@
-cbuffer mats : register (b0) {
-    float4x4 matScl;
-    float4x4 matRot;
-    float4x4 matTrs;
-    float4x4 matView;
-    float4x4 matProj;
-    float4 vecColor;
-    float4 vecLight;
+cbuf mats : register (b0) {
+    float4x4 mat_scl;
+    float4x4 mat_rot;
+    float4x4 mat_trs;
+    float4x4 mat_view;
+    float4x4 mat_proj;
+    float4 vec_color;
+    float4 vec_light;
     float4 params;
 }
 
@@ -26,16 +26,16 @@ struct VS_OUT {
 VS_OUT vs_main(VS_IN input) {
     VS_OUT output;
 
-    output.pos = mul(input.pos, matScl);
-    output.pos = mul(output.pos, matRot);
-    output.pos = mul(output.pos, matTrs);
-    output.pos = mul(output.pos, matView);
-    output.pos = mul(output.pos, matProj);
+    output.pos = mul(input.pos, mat_scl);
+    output.pos = mul(output.pos, mat_rot);
+    output.pos = mul(output.pos, mat_trs);
+    output.pos = mul(output.pos, mat_view);
+    output.pos = mul(output.pos, mat_proj);
 
-    float4 nor = mul(input.nor, matRot);
+    float4 nor = mul(input.nor, mat_rot);
     float3 norRes = normalize(nor.xyz);
-    float4 col = input.col * vecColor;
-    output.col = float4(col.xyz * (dot(-norRes, vecLight.xyz) * 0.5 + 0.5), col.w);
+    float4 col = input.col * vec_color;
+    output.col = float4(col.xyz * (dot(-norRes, vec_light.xyz) * 0.5 + 0.5), col.w);
 
     output.tex = input.tex;
     output.prm = params;

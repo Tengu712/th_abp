@@ -22,82 +22,82 @@ struct Vertex {
 };
 
 struct ConstantBuffer {
-    DirectX::XMFLOAT4X4 matScl;
-    DirectX::XMFLOAT4X4 matRot;
-    DirectX::XMFLOAT4X4 matTrs;
-    DirectX::XMFLOAT4X4 matView;
-    DirectX::XMFLOAT4X4 matProj;
-    DirectX::XMFLOAT4 vecColor;
-    DirectX::XMFLOAT4 vecLight;
+    DirectX::XMFLOAT4X4 mat_scl;
+    DirectX::XMFLOAT4X4 mat_rot;
+    DirectX::XMFLOAT4X4 mat_trs;
+    DirectX::XMFLOAT4X4 mat_view;
+    DirectX::XMFLOAT4X4 mat_proj;
+    DirectX::XMFLOAT4 vec_color;
+    DirectX::XMFLOAT4 vec_light;
     DirectX::XMFLOAT4 params;
 };
 
 struct Image {
     unsigned int id;
-    ComPtr<ID3D11ShaderResourceView> pSRView;
+    ComPtr<ID3D11ShaderResourceView> p_srview;
 };
 
 struct FrameBuffer {
-    ComPtr<ID3D11RenderTargetView> pRTView;
+    ComPtr<ID3D11RenderTargetView> p_rtview;
     Image image;
 };
 
 struct ModelInf {
-    unsigned int numIdx;
-    ComPtr<ID3D11Buffer> pVBuffer;
-    ComPtr<ID3D11Buffer> pIBuffer;
+    unsigned int num_idx;
+    ComPtr<ID3D11Buffer> p_vbuf;
+    ComPtr<ID3D11Buffer> p_ibuf;
 };
 
 class D3DManager {
 private:
-    HWND _hWnd;
-    bool _isDepth;
-    ComPtr<ID3D11Device> _pDevice;
-    ComPtr<ID3D11DeviceContext> _pImContext;
-    ComPtr<IDXGISwapChain> _pSwapChain;
-    ComPtr<ID3D11RenderTargetView> _pRTView;
-    ComPtr<ID3D11DepthStencilView> _pDSView;
-    ComPtr<ID3D11VertexShader> _pVShader;
-    ComPtr<ID3D11PixelShader> _pPShader;
-    ComPtr<ID3D11InputLayout> _pILayout;
-    ComPtr<ID3D11Buffer> _pCBuffer;
-    ConstantBuffer _cbuffer;
+    HWND _h_wnd;
+    bool _is_depth;
+    ComPtr<ID3D11Device> _p_device;
+    ComPtr<ID3D11DeviceContext> _p_context;
+    ComPtr<IDXGISwapChain> _p_swapchain;
+    ComPtr<ID3D11RenderTargetView> _p_rtview;
+    ComPtr<ID3D11DepthStencilView> _p_dsview;
+    ComPtr<ID3D11VertexShader> _p_vshader;
+    ComPtr<ID3D11PixelShader> _p_pshader;
+    ComPtr<ID3D11InputLayout> _p_ilayout;
+    ComPtr<ID3D11Buffer> _p_cbuf;
+    ConstantBuffer _cbuf;
 
 public:
     D3DManager()
-        : _hWnd(nullptr),
-          _pDevice(nullptr),
-          _pImContext(nullptr),
-          _pSwapChain(nullptr),
-          _isDepth(true),
-          _pRTView(nullptr),
-          _pDSView(nullptr),
-          _pVShader(nullptr),
-          _pPShader(nullptr),
-          _pILayout(nullptr),
-          _pCBuffer(nullptr),
-          _cbuffer(ConstantBuffer()) {
+        : _h_wnd(nullptr),
+          _p_device(nullptr),
+          _p_context(nullptr),
+          _p_swapchain(nullptr),
+          _is_depth(true),
+          _p_rtview(nullptr),
+          _p_dsview(nullptr),
+          _p_vshader(nullptr),
+          _p_pshader(nullptr),
+          _p_ilayout(nullptr),
+          _p_cbuf(nullptr),
+          _cbuf(ConstantBuffer()) {
     }
-    bool init(HINSTANCE hInst, int cmdShow, LPCWSTR wndName, LPCWSTR wndClassName, unsigned int width,
+    bool init(HINSTANCE h_inst, int cmd_show, LPCWSTR name_wnd, LPCWSTR name_wndclass, unsigned int width,
         unsigned int height, bool windowed);
     bool isIconic();
-    bool createModelBuffers(unsigned int numVtx, Vertex* data, unsigned int* dataIdx, ModelInf* minf);
-    bool createFrameBuffer(unsigned int width, unsigned int height, FrameBuffer* pFBuffer);
-    bool createImage(HMODULE hModule, unsigned int id, Image* pImage);
-    void applyImage(Image* pImage);
+    bool createModelBuffers(unsigned int num_vtx, Vertex* data, unsigned int* data_indx, ModelInf* p_minf);
+    bool createFrameBuffer(unsigned int width, unsigned int height, FrameBuffer* p_fbuf);
+    bool createImage(HMODULE h_module, unsigned int id, Image* p_image);
+    void applyImage(Image* p_image);
     void enableDepthStencil(bool enable);
-    void setViewport(D3D11_VIEWPORT* pViewport);
-    void setMatrixScale(float sclX, float sclY, float sclZ);
-    void setMatrixRotate(float degX, float degY, float degZ);
-    void setMatrixTranslate(float posX, float posY, float posZ);
+    void setViewport(D3D11_VIEWPORT* p_viewport);
+    void setMatrixScale(float scl_x, float scl_y, float scl_z);
+    void setMatrixRotate(float deg_x, float deg_y, float deg_z);
+    void setMatrixTranslate(float pos_x, float pos_Y, float pos_z);
     void setMatrixView(
-        float posX, float posY, float posZ, float dirX, float dirY, float dirZ, float uppX, float uppY, float uppZ);
+        float pos_x, float pos_Y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z);
     void setMatrixProject(float width, float height, float angle, float nearZ, float farZ, bool parse);
-    void setVectorColor(float colR, float colG, float colB, float colA);
+    void setVectorColor(float col_r, float col_g, float col_b, float col_a);
     void setVectorLight(float x, float y, float z, float w);
     void setVectorParams(float x, float y, float z, float w);
-    void drawBegin(FrameBuffer* pFBuffer);
-    void drawModel(ModelInf* minf);
+    void drawBegin(FrameBuffer* p_fbuf);
+    void drawModel(ModelInf* p_minf);
     void drawEnd();
 };
 
@@ -117,27 +117,27 @@ enum struct GAMEPAD_KEYTYPE : char {
 
 struct KeyInf {
     char state;
-    char statePrev;
-    char codeKey;
-    char codeKeyboard;
-    GAMEPAD_KEYTYPE typeGamepadKey;
-    short codeGamepad;
+    char state_prev;
+    char code_key;
+    char code_keyboard;
+    GAMEPAD_KEYTYPE type_gamepad;
+    short code_gamepad;
 };
 
 class InputManager {
 private:
-    int maxNumKey;
-    int numRegistered;
+    int max_num_key;
+    int num_registered;
     KeyInf* infs;
 
 public:
-    InputManager() : maxNumKey(0), numRegistered(0), infs(nullptr) {
+    InputManager() : max_num_key(0), num_registered(0), infs(nullptr) {
     }
     ~InputManager();
-    bool init(int maxNumKey);
-    bool addKeycode(char codeKey, char codeKeyboard, GAMEPAD_KEYTYPE typeGamepadKey, short codeGamepad);
+    bool init(int max_num_key);
+    bool addKeycode(char code_key, char code_keyboard, GAMEPAD_KEYTYPE type_gamepad, short code_gamepad);
     void inspect();
-    char getKey(char codeKey);
+    char getKey(char code_key);
 };
 
 #endif

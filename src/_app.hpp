@@ -16,9 +16,9 @@ class App;
 struct Camera {
     float width, height;
     float angle, nearZ, farZ;
-    float posX, posY, posZ;
-    float dirX, dirY, dirZ;
-    float uppX, uppY, uppZ;
+    float pos_x, pos_Y, pos_z;
+    float dir_x, dir_y, dir_z;
+    float upp_x, upp_y, upp_z;
     bool parse;
     Camera() :
         width(kSceWidth),
@@ -26,46 +26,46 @@ struct Camera {
         angle(0.7853981853f),
         nearZ(1.0f),
         farZ(2000.0f),
-        posX(0.0f),
-        posY(0.0f),
-        posZ(0.0f),
-        dirX(0.0f),
-        dirY(0.0f),
-        dirZ(1.0f),
-        uppX(0.0f),
-        uppY(1.0f),
-        uppZ(0.0f),
+        pos_x(0.0f),
+        pos_Y(0.0f),
+        pos_z(0.0f),
+        dir_x(0.0f),
+        dir_y(0.0f),
+        dir_z(1.0f),
+        upp_x(0.0f),
+        upp_y(1.0f),
+        upp_z(0.0f),
         parse(false)
     {}
 };
 
 struct Model {
-    float posX, posY, posZ;
-    float degX, degY, degZ;
-    float sclX, sclY, sclZ;
-    float colR, colG, colB, colA;
+    float pos_x, pos_Y, pos_z;
+    float deg_x, deg_y, deg_z;
+    float scl_x, scl_y, scl_z;
+    float col_r, col_g, col_b, col_a;
     Model() :
-        posX(0.0f),
-        posY(0.0f),
-        posZ(0.0f),
-        degX(0.0f),
-        degY(0.0f),
-        degZ(0.0f),
-        sclX(1.0f),
-        sclY(1.0f),
-        sclZ(1.0f),
-        colR(1.0f),
-        colG(1.0f),
-        colB(1.0f),
-        colA(1.0f)
+        pos_x(0.0f),
+        pos_Y(0.0f),
+        pos_z(0.0f),
+        deg_x(0.0f),
+        deg_y(0.0f),
+        deg_z(0.0f),
+        scl_x(1.0f),
+        scl_y(1.0f),
+        scl_z(1.0f),
+        col_r(1.0f),
+        col_g(1.0f),
+        col_b(1.0f),
+        col_a(1.0f)
     {}
 };
 
 class Scene {
 protected:
-    App* pApp;
+    App* p_app;
 public:
-    Scene(App* pApp) : pApp(pApp) {}
+    Scene(App* p_app) : p_app(p_app) {}
     virtual bool init() = 0;
     virtual void update() = 0;
 };
@@ -74,7 +74,7 @@ class SceneTitle : public Scene {
 private:
     unsigned int cnt;
 public:
-    SceneTitle(App* pApp) : Scene(pApp), cnt(0U) {}
+    SceneTitle(App* p_app) : Scene(p_app), cnt(0U) {}
     bool init();
     void update();
 };
@@ -83,26 +83,22 @@ struct AppInf;
 
 class App {
 private:
-    AppInf* pInf;
-    Camera cameraUI;
-    Image* imgs;
+    AppInf* p_inf;
 public:
-    App() : pInf(nullptr), cameraUI(Camera()), imgs(nullptr) {}
+    App() : p_inf(nullptr) {}
     ~App() {
-        if (pInf != nullptr)
-            delete pInf;
-        if (imgs != nullptr)
-            delete imgs;
+        if (p_inf != nullptr)
+            delete p_inf;
     }
-    bool init(HINSTANCE hInst, LPSTR pCmd, int cmdShow);
+    bool init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show);
     bool isIconic();
     bool update();
     void drawIdea();
-    void applyModel(Model* pFact);
-    void applyCamera(Camera* pCamera);
+    void applyModel(Model* p_model);
+    void applyCamera(Camera* p_camera);
     void applyImage(unsigned int id);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
-    void applyFrameBuffer(FrameBuffer* pFBuffer);
+    void applyFrameBuffer(FrameBuffer* p_fbuf);
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
