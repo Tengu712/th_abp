@@ -144,7 +144,7 @@ void App::applyCamera(Camera* p_camera) {
     p_inf->dmanager.setMatrixView(p_camera->pos_x, p_camera->pos_Y, p_camera->pos_z, p_camera->dir_x, p_camera->dir_y,
         p_camera->dir_z, p_camera->upp_x, p_camera->upp_y, p_camera->upp_z);
     p_inf->dmanager.setMatrixProject(
-        p_camera->width, p_camera->height, p_camera->angle, p_camera->nearZ, p_camera->farZ, p_camera->parse);
+        p_camera->width, p_camera->height, p_camera->angle, p_camera->near_z, p_camera->far_z, p_camera->parse);
 }
 
 void App::applyImage(unsigned int id) {

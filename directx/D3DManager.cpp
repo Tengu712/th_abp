@@ -52,10 +52,10 @@ void D3DManager::setMatrixView(
             DirectX::XMVectorSet(dir_x, dir_y, dir_z, 0.0f), DirectX::XMVectorSet(upp_x, upp_y, upp_z, 0.0f))));
 }
 
-void D3DManager::setMatrixProject(float width, float height, float angle, float nearZ, float farZ, bool parse) {
+void D3DManager::setMatrixProject(float width, float height, float angle, float near_z, float far_z, bool parse) {
     DirectX::XMStoreFloat4x4(&_cbuf.mat_proj,
-        DirectX::XMMatrixTranspose(parse ? DirectX::XMMatrixPerspectiveFovLH(angle, width / height, nearZ, farZ)
-                                         : DirectX::XMMatrixOrthographicLH(width, height, nearZ, farZ)));
+        DirectX::XMMatrixTranspose(parse ? DirectX::XMMatrixPerspectiveFovLH(angle, width / height, near_z, far_z)
+                                         : DirectX::XMMatrixOrthographicLH(width, height, near_z, far_z)));
 }
 
 void D3DManager::setVectorColor(float col_r, float col_g, float col_b, float col_a) {

@@ -15,7 +15,7 @@ class App;
 
 struct Camera {
     float width, height;
-    float angle, nearZ, farZ;
+    float angle, near_z, far_z;
     float pos_x, pos_Y, pos_z;
     float dir_x, dir_y, dir_z;
     float upp_x, upp_y, upp_z;
@@ -24,8 +24,8 @@ struct Camera {
         width(kSceWidth),
         height(kSceHeight),
         angle(0.7853981853f),
-        nearZ(1.0f),
-        farZ(2000.0f),
+        near_z(1.0f),
+        far_z(2000.0f),
         pos_x(0.0f),
         pos_Y(0.0f),
         pos_z(0.0f),
