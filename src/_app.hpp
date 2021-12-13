@@ -99,6 +99,7 @@ public:
     void drawIdea();
     void drawString(const char* str, Model* p_model, int align);
     void applyModel(Model* p_model);
+    void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);
     void applyImage(unsigned int id);
     void applyFont(unsigned int code);

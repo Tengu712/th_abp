@@ -225,6 +225,16 @@ void App::applyModel(Model* p_model) {
     p_inf->dmanager.setVectorColor(p_model->col_r, p_model->col_g, p_model->col_b, p_model->col_a);
 }
 
+void App::applyModelUI(Model* p_model) {
+    if (p_model == nullptr)
+        return;
+    Model model = *p_model;
+    model.pos_x -= (float)(kSceWidth / 2) - model.scl_x / 2.0f;
+    model.pos_y *= model.pos_y < 0 ? -1.0f : 1.0f;
+    model.pos_y += (float)(kSceHeight / 2) - model.scl_y / 2.0f;
+    applyModel(&model);
+}
+
 void App::applyCamera(Camera* p_camera) {
     if (p_camera == nullptr) {
         p_inf->dmanager.enableDepthStencil(false);
