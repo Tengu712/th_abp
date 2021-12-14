@@ -1,5 +1,7 @@
 # 射命丸文の弾幕稽古
 
+![Title](build/html/title.png)
+
 ## 諸注意
 
 ### ビルド環境
