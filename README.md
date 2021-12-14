@@ -37,7 +37,7 @@
 `App::drawString`にconst char*を渡す。数値を用いたいときは、
 ```c++
 char buf[64] = ""; // 余分に大きく取った配列
-sprintf(buf, "+%d bonus", bonus);
+snprintf(buf, 64, "+%d bonus", bonus);
 p_app->drawString(buf); // 文字のあるところまで適応される
 ```
 

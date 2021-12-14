@@ -181,7 +181,7 @@ bool App::update() {
     model.scl_x = 14.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
-    sprintf(buf, "%3.1ffps", p_inf->fps);
+    snprintf(buf, 64, "%3.1ffps", p_inf->fps);
     drawString(buf, &model, 1);
     p_inf->dmanager.drawEnd();
     return false;
