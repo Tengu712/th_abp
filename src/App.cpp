@@ -57,7 +57,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
     debug("            \"Aya's Bullethell Practice\"\n");
     debug("      SkyDog Assoc of WordSpiritism, Tengu712 \n");
     debug("==================================================\n\n");
-    debug("Start up ...\n");
+    debug("Starts up ...\n");
 
     try {
         if (!p_inf->dmanager.init(h_inst, cmd_show, L"射命丸文の弾幕稽古", L"TH_ABP", 1280U, 960U, kWindowed))
@@ -80,6 +80,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to create p_inf->idea.";
         debug(" - Idea : Success\n");
 
+        p_inf->dmanager.drawBegin(nullptr);
         HMODULE h_module = LoadLibraryA("./resource.dll");
         if (h_module == nullptr)
             throw "Failed to load resource.dll.";
@@ -90,9 +91,15 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         p_inf->dmanager.applyImage(&img_load);
         Model model_load = Model();
         model_load.scl_x = 1280.0f;
-        model_load.scl_y = 960.0f;
-        applyModel(&model_load);
+        model_load.scl_y = 1280.0f;
+        p_inf->cmr_ui.pos_z = -10.0f;
+        p_inf->cmr_ui.parse = false;
+        applyCamera(nullptr);
+        applyModelUI(&model_load);
         drawIdea();
+        p_inf->dmanager.drawEnd();
+        debug("Load begins ...\n");
+
         p_inf->imgs = new Image[kNumImage];
         if (p_inf->imgs == nullptr)
             throw "Failed to create array of images.";
@@ -143,8 +150,6 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to initialize title.";
         debug(" - Title Scene : Success\n");
 
-        p_inf->cmr_ui.pos_z = -10.0f;
-        p_inf->cmr_ui.parse = false;
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
     } catch (const char* error) {
         ErrorMessage(error);
