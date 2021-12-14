@@ -26,8 +26,9 @@ void D3DManager::enableDepthStencil(bool enable) {
 }
 
 void D3DManager::setViewport(D3D11_VIEWPORT* p_viewport) {
-    if (p_viewport == nullptr) return;
-        _p_context->RSSetViewports(1U, p_viewport);
+    if (p_viewport == nullptr)
+        return;
+    _p_context->RSSetViewports(1U, p_viewport);
 }
 
 void D3DManager::setMatrixScale(float scl_x, float scl_y, float scl_z) {
@@ -36,8 +37,8 @@ void D3DManager::setMatrixScale(float scl_x, float scl_y, float scl_z) {
 
 void D3DManager::setMatrixRotate(float deg_x, float deg_y, float deg_z) {
     DirectX::XMStoreFloat4x4(&_cbuf.mat_rot,
-        DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationRollPitchYaw(
-            DirectX::XMConvertToRadians(deg_x), DirectX::XMConvertToRadians(deg_y), DirectX::XMConvertToRadians(deg_z))));
+        DirectX::XMMatrixTranspose(DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(deg_x),
+            DirectX::XMConvertToRadians(deg_y), DirectX::XMConvertToRadians(deg_z))));
 }
 
 void D3DManager::setMatrixTranslate(float pos_x, float pos_y, float pos_z) {
@@ -45,8 +46,8 @@ void D3DManager::setMatrixTranslate(float pos_x, float pos_y, float pos_z) {
         &_cbuf.mat_trs, DirectX::XMMatrixTranspose(DirectX::XMMatrixTranslation(pos_x, pos_y, pos_z)));
 }
 
-void D3DManager::setMatrixView(
-    float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z) {
+void D3DManager::setMatrixView(float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z,
+    float upp_x, float upp_y, float upp_z) {
     DirectX::XMStoreFloat4x4(&_cbuf.mat_view,
         DirectX::XMMatrixTranspose(DirectX::XMMatrixLookToLH(DirectX::XMVectorSet(pos_x, pos_y, pos_z, 0.0f),
             DirectX::XMVectorSet(dir_x, dir_y, dir_z, 0.0f), DirectX::XMVectorSet(upp_x, upp_y, upp_z, 0.0f))));
@@ -75,8 +76,7 @@ void D3DManager::setVectorParams(float x, float y, float z, float w) {
 // ================================================================================================================= //
 
 void D3DManager::drawBegin(FrameBuffer* p_fbuf) {
-    _p_context->OMSetRenderTargets(1U,
-        p_fbuf == nullptr ? _p_rtview.GetAddressOf() : p_fbuf->p_rtview.GetAddressOf(),
+    _p_context->OMSetRenderTargets(1U, p_fbuf == nullptr ? _p_rtview.GetAddressOf() : p_fbuf->p_rtview.GetAddressOf(),
         _is_depth ? _p_dsview.Get() : nullptr);
     float clearColor[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     _p_context->ClearRenderTargetView(p_fbuf == nullptr ? _p_rtview.Get() : p_fbuf->p_rtview.Get(), clearColor);
@@ -102,9 +102,9 @@ void D3DManager::drawEnd() {
 //                                          Creating Funcs                                                           //
 // ================================================================================================================= //
 
-bool D3DManager::createModelBuffers(unsigned int num_vtx, Vertex* data_pcnu, unsigned int* data_indx, ModelInf* p_minf) {
-    D3D11_BUFFER_DESC desc_vbuf = {
-        sizeof(Vertex) * num_vtx, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0U, 0U, 0U};
+bool D3DManager::createModelBuffers(
+    unsigned int num_vtx, Vertex* data_pcnu, unsigned int* data_indx, ModelInf* p_minf) {
+    D3D11_BUFFER_DESC desc_vbuf = {sizeof(Vertex) * num_vtx, D3D11_USAGE_DEFAULT, D3D11_BIND_VERTEX_BUFFER, 0U, 0U, 0U};
     D3D11_SUBRESOURCE_DATA dataVBuffer = {data_pcnu, 0U, 0U};
     if (FAILED(_p_device->CreateBuffer(&desc_vbuf, &dataVBuffer, p_minf->p_vbuf.GetAddressOf())))
         return false;
@@ -124,8 +124,16 @@ bool D3DManager::createFrameBuffer(unsigned int width, unsigned int height, Fram
             throw "Nullptr gained when create a frame buf.";
 
         D3D11_TEXTURE2D_DESC desc_tex = {
-            width, height, 1U, 1U, DXGI_FORMAT_R8G8B8A8_UNORM, {1U, 0U}, D3D11_USAGE_DEFAULT,
-            D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0U, 0U,
+            width,
+            height,
+            1U,
+            1U,
+            DXGI_FORMAT_R8G8B8A8_UNORM,
+            {1U, 0U},
+            D3D11_USAGE_DEFAULT,
+            D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE,
+            0U,
+            0U,
         };
         ComPtr<ID3D11Texture2D> p_tex = nullptr;
         if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_tex.GetAddressOf())))
@@ -143,7 +151,8 @@ bool D3DManager::createFrameBuffer(unsigned int width, unsigned int height, Fram
         desc_srview.Format = desc_rtview.Format;
         desc_srview.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         desc_srview.Texture2D.MipLevels = 1U;
-        if (FAILED(_p_device->CreateShaderResourceView(p_tex.Get(), &desc_srview, p_fbuf->image.p_srview.GetAddressOf())))
+        if (FAILED(
+                _p_device->CreateShaderResourceView(p_tex.Get(), &desc_srview, p_fbuf->image.p_srview.GetAddressOf())))
             throw "Failed to create shader resource view for frame buf.";
 
     } catch (const char* error) {
@@ -253,12 +262,12 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
         TEXTMETRICA met_text;
         GetTextMetricsA(hdc, &met_text);
         GLYPHMETRICS met_glyph;
-        const MAT2 mat = {{0,1}, {0,0}, {0,0}, {0,1}};
+        const MAT2 mat = {{0, 1}, {0, 0}, {0, 0}, {0, 1}};
         DWORD dw_res = GetGlyphOutlineA(hdc, code, GGO_GRAY4_BITMAP, &met_glyph, 0, nullptr, &mat);
 
         unsigned char* p_mono = new unsigned char[dw_res];
         GetGlyphOutlineA(hdc, code, GGO_GRAY4_BITMAP, &met_glyph, dw_res, p_mono, &mat);
-    
+
         SelectObject(hdc, h_font_old);
         DeleteObject(h_font);
         ReleaseDC(nullptr, hdc);
@@ -271,13 +280,21 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
         const int kHeightBmp = met_glyph.gmBlackBoxY;
 
         D3D11_TEXTURE2D_DESC desc_tex = {
-            kWidth, kHeight, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, {1, 0}, D3D11_USAGE_DYNAMIC,
-            D3D11_BIND_SHADER_RESOURCE, D3D11_CPU_ACCESS_WRITE, 0, 
+            kWidth,
+            kHeight,
+            1,
+            1,
+            DXGI_FORMAT_R8G8B8A8_UNORM,
+            {1, 0},
+            D3D11_USAGE_DYNAMIC,
+            D3D11_BIND_SHADER_RESOURCE,
+            D3D11_CPU_ACCESS_WRITE,
+            0,
         };
         ComPtr<ID3D11Texture2D> p_layer = nullptr;
         if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_layer.GetAddressOf())))
             throw "Failed to create font texture.";
-    
+
         D3D11_MAPPED_SUBRESOURCE res_mapped;
         _p_context->Map(p_layer.Get(), 0U, D3D11_MAP_WRITE_DISCARD, 0U, &res_mapped);
         unsigned char* p_bits = (unsigned char*)res_mapped.pData;
@@ -286,8 +303,7 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
                 if (x < kOfsX || y < kOfsY || x >= kOfsX + kWidthBmp || y >= kOfsY + kHeightBmp) {
                     DWORD col = 0x00000000;
                     memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
-                }
-                else {
+                } else {
                     DWORD alp = (255 * p_mono[x - kOfsX + kWidthBmp * (y - kOfsY)]) / 16;
                     DWORD col = 0x00ffffff | (alp << 24);
                     memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
@@ -304,7 +320,7 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
         desc_srview.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         desc_srview.Texture2D.MostDetailedMip = 0;
         desc_srview.Texture2D.MipLevels = desc_tex.MipLevels;
-        if (FAILED(_p_device->CreateShaderResourceView(p_layer.Get(), &desc_srview, p_image->p_srview.GetAddressOf()))) 
+        if (FAILED(_p_device->CreateShaderResourceView(p_layer.Get(), &desc_srview, p_image->p_srview.GetAddressOf())))
             throw "Failed to create shader resource view.";
 
     } catch (const char* error) {

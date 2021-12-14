@@ -13,7 +13,7 @@ int WINAPI WinMain(HINSTANCE h_inst, HINSTANCE h_pinst, LPSTR p_cmd, int cmd_sho
             DispatchMessageW(&msg);
             continue;
         }
-        if (app.isIconic()) 
+        if (app.isIconic())
             Sleep(16);
         else if (app.update())
             break;

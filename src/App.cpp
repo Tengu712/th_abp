@@ -13,18 +13,18 @@ struct AppInf {
     Image* imgs;
     Image* fnts;
     Scene* p_scene;
-    AppInf() :
-        dmanager(D3DManager()),
-        imanager(InputManager()),
-        is_debug(false),
-        idea(ModelInf()),
-        cmr_ui(Camera()),
-        time_last(timeGetTime()),
-        cnt_fps(0U),
-        fps(0.0f),
-        imgs(nullptr),
-        fnts(nullptr),
-        p_scene(nullptr) {
+    AppInf()
+        : dmanager(D3DManager()),
+          imanager(InputManager()),
+          is_debug(false),
+          idea(ModelInf()),
+          cmr_ui(Camera()),
+          time_last(timeGetTime()),
+          cnt_fps(0U),
+          fps(0.0f),
+          imgs(nullptr),
+          fnts(nullptr),
+          p_scene(nullptr) {
     }
     ~AppInf() {
         if (imgs != nullptr)
@@ -67,7 +67,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!p_inf->imanager.init(64))
             throw "Failed to initialize InputManager.";
         debug(" - XInput : Success\n");
-        
+
         p_inf->idea.num_idx = 6U;
         struct Vertex data_pcnu[4U] = {
             {-0.5f, -0.5f, +0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f},
@@ -79,7 +79,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!p_inf->dmanager.createModelBuffers(p_inf->idea.num_idx, data_pcnu, data_indx, &p_inf->idea))
             throw "Failed to create p_inf->idea.";
         debug(" - Idea : Success\n");
-        
+
         HMODULE h_module = LoadLibraryA("./resource.dll");
         if (h_module == nullptr)
             throw "Failed to load resource.dll.";
@@ -110,17 +110,9 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
-        
-        LOGFONTA logfont = {
-            64, 0, 0, 0,
-            0, 0, 0, 0,
-            SHIFTJIS_CHARSET,
-            OUT_TT_ONLY_PRECIS,
-            CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY,
-            DEFAULT_PITCH | FF_MODERN,
-            "MS Gothic",
-        };
+
+        LOGFONTA logfont = {64, 0, 0, 0, 0, 0, 0, 0, SHIFTJIS_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "MS Gothic"};
         p_inf->fnts = new Image[kNumFont];
         if (p_inf->fnts == nullptr)
             throw "Failed to create array of fonts.";
