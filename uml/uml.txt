@@ -1,0 +1,66 @@
+@startuml
+!theme cerulean
+== Initialize ==
+Activate main
+main->App: init()
+Activate App
+App->D3DManager: init()
+Activate D3DManager
+D3DManager-->App: fail?
+App->InputManager: init()
+Activate InputManager
+InputManager-->App: fail?
+App->Scene: init()
+Activate Scene
+Scene-->App: fail?
+App-->main: fail?
+== Update ==
+loop
+  main->App: update()
+  App->Scene: update()
+  break
+    App-->main: end?
+  end
+end
+@enduml
+
+@startuml
+!theme cerulean
+== Initialize ==
+Activate App
+Activate D3DManager
+[->App: createFrameBuffer()
+Activate App
+App->D3DManager: createFrameBuffer()
+App-->[: Ptr of FBuffer
+Deactivate App
+== Update ==
+[->App: applyFrameBuffer()
+App->D3DManager: drawBegin()
+[->App: applyCamera()
+App->D3DManager: setMatrixView()
+App->D3DManager: setMatrixProject()
+[->App: applyImage()
+App->D3DManager: applyImage()
+alt normal model
+  [->App: applyModel()
+else ui model
+  [->App: applyModelUI()
+  App->App: applyModel()
+else
+  App->D3DManager: setMatrixScale()
+  App->D3DManager: setMatrixRotate()
+  App->D3DManager: setMatrixTranslate()
+  App->D3DManager: setVectorColor()
+end
+alt normal model
+  [->App: drawIdea()
+else string
+  [->App: drawString()
+  loop length of string
+    App->App: drawIdea()
+  end
+else
+  App->D3DManager: drawModel()
+end
+@enduml

@@ -1,5 +1,7 @@
 # 射命丸文の弾幕稽古
 
+![Title](build/html/title.png)
+
 ## 諸注意
 
 ### ビルド環境
@@ -37,7 +39,7 @@
 `App::drawString`にconst char*を渡す。数値を用いたいときは、
 ```c++
 char buf[64] = ""; // 余分に大きく取った配列
-sprintf(buf, "+%d bonus", bonus);
+snprintf(buf, 64, "+%d bonus", bonus);
 p_app->drawString(buf); // 文字のあるところまで適応される
 ```
 

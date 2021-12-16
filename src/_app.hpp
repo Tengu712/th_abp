@@ -4,8 +4,9 @@
 
 #include <stdio.h>
 
-#include "./_resource.hpp"
 #include "../directx/_dx11.hpp"
+#include "./_resource.hpp"
+
 #pragma comment(lib, "mydx.lib")
 #pragma comment(lib, "Winmm.lib")
 
@@ -23,23 +24,23 @@ struct Camera {
     float dir_x, dir_y, dir_z;
     float upp_x, upp_y, upp_z;
     bool parse;
-    Camera() :
-        width(kSceWidth),
-        height(kSceHeight),
-        angle(0.7853981853f),
-        near_z(1.0f),
-        far_z(2000.0f),
-        pos_x(0.0f),
-        pos_y(0.0f),
-        pos_z(0.0f),
-        dir_x(0.0f),
-        dir_y(0.0f),
-        dir_z(1.0f),
-        upp_x(0.0f),
-        upp_y(1.0f),
-        upp_z(0.0f),
-        parse(false)
-    {}
+    Camera()
+        : width(kSceWidth),
+          height(kSceHeight),
+          angle(0.7853981853f),
+          near_z(1.0f),
+          far_z(2000.0f),
+          pos_x(0.0f),
+          pos_y(0.0f),
+          pos_z(0.0f),
+          dir_x(0.0f),
+          dir_y(0.0f),
+          dir_z(1.0f),
+          upp_x(0.0f),
+          upp_y(1.0f),
+          upp_z(0.0f),
+          parse(false) {
+    }
 };
 
 struct Model {
@@ -47,28 +48,30 @@ struct Model {
     float deg_x, deg_y, deg_z;
     float scl_x, scl_y, scl_z;
     float col_r, col_g, col_b, col_a;
-    Model() :
-        pos_x(0.0f),
-        pos_y(0.0f),
-        pos_z(0.0f),
-        deg_x(0.0f),
-        deg_y(0.0f),
-        deg_z(0.0f),
-        scl_x(1.0f),
-        scl_y(1.0f),
-        scl_z(1.0f),
-        col_r(1.0f),
-        col_g(1.0f),
-        col_b(1.0f),
-        col_a(1.0f)
-    {}
+    Model()
+        : pos_x(0.0f),
+          pos_y(0.0f),
+          pos_z(0.0f),
+          deg_x(0.0f),
+          deg_y(0.0f),
+          deg_z(0.0f),
+          scl_x(1.0f),
+          scl_y(1.0f),
+          scl_z(1.0f),
+          col_r(1.0f),
+          col_g(1.0f),
+          col_b(1.0f),
+          col_a(1.0f) {
+    }
 };
 
 class Scene {
 protected:
     App* p_app;
+
 public:
-    Scene(App* p_app) : p_app(p_app) {}
+    Scene(App* p_app) : p_app(p_app) {
+    }
     virtual bool init() = 0;
     virtual void update() = 0;
 };
@@ -76,8 +79,10 @@ public:
 class SceneTitle : public Scene {
 private:
     unsigned int cnt;
+
 public:
-    SceneTitle(App* p_app) : Scene(p_app), cnt(0U) {}
+    SceneTitle(App* p_app) : Scene(p_app), cnt(0U) {
+    }
     bool init();
     void update();
 };
@@ -87,8 +92,10 @@ struct AppInf;
 class App {
 private:
     AppInf* p_inf;
+
 public:
-    App() : p_inf(nullptr) {}
+    App() : p_inf(nullptr) {
+    }
     ~App() {
         if (p_inf != nullptr)
             delete p_inf;

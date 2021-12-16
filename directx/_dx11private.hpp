@@ -94,8 +94,8 @@ public:
     void setMatrixScale(float scl_x, float scl_y, float scl_z);
     void setMatrixRotate(float deg_x, float deg_y, float deg_z);
     void setMatrixTranslate(float pos_x, float pos_y, float pos_z);
-    void setMatrixView(
-        float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x, float upp_y, float upp_z);
+    void setMatrixView(float pos_x, float pos_y, float pos_z, float dir_x, float dir_y, float dir_z, float upp_x,
+        float upp_y, float upp_z);
     void setMatrixProject(float width, float height, float angle, float near_z, float far_z, bool parse);
     void setVectorColor(float col_r, float col_g, float col_b, float col_a);
     void setVectorLight(float x, float y, float z, float w);

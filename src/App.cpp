@@ -13,18 +13,18 @@ struct AppInf {
     Image* imgs;
     Image* fnts;
     Scene* p_scene;
-    AppInf() :
-        dmanager(D3DManager()),
-        imanager(InputManager()),
-        is_debug(false),
-        idea(ModelInf()),
-        cmr_ui(Camera()),
-        time_last(timeGetTime()),
-        cnt_fps(0U),
-        fps(0.0f),
-        imgs(nullptr),
-        fnts(nullptr),
-        p_scene(nullptr) {
+    AppInf()
+        : dmanager(D3DManager()),
+          imanager(InputManager()),
+          is_debug(false),
+          idea(ModelInf()),
+          cmr_ui(Camera()),
+          time_last(timeGetTime()),
+          cnt_fps(0U),
+          fps(0.0f),
+          imgs(nullptr),
+          fnts(nullptr),
+          p_scene(nullptr) {
     }
     ~AppInf() {
         if (imgs != nullptr)
@@ -57,7 +57,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
     debug("            \"Aya's Bullethell Practice\"\n");
     debug("      SkyDog Assoc of WordSpiritism, Tengu712 \n");
     debug("==================================================\n\n");
-    debug("Start up ...\n");
+    debug("Starts up ...\n");
 
     try {
         if (!p_inf->dmanager.init(h_inst, cmd_show, L"射命丸文の弾幕稽古", L"TH_ABP", 1280U, 960U, kWindowed))
@@ -67,7 +67,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!p_inf->imanager.init(64))
             throw "Failed to initialize InputManager.";
         debug(" - XInput : Success\n");
-        
+
         p_inf->idea.num_idx = 6U;
         struct Vertex data_pcnu[4U] = {
             {-0.5f, -0.5f, +0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f},
@@ -79,7 +79,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!p_inf->dmanager.createModelBuffers(p_inf->idea.num_idx, data_pcnu, data_indx, &p_inf->idea))
             throw "Failed to create p_inf->idea.";
         debug(" - Idea : Success\n");
-        
+
+        p_inf->dmanager.drawBegin(nullptr);
         HMODULE h_module = LoadLibraryA("./resource.dll");
         if (h_module == nullptr)
             throw "Failed to load resource.dll.";
@@ -90,9 +91,15 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         p_inf->dmanager.applyImage(&img_load);
         Model model_load = Model();
         model_load.scl_x = 1280.0f;
-        model_load.scl_y = 960.0f;
-        applyModel(&model_load);
+        model_load.scl_y = 1280.0f;
+        p_inf->cmr_ui.pos_z = -10.0f;
+        p_inf->cmr_ui.parse = false;
+        applyCamera(nullptr);
+        applyModelUI(&model_load);
         drawIdea();
+        p_inf->dmanager.drawEnd();
+        debug("Load begins ...\n");
+
         p_inf->imgs = new Image[kNumImage];
         if (p_inf->imgs == nullptr)
             throw "Failed to create array of images.";
@@ -111,7 +118,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
-        
+
         DESIGNVECTOR design;
         if (AddFontResourceExA("C:/Windows/Fonts/ELEPHNT.TTF", FR_PRIVATE, &design) == 0)
             throw "Failed to load 'Elephant' font.";
@@ -155,8 +162,6 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to initialize title.";
         debug(" - Title Scene : Success\n");
 
-        p_inf->cmr_ui.pos_z = -10.0f;
-        p_inf->cmr_ui.parse = false;
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
     } catch (const char* error) {
         ErrorMessage(error);
@@ -188,7 +193,7 @@ bool App::update() {
     model.scl_x = 14.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
-    sprintf(buf, "%3.1ffあs", p_inf->fps);
+    snprintf(buf, 64, "%3.1ffps", p_inf->fps);
     drawString(buf, &model, 1);
     p_inf->dmanager.drawEnd();
     return false;
