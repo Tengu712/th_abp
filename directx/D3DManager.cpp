@@ -336,8 +336,7 @@ bool D3DManager::init(HINSTANCE h_inst, int cmd_show, LPCWSTR name_wnd, LPCWSTR 
         // Create Window
         {
             const DWORD kDwStyle = windowed ? WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX : WS_POPUP;
-            const DWORD kDwExStyle = windowed ? 0 : WS_EX_TOPMOST;
-            const int kCmdShow = windowed ? SW_SHOW : SW_SHOWMAXIMIZED;
+            const int kCmdShow = windowed ? cmd_show : SW_SHOWMAXIMIZED;
 
             WNDCLASSEXW wcex = {sizeof(WNDCLASSEX), CS_CLASSDC, WndProc, 0L, 0L, h_inst, nullptr, nullptr, nullptr,
                 nullptr, name_wndclass, nullptr};
@@ -346,14 +345,14 @@ bool D3DManager::init(HINSTANCE h_inst, int cmd_show, LPCWSTR name_wnd, LPCWSTR 
 
             RECT rect;
             rect = {0, 0, (long)width, (long)height};
-            AdjustWindowRectEx(&rect, kDwStyle, false, kDwExStyle);
+            AdjustWindowRectEx(&rect, kDwStyle, false, 0);
 
-            _h_wnd = CreateWindowExW(kDwExStyle, name_wndclass, name_wnd, kDwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+            _h_wnd = CreateWindowExW(0, name_wndclass, name_wnd, kDwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                 rect.right - rect.left, rect.bottom - rect.top, nullptr, nullptr, h_inst, nullptr);
             if (!_h_wnd)
                 throw "Failed to create window handle.";
 
-            ShowWindow(_h_wnd, cmd_show);
+            ShowWindow(_h_wnd, kCmdShow);
             UpdateWindow(_h_wnd);
             ShowCursor(windowed);
         }

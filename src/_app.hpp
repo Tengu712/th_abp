@@ -12,7 +12,7 @@
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
 constexpr unsigned int kNumImage = 30U;
-constexpr unsigned int kNumFont = 80U;
+constexpr unsigned int kNumFont = 200U;
 
 class App;
 

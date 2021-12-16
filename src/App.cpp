@@ -107,19 +107,23 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         };
         bool flg = true;
         flg = flg && loadImage(IMG_BG_TITLE);
+        flg = flg && loadImage(IMG_CH_KOSUZU_B0);
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
         
+        DESIGNVECTOR design;
+        if (AddFontResourceExA("C:/Windows/Fonts/ELEPHNT.TTF", FR_PRIVATE, &design) == 0)
+            throw "Failed to load 'Elephant' font.";
         LOGFONTA logfont = {
             64, 0, 0, 0,
             0, 0, 0, 0,
-            SHIFTJIS_CHARSET,
+            DEFAULT_CHARSET,
             OUT_TT_ONLY_PRECIS,
             CLIP_DEFAULT_PRECIS,
             PROOF_QUALITY,
             DEFAULT_PITCH | FF_MODERN,
-            "MS Gothic",
+            "Elephant",
         };
         p_inf->fnts = new Image[kNumFont];
         if (p_inf->fnts == nullptr)
@@ -133,7 +137,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             }
             return false;
         };
-        const char* str = " .0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const char* str = " .0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ";
         const int kLenStr = strlen(str);
         for (int i = 0; i < kLenStr; ++i) {
             if (IsDBCSLeadByte(str[i])) {
@@ -184,7 +188,7 @@ bool App::update() {
     model.scl_x = 14.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
-    sprintf(buf, "%3.1ffps", p_inf->fps);
+    sprintf(buf, "%3.1ffあs", p_inf->fps);
     drawString(buf, &model, 1);
     p_inf->dmanager.drawEnd();
     return false;
