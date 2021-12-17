@@ -8,6 +8,10 @@ void ModelColorCode2RGBA(Model* p_model, unsigned int col) {
     p_model->col_a = (float)((col & 0xff000000) >> 24) / 255.0f;
 }
 
+double Deg2Rad(double deg) {
+    return (double)deg * PI / 180.0;
+}
+
 class FontBank {
 private:
     unsigned int num_font;
@@ -202,8 +206,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             DEFAULT_PITCH | FF_MODERN,
             "Elephant",
         };
-        p_inf->fnts[kIdxElephant].init(16U);
-        loadString(&logfont_elp, 1, "StarChpecoRlyQui");
+        p_inf->fnts[kIdxElephant].init(25U);
+        loadString(&logfont_elp, 1, " StarChpecoRlyQuikDgAsW20");
         if (!flg)
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");

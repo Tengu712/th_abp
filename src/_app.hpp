@@ -3,6 +3,9 @@
 #define _APP_
 
 #include <stdio.h>
+#include <math.h>
+
+#define PI 3.141592653589793238462643
 
 #include "../directx/_dx11.hpp"
 #include "./_resource.hpp"
@@ -81,9 +84,10 @@ public:
 class SceneTitle : public Scene {
 private:
     unsigned int cnt;
+    unsigned int cur;
 
 public:
-    SceneTitle(App* p_app) : Scene(p_app), cnt(0U) {
+    SceneTitle(App* p_app) : Scene(p_app), cnt(0U), cur(0U) {
     }
     bool init();
     void update();
@@ -121,5 +125,6 @@ public:
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);
+double Deg2Rad(double deg);
 
 #endif
