@@ -100,6 +100,10 @@ public:
     void setVectorColor(float col_r, float col_g, float col_b, float col_a);
     void setVectorLight(float x, float y, float z, float w);
     void setVectorParams(float x, float y, float z, float w);
+    void setVectorParamsX(float x);
+    void setVectorParamsY(float y);
+    void setVectorParamsZ(float z);
+    void setVectorParamsW(float w);
     void drawBegin(FrameBuffer* p_fbuf);
     void drawModel(ModelInf* p_minf);
     void drawEnd();

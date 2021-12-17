@@ -13,7 +13,9 @@
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
 constexpr unsigned int kNumImage = 30U;
-constexpr unsigned int kNumFont = 200U;
+constexpr unsigned int kNumFontBank = 2U;
+constexpr unsigned int kIdxNormal = 0U;
+constexpr unsigned int kIdxElephant = 1U;
 
 class App;
 
@@ -104,17 +106,20 @@ public:
     bool isIconic();
     bool update();
     void drawIdea();
-    void drawString(const char* str, Model* p_model, int align);
+    void drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str);
+    void drawStringWithBorder(const Model* p_model, int align, unsigned int col, unsigned int idx_bank1, unsigned int idx_bank2, const char* str);
     void applyModel(Model* p_model);
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);
     void applyImage(unsigned int id);
-    void applyFont(unsigned int code);
+    void applyFont(unsigned int idx_bank, unsigned int code);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
 };
+
+void ModelColorCode2RGBA(Model* p_model, unsigned int col);
 
 #endif

@@ -1,6 +1,48 @@
 ﻿#include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
+void ModelColorCode2RGBA(Model* p_model, unsigned int col) {
+    p_model->col_r = (float)(col & 0x000000ff) / 255.0f;
+    p_model->col_g = (float)((col & 0x0000ff00) >> 8) / 255.0f;
+    p_model->col_b = (float)((col & 0x00ff0000) >> 16) / 255.0f;
+    p_model->col_a = (float)((col & 0xff000000) >> 24) / 255.0f;
+}
+
+class FontBank {
+private:
+    unsigned int num_font;
+    Image* imgs;
+public:
+    FontBank() : num_font(0U), imgs(nullptr) {}
+    ~FontBank() {
+        if (imgs != nullptr)
+            delete imgs;
+    }
+    bool init(unsigned int num_font) {
+        imgs = new Image[num_font];
+        if (imgs == nullptr)
+            return false;
+        memset(imgs, 0, sizeof(Image) * num_font);
+        this->num_font = num_font;
+        return true;
+    }
+    Image* getFont(unsigned int code) {
+        for (int i = 0; i < num_font; ++i) {
+            if (imgs[i].id == code)
+                return &imgs[i];
+        }
+        return nullptr;
+    }
+    Image* getFontNext() {
+        for (int i = 0; i < num_font; ++i) {
+            if (imgs[i].id != 0U)
+                continue;
+            return &imgs[i];
+        }
+        return nullptr;
+    }
+};
+
 struct AppInf {
     D3DManager dmanager;
     InputManager imanager;
@@ -11,7 +53,7 @@ struct AppInf {
     unsigned int cnt_fps;
     float fps;
     Image* imgs;
-    Image* fnts;
+    FontBank* fnts;
     Scene* p_scene;
     AppInf()
         : dmanager(D3DManager()),
@@ -119,10 +161,38 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
 
+        p_inf->fnts = new FontBank[kNumFontBank];
+        if (p_inf->fnts == nullptr)
+            throw "Failed to create array of fonts.";
+        memset(p_inf->fnts, 0, sizeof(FontBank) * kNumFontBank);
         DESIGNVECTOR design;
         if (AddFontResourceExA("C:/Windows/Fonts/ELEPHNT.TTF", FR_PRIVATE, &design) == 0)
             throw "Failed to load 'Elephant' font.";
-        LOGFONTA logfont = {
+        auto loadString = [&](LOGFONTA* logfont, unsigned int idx_bank, const char* str) {
+            const int kLenStr = strlen(str);
+            for (int i = 0; i < kLenStr; ++i) {
+                unsigned int code = 0U;
+                if (IsDBCSLeadByte(str[i])) { 
+                    code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
+                    ++i;
+                } else
+                    code = (unsigned int)str[i];
+                flg = flg && p_inf->dmanager.createFontImage(logfont, code, p_inf->fnts[idx_bank].getFontNext());
+            }
+        };
+        LOGFONTA logfont_msg = {
+            64, 0, 0, 0,
+            0, 0, 0, 0,
+            DEFAULT_CHARSET,
+            OUT_TT_ONLY_PRECIS,
+            CLIP_DEFAULT_PRECIS,
+            PROOF_QUALITY,
+            DEFAULT_PITCH | FF_MODERN,
+            "MS Gothic",
+        };
+        p_inf->fnts[kIdxNormal].init(140U);
+        loadString(&logfont_msg, 0, " .0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ");
+        LOGFONTA logfont_elp = {
             64, 0, 0, 0,
             0, 0, 0, 0,
             DEFAULT_CHARSET,
@@ -132,27 +202,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             DEFAULT_PITCH | FF_MODERN,
             "Elephant",
         };
-        p_inf->fnts = new Image[kNumFont];
-        if (p_inf->fnts == nullptr)
-            throw "Failed to create array of fonts.";
-        memset(p_inf->fnts, 0, sizeof(Image) * kNumFont);
-        auto loadFont = [&](unsigned int code) {
-            for (int i = 0; i < kNumFont; ++i) {
-                if (p_inf->fnts[i].id != 0U)
-                    continue;
-                return p_inf->dmanager.createFontImage(&logfont, code, &p_inf->fnts[i]);
-            }
-            return false;
-        };
-        const char* str = " .0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ";
-        const int kLenStr = strlen(str);
-        for (int i = 0; i < kLenStr; ++i) {
-            if (IsDBCSLeadByte(str[i])) {
-                flg = flg && loadFont((unsigned char)str[i] << 8 | (unsigned char)str[i + 1]);
-                ++i;
-            } else
-                flg = flg && loadFont((unsigned int)str[i]);
-        }
+        p_inf->fnts[kIdxElephant].init(16U);
+        loadString(&logfont_elp, 1, "StarChpecoRlyQui");
         if (!flg)
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
@@ -188,13 +239,13 @@ bool App::update() {
     p_inf->p_scene->update();
 
     Model model = Model();
-    model.pos_x = 638.0f;
-    model.pos_y = -456.0f;
+    model.pos_x = 1275.0f;
+    model.pos_y = 933.0f;
     model.scl_x = 14.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
     snprintf(buf, 64, "%3.1ffps", p_inf->fps);
-    drawString(buf, &model, 1);
+    drawString(&model, 1, kIdxNormal, buf);
     p_inf->dmanager.drawEnd();
     return false;
 }
@@ -203,14 +254,13 @@ void App::drawIdea() {
     p_inf->dmanager.drawModel(&p_inf->idea);
 }
 
-void App::drawString(const char* str, Model* p_model, int align) {
-    p_model->pos_x += p_model->scl_x / 2.0f;
-    p_model->pos_y -= p_model->scl_y / 2.0f;
+void App::drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str) {
+    Model model = *p_model;
     const int kLenStr = strlen(str);
     if (align == 0)
-        p_model->pos_x -= p_model->scl_x * (float)kLenStr / 2.0f;
+        model.pos_x -= model.scl_x * (float)kLenStr / 2.0f;
     else if (align == 1)
-        p_model->pos_x -= p_model->scl_x * (float)kLenStr;
+        model.pos_x -= model.scl_x * (float)kLenStr;
     for (int i = 0; i < kLenStr; ++i) {
         unsigned int code = 0U;
         if (IsDBCSLeadByte(str[i])) {
@@ -218,10 +268,49 @@ void App::drawString(const char* str, Model* p_model, int align) {
             ++i;
         } else
             code = (unsigned int)str[i];
-        applyModel(p_model);
-        applyFont(code);
+        applyModelUI(&model);
+        applyFont(idx_bank, code);
         drawIdea();
-        p_model->pos_x += p_model->scl_x;
+        model.pos_x += model.scl_x;
+    }
+}
+
+void App::drawStringWithBorder(const Model* p_model, int align, unsigned int col,
+        unsigned int idx_bank1, unsigned int idx_bank2, const char* str) {
+    const float nr = (float)(col & 0x000000ff) / 255.0f;
+    const float ng = (float)((col & 0x0000ff00) >> 8) / 255.0f;
+    const float nb = (float)((col & 0x00ff0000) >> 16) / 255.0f;
+    const float na = (float)((col & 0xff000000) >> 24) / 255.0f;
+    Model model = *p_model;
+    model.pos_x += model.scl_x / 2.0f;
+    model.pos_y -= model.scl_y / 2.0f;
+    const int kLenStr = strlen(str);
+    if (align == 0)
+        model.pos_x -= model.scl_x * (float)kLenStr / 2.0f;
+    else if (align == 1)
+        model.pos_x -= model.scl_x * (float)kLenStr;
+    for (int i = 0; i < kLenStr; ++i) {
+        unsigned int code = 0U;
+        if (IsDBCSLeadByte(str[i])) {
+            code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
+            ++i;
+        } else
+            code = (unsigned int)str[i];
+        model.col_r = nr;
+        model.col_g = ng;
+        model.col_b = nb;
+        model.col_a = na;
+        applyModel(&model);
+        applyFont(idx_bank2, code);
+        drawIdea();
+        model.col_r = p_model->col_r;
+        model.col_g = p_model->col_g;
+        model.col_b = p_model->col_b;
+        model.col_a = p_model->col_a;
+        applyModel(&model);
+        applyFont(idx_bank1, code);
+        drawIdea();
+        model.pos_x += model.scl_x;
     }
 }
 
@@ -239,8 +328,7 @@ void App::applyModelUI(Model* p_model) {
         return;
     Model model = *p_model;
     model.pos_x -= (float)(kSceWidth / 2) - model.scl_x / 2.0f;
-    model.pos_y *= model.pos_y < 0 ? -1.0f : 1.0f;
-    model.pos_y += (float)(kSceHeight / 2) - model.scl_y / 2.0f;
+    model.pos_y = (float)(kSceHeight / 2) - model.scl_y / 2.0f - model.pos_y;
     applyModel(&model);
 }
 
@@ -264,12 +352,8 @@ void App::applyImage(unsigned int id) {
     p_inf->dmanager.applyImage(nullptr);
 }
 
-void App::applyFont(unsigned int code) {
-    for (int i = 0; i < kNumFont; ++i) {
-        if (p_inf->fnts[i].id == code)
-            return p_inf->dmanager.applyImage(&p_inf->fnts[i]);
-    }
-    p_inf->dmanager.applyImage(nullptr);
+void App::applyFont(unsigned int idx_bank, unsigned int code) {
+    p_inf->dmanager.applyImage(p_inf->fnts[idx_bank].getFont(code));
 }
 
 FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {

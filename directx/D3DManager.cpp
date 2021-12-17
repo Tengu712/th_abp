@@ -71,6 +71,22 @@ void D3DManager::setVectorParams(float x, float y, float z, float w) {
     DirectX::XMStoreFloat4(&_cbuf.params, DirectX::XMVectorSet(x, y, z, w));
 }
 
+void D3DManager::setVectorParamsX(float x) {
+    DirectX::XMStoreFloat4(&_cbuf.params, DirectX::XMVectorSet(x, _cbuf.params.y, _cbuf.params.z, _cbuf.params.w));
+}
+
+void D3DManager::setVectorParamsY(float y) {
+    DirectX::XMStoreFloat4(&_cbuf.params, DirectX::XMVectorSet(_cbuf.params.x, y, _cbuf.params.z, _cbuf.params.w));
+}
+
+void D3DManager::setVectorParamsZ(float z) {
+    DirectX::XMStoreFloat4(&_cbuf.params, DirectX::XMVectorSet(_cbuf.params.x, _cbuf.params.y, z, _cbuf.params.w));
+}
+
+void D3DManager::setVectorParamsW(float w) {
+    DirectX::XMStoreFloat4(&_cbuf.params, DirectX::XMVectorSet(_cbuf.params.w, _cbuf.params.y, _cbuf.params.z, w));
+}
+
 // ================================================================================================================= //
 //                                          Drawing Funcs                                                            //
 // ================================================================================================================= //
