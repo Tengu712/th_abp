@@ -11,6 +11,11 @@ void SceneTitle::update() {
     if (ud == -1)
         cur += 4;
 
+    if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
+        if (cur % 5 == 4)
+            p_app->changeScene(kSceneExit);
+    }
+
     p_app->applyCamera(nullptr);
     Model model = Model();
     model.scl_x = 1280.0f;
@@ -20,15 +25,18 @@ void SceneTitle::update() {
     p_app->drawIdea();
     model.pos_x = 30.0f;
     model.pos_y = 500.0f;
-    model.scl_x = 40.0f;
-    model.scl_y = 60.0f;
     auto drawOption = [&](const char* str, int i) {
+        model.scl_x = 40.0f;
+        model.scl_y = 60.0f;
         ModelColorCode2RGBA(&model, 0xaa303030);
         if (cur % 5 == i) {
-            const unsigned int cnt_new = cnt * 2;
-            model.col_r = (float)(0.36 + 0.4 * fabs(sin(Deg2Rad(cnt_new))));
-            model.col_g = (float)(0.09 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
-            model.col_b = (float)(0.09 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
+            model.pos_y -= 5.0f;
+            model.scl_x += 8.0f;
+            model.scl_y += 10.0f;
+            const unsigned int cnt_new = cnt * 3;
+            model.col_r = (float)(0.40 + 0.6 * fabs(sin(Deg2Rad(cnt_new))));
+            model.col_g = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
+            model.col_b = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_a = 1.0f;
         }
         p_app->drawString(&model, -1, kIdxElephant, str);

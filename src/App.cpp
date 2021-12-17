@@ -58,6 +58,8 @@ struct AppInf {
     float fps;
     Image* imgs;
     FontBank* fnts;
+    unsigned int no_scene_cur;
+    unsigned int no_scene_nex;
     Scene* p_scene;
     AppInf()
         : dmanager(D3DManager()),
@@ -70,6 +72,8 @@ struct AppInf {
           fps(0.0f),
           imgs(nullptr),
           fnts(nullptr),
+          no_scene_cur(0),
+          no_scene_nex(0),
           p_scene(nullptr) {
     }
     ~AppInf() {
@@ -212,21 +216,21 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
 
-        FILE* pKC = fopen("./keyconfig.cfg", "r");
-        if (!pKC) 
+        FILE* p_file_cfg = fopen("./keyconfig.cfg", "r");
+        if (!p_file_cfg) 
             throw "Failed to open keyconfig.cfg.";
-        int cntKey = 0;
-        int cntBuf = 0;
+        int cnt_key = 0;
+        int cnt_buf = 0;
         int buf = 0;
         int bufs[2] = {0, 0};
-        char mapKey[8] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, 0x5A, 0x58, VK_SHIFT, VK_ESCAPE};
-        while ((buf = fgetc(pKC)) != EOF) {
+        char map_key[8] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, 0x5A, 0x58, VK_SHIFT, VK_ESCAPE};
+        while ((buf = fgetc(p_file_cfg)) != EOF) {
             if (buf != 'u' && buf != 'd' && buf != 'l' && buf != 'r' 
                     && buf != 's' && buf != 't' && buf != 'b' && buf != 'c'
                     && buf != '1' && buf != '2' && buf != '3'
                     && buf != 'a' && buf != 'b' && buf != 'x' && buf != 'y' && buf != ',')
                 continue;
-            if (cntKey >= 8 || cntBuf > 2)
+            if (cnt_key >= 8 || cnt_buf > 2)
                 throw "Invalid keyconfig.";
             if (buf == ',') {
                 GAMEPAD_KEYTYPE t;
@@ -305,23 +309,24 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
                     c = XINPUT_GAMEPAD_Y;
                 } else
                     throw "Invalid keycode.";
-                if (!p_inf->imanager.addKeycode(cntKey + 1, mapKey[cntKey], t, c))
+                if (!p_inf->imanager.addKeycode(cnt_key + 1, map_key[cnt_key], t, c))
                     throw "Failed to add key.";
-                cntKey++;
-                cntBuf = 0;
+                cnt_key++;
+                cnt_buf = 0;
                 bufs[0] = 0;
                 bufs[1] = 0;
                 continue;
             }
-            bufs[cntBuf] = buf;
-            cntBuf++;
+            bufs[cnt_buf] = buf;
+            cnt_buf++;
         }
-        fclose(pKC);
+        fclose(p_file_cfg);
         debug(" - Keys : Success\n");
 
         p_inf->p_scene = new SceneTitle(this);
         if (!p_inf->p_scene->init())
             throw "Failed to initialize title.";
+        p_inf->no_scene_nex = kSceneEscape;
         debug(" - Title Scene : Success\n");
 
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
@@ -349,6 +354,18 @@ bool App::update() {
     p_inf->dmanager.drawBegin(nullptr);
     p_inf->p_scene->update();
 
+    if (p_inf->no_scene_nex != kSceneEscape) {
+        delete p_inf->p_scene;
+        if (p_inf->no_scene_nex == kSceneTitle) 
+            p_inf->p_scene = new SceneTitle(this);
+        else if (p_inf->no_scene_nex == kSceneExit)
+            return true;
+        p_inf->no_scene_cur = p_inf->no_scene_nex;
+        p_inf->no_scene_nex = kSceneEscape;
+        if (!p_inf->p_scene->init())
+            return true;
+    }
+
     Model model = Model();
     model.pos_x = 1275.0f;
     model.pos_y = 933.0f;
@@ -359,6 +376,10 @@ bool App::update() {
     drawString(&model, 1, kIdxNormal, buf);
     p_inf->dmanager.drawEnd();
     return false;
+}
+
+void App::changeScene(unsigned int no_scene_nex) {
+    p_inf->no_scene_nex = no_scene_nex;
 }
 
 void App::drawIdea() {
@@ -488,6 +509,7 @@ bool App::getKey(KEY_CODE code, KEY_STATE state) {
         return (res & 0b001) > 0;
     if (state == KEY_STATE::Up)
         return (res & 0b100) > 0; 
+    return false;
 }
 
 bool App::createConsole() {

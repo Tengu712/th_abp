@@ -19,6 +19,9 @@ constexpr unsigned int kNumImage = 30U;
 constexpr unsigned int kNumFontBank = 2U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxElephant = 1U;
+constexpr unsigned int kSceneTitle = 0U;
+constexpr unsigned int kSceneExit = 128U;
+constexpr unsigned int kSceneEscape = 255U;
 
 class App;
 
@@ -128,6 +131,7 @@ public:
     bool init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show);
     bool isIconic();
     bool update();
+    void changeScene(unsigned int no_scene_nex);
     void drawIdea();
     void drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str);
     void drawStringWithBorder(const Model* p_model, int align, unsigned int col, unsigned int idx_bank1, unsigned int idx_bank2, const char* str);
