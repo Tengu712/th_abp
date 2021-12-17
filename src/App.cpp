@@ -212,6 +212,113 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
 
+        FILE* pKC = fopen("./keyconfig.cfg", "r");
+        if (!pKC) 
+            throw "Failed to open keyconfig.cfg.";
+        int cntKey = 0;
+        int cntBuf = 0;
+        int buf = 0;
+        int bufs[2] = {0, 0};
+        char mapKey[8] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, 0x5A, 0x58, VK_SHIFT, VK_ESCAPE};
+        while ((buf = fgetc(pKC)) != EOF) {
+            if (buf != 'u' && buf != 'd' && buf != 'l' && buf != 'r' 
+                    && buf != 's' && buf != 't' && buf != 'b' && buf != 'c'
+                    && buf != '1' && buf != '2' && buf != '3'
+                    && buf != 'a' && buf != 'b' && buf != 'x' && buf != 'y' && buf != ',')
+                continue;
+            if (cntKey >= 8 || cntBuf > 2)
+                throw "Invalid keyconfig.";
+            if (buf == ',') {
+                GAMEPAD_KEYTYPE t;
+                short c = 0;
+                if (bufs[0] == 'l' && bufs[1] == '2') {
+                    t = GAMEPAD_KEYTYPE::LTrigger;
+                    c = 12800;
+                } else if (bufs[0] == 'r' && bufs[1] == '2') {
+                    t = GAMEPAD_KEYTYPE::RTrigger;
+                    c = 12800;
+                } else if (bufs[0] == 'l' && bufs[1] == 'l') {
+                    t = GAMEPAD_KEYTYPE::ThumbLL;
+                    c = -12800;
+                } else if (bufs[0] == 'l' && bufs[1] == 'r') {
+                    t = GAMEPAD_KEYTYPE::ThumbLR;
+                    c = 12800;
+                } else if (bufs[0] == 'l' && bufs[1] == 'u') {
+                    t = GAMEPAD_KEYTYPE::ThumbLU;
+                    c = 12800;
+                } else if (bufs[0] == 'l' && bufs[1] == 'd') {
+                    t = GAMEPAD_KEYTYPE::ThumbLD;
+                    c = -12800;
+                } else if (bufs[0] == 'r' && bufs[1] == 'l') {
+                    t = GAMEPAD_KEYTYPE::ThumbRL;
+                    c = -12800;
+                } else if (bufs[0] == 'r' && bufs[1] == 'r') {
+                    t = GAMEPAD_KEYTYPE::ThumbRR;
+                    c = 12800;
+                } else if (bufs[0] == 'r' && bufs[1] == 'u') {
+                    t = GAMEPAD_KEYTYPE::ThumbRU;
+                    c = 12800;
+                } else if (bufs[0] == 'r' && bufs[1] == 'd') {
+                    t = GAMEPAD_KEYTYPE::ThumbRD;
+                    c = -12800;
+                } else if (bufs[0] == 's' && bufs[1] == 't') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_START;
+                } else if (bufs[0] == 'b' && bufs[1] == 'c') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_BACK;
+                } else if (bufs[0] == 'l' && bufs[1] == '1') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_LEFT_SHOULDER;
+                } else if (bufs[0] == 'r' && bufs[1] == '1') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_RIGHT_SHOULDER;
+                } else if (bufs[0] == 'l' && bufs[1] == '3') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_LEFT_THUMB;
+                } else if (bufs[0] == 'r' && bufs[1] == '3') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_RIGHT_THUMB;
+                } else if (bufs[0] == 'u') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_DPAD_UP;
+                } else if (bufs[0] == 'd') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_DPAD_DOWN;
+                } else if (bufs[0] == 'l') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_DPAD_LEFT;
+                } else if (bufs[0] == 'r') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_DPAD_RIGHT;
+                } else if (bufs[0] == 'a') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_A;
+                } else if (bufs[0] == 'b') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_B;
+                } else if (bufs[0] == 'x') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_X;
+                } else if (bufs[0] == 'y') {
+                    t = GAMEPAD_KEYTYPE::Buttons;
+                    c = XINPUT_GAMEPAD_Y;
+                } else
+                    throw "Invalid keycode.";
+                if (!p_inf->imanager.addKeycode(cntKey + 1, mapKey[cntKey], t, c))
+                    throw "Failed to add key.";
+                cntKey++;
+                cntBuf = 0;
+                bufs[0] = 0;
+                bufs[1] = 0;
+                continue;
+            }
+            bufs[cntBuf] = buf;
+            cntBuf++;
+        }
+        fclose(pKC);
+        debug(" - Keys : Success\n");
+
         p_inf->p_scene = new SceneTitle(this);
         if (!p_inf->p_scene->init())
             throw "Failed to initialize title.";
@@ -368,6 +475,19 @@ FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
 
 void App::applyFrameBuffer(FrameBuffer* p_fbuf) {
     p_inf->dmanager.drawBegin(p_fbuf);
+}
+
+bool App::getKey(KEY_CODE code, KEY_STATE state) {
+    char res = p_inf->imanager.getKey(static_cast<char>(code));
+    if (state == KEY_STATE::Nutral)
+        return (res & 0b011) == 0;
+    debug((int)res);
+    if (state == KEY_STATE::Down)
+        return (res & 0b010) > 0;
+    if (state == KEY_STATE::Pressed)
+        return (res & 0b001) > 0;
+    if (state == KEY_STATE::Up)
+        return (res & 0b100) > 0; 
 }
 
 bool App::createConsole() {

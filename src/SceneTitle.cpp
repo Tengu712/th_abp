@@ -5,6 +5,11 @@ bool SceneTitle::init() {
 }
 
 void SceneTitle::update() {
+    int ud = p_app->getKey(KEY_CODE::Down, KEY_STATE::Down) - p_app->getKey(KEY_CODE::Up, KEY_STATE::Down);
+    if (ud == 1)
+        ++cur;
+    if (ud == -1)
+        cur += 4;
 
     p_app->applyCamera(nullptr);
     Model model = Model();
@@ -18,12 +23,12 @@ void SceneTitle::update() {
     model.scl_x = 40.0f;
     model.scl_y = 60.0f;
     auto drawOption = [&](const char* str, int i) {
-        ModelColorCode2RGBA(&model, 0xbb434343);
+        ModelColorCode2RGBA(&model, 0xaa303030);
         if (cur % 5 == i) {
             const unsigned int cnt_new = cnt * 2;
             model.col_r = (float)(0.36 + 0.4 * fabs(sin(Deg2Rad(cnt_new))));
-            model.col_g = (float)(0.09 + 0.4 * fabs(sin(Deg2Rad(cnt_new))));
-            model.col_b = (float)(0.09 + 0.4 * fabs(sin(Deg2Rad(cnt_new))));
+            model.col_g = (float)(0.09 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
+            model.col_b = (float)(0.09 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_a = 1.0f;
         }
         p_app->drawString(&model, -1, kIdxElephant, str);

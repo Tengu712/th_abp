@@ -93,6 +93,25 @@ public:
     void update();
 };
 
+enum struct KEY_CODE {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+    Z,
+    X,
+    Shift,
+    Escape,
+};
+
+enum struct KEY_STATE {
+    Nutral,
+    Down,
+    Pressed,
+    Up,
+};
+
 struct AppInf;
 
 class App {
@@ -119,6 +138,7 @@ public:
     void applyFont(unsigned int idx_bank, unsigned int code);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
+    bool getKey(KEY_CODE code, KEY_STATE state);
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
