@@ -40,6 +40,8 @@ void SceneTitle::update() {
             model.col_a = 1.0f;
         }
         p_app->drawString(&model, -1, kIdxElephant, str);
+        if (cur % 5 == i)
+            model.pos_y += 5.0f;
         model.pos_x += 20.0f;
         model.pos_y += 70.0f;
     };
