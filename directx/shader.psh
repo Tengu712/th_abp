@@ -22,13 +22,13 @@ float4 ps_main(PS_IN input) : SV_Target {
                     - 2.0 * (float4(1.0, 1.0, 1.0, 1.0) - col)
                           * (float4(1.0, 1.0, 1.0, 1.0) - input.col);
         }
+        // Mosaic
+        else if (input.prm.y == 2)
+            return input.col * diffuseTexture.Sample(diffuseTextureSampler, floor(input.tex * 200.0) / 200.0);
         // Multiply
         else
             return input.col * diffuseTexture.Sample(diffuseTextureSampler, input.tex);
     }
-    // Mosaic
-    else if (input.prm.x == 2)
-        return input.col * diffuseTexture.Sample(diffuseTextureSampler, floor(input.tex * 200.0) / 200.0);
     // No image
     else
         return input.col;

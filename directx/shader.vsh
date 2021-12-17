@@ -1,4 +1,4 @@
-cbuf mats : register (b0) {
+cbuffer mats : register (b0) {
     float4x4 mat_scl;
     float4x4 mat_rot;
     float4x4 mat_trs;
