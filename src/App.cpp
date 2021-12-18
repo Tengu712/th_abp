@@ -164,6 +164,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         };
         bool flg = true;
         flg = flg && loadImage(IMG_BG_TITLE);
+        flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_KOSUZU_B0);
         if (!flg)
             throw "Failed to load some images.";
@@ -356,10 +357,14 @@ bool App::update() {
 
     if (p_inf->no_scene_nex != kSceneEscape) {
         delete p_inf->p_scene;
-        if (p_inf->no_scene_nex == kSceneTitle) 
-            p_inf->p_scene = new SceneTitle(this);
+        if (p_inf->no_scene_nex == kSceneCSelect)
+            p_inf->p_scene = new SceneCharacterSelect(this);
+        else if (p_inf->no_scene_nex == kSceneGame)
+            p_inf->p_scene = new SceneGame(this);
         else if (p_inf->no_scene_nex == kSceneExit)
             return true;
+        else
+            p_inf->p_scene = new SceneTitle(this);
         p_inf->no_scene_cur = p_inf->no_scene_nex;
         p_inf->no_scene_nex = kSceneEscape;
         if (!p_inf->p_scene->init())
@@ -502,7 +507,6 @@ bool App::getKey(KEY_CODE code, KEY_STATE state) {
     char res = p_inf->imanager.getKey(static_cast<char>(code));
     if (state == KEY_STATE::Nutral)
         return (res & 0b011) == 0;
-    debug((int)res);
     if (state == KEY_STATE::Down)
         return (res & 0b010) > 0;
     if (state == KEY_STATE::Pressed)
@@ -510,6 +514,19 @@ bool App::getKey(KEY_CODE code, KEY_STATE state) {
     if (state == KEY_STATE::Up)
         return (res & 0b100) > 0; 
     return false;
+}
+
+void App::initGameInf() {
+    ginf = GameInf();
+    ginf.player.init(this);
+}
+
+void App::updatePlayer() {
+    ginf.player.update();
+}
+
+void App::drawPlayer() {
+    ginf.player.draw();
 }
 
 bool App::createConsole() {

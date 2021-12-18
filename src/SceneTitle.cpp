@@ -12,6 +12,8 @@ void SceneTitle::update() {
         cur += 4;
 
     if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
+        if (cur % 5 == 0)
+            p_app->changeScene(kSceneCSelect);
         if (cur % 5 == 4)
             p_app->changeScene(kSceneExit);
     }

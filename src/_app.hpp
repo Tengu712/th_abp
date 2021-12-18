@@ -2,8 +2,8 @@
 #ifndef _APP_
 #define _APP_
 
-#include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 
 #define PI 3.141592653589793238462643
 
@@ -20,6 +20,8 @@ constexpr unsigned int kNumFontBank = 2U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxElephant = 1U;
 constexpr unsigned int kSceneTitle = 0U;
+constexpr unsigned int kSceneCSelect = 1U;
+constexpr unsigned int kSceneGame = 2U;
 constexpr unsigned int kSceneExit = 128U;
 constexpr unsigned int kSceneEscape = 255U;
 
@@ -73,6 +75,30 @@ struct Model {
     }
 };
 
+struct Entity {
+    bool moving, existing;
+    double x, y;
+    double deg, spd;
+    Entity() : moving(false), existing(false), x(0.0), y(0.0), deg(0.0), spd(0.0) {
+    }
+    void move();
+};
+
+class Player : public Entity {
+private:
+    App* p_app;
+    unsigned int id_weapon;
+    unsigned int cnt_all;
+    int lr;
+
+public:
+    Player() : Entity(), p_app(nullptr), id_weapon(0U), cnt_all(0U), lr(0) {
+    }
+    void init(App* p_app);
+    void update();
+    void draw();
+};
+
 class Scene {
 protected:
     App* p_app;
@@ -91,6 +117,25 @@ private:
 
 public:
     SceneTitle(App* p_app) : Scene(p_app), cnt(0U), cur(0U) {
+    }
+    bool init();
+    void update();
+};
+
+class SceneCharacterSelect : public Scene {
+public:
+    SceneCharacterSelect(App* p_app) : Scene(p_app) {
+    }
+    bool init();
+    void update();
+};
+
+class SceneGame : public Scene {
+private:
+    unsigned int cnt;
+
+public:
+    SceneGame(App* p_app) : Scene(p_app), cnt(0U) {
     }
     bool init();
     void update();
@@ -117,9 +162,16 @@ enum struct KEY_STATE {
 
 struct AppInf;
 
+struct GameInf {
+    Player player;
+    GameInf() : player(Player()) {
+    }
+};
+
 class App {
 private:
     AppInf* p_inf;
+    GameInf ginf;
 
 public:
     App() : p_inf(nullptr) {
@@ -134,7 +186,8 @@ public:
     void changeScene(unsigned int no_scene_nex);
     void drawIdea();
     void drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str);
-    void drawStringWithBorder(const Model* p_model, int align, unsigned int col, unsigned int idx_bank1, unsigned int idx_bank2, const char* str);
+    void drawStringWithBorder(const Model* p_model, int align, unsigned int col, unsigned int idx_bank1,
+        unsigned int idx_bank2, const char* str);
     void applyModel(Model* p_model);
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);
@@ -143,6 +196,9 @@ public:
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
     bool getKey(KEY_CODE code, KEY_STATE state);
+    void initGameInf();
+    void updatePlayer();
+    void drawPlayer();
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
