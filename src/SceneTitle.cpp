@@ -6,19 +6,24 @@ bool SceneTitle::init() {
 
 void SceneTitle::update() {
     int ud = p_app->getKey(KEY_CODE::Down, KEY_STATE::Down) - p_app->getKey(KEY_CODE::Up, KEY_STATE::Down);
-    if (ud == 1)
+    if (cnt >= 0 && ud == 1)
         ++cur;
-    if (ud == -1)
+    if (cnt >= 0 && ud == -1)
         cur += 4;
-
+    if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
+        cur = 4;
+    }
     if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
+        cnt = -1;
+    }
+
+    if (cnt < -10) {
         if (cur % 5 == 0)
             p_app->changeScene(kSceneCSelect);
         if (cur % 5 == 4)
             p_app->changeScene(kSceneExit);
     }
 
-    p_app->applyCamera(nullptr);
     Model model = Model();
     model.scl_x = 1280.0f;
     model.scl_y = 1280.0f;
@@ -62,13 +67,16 @@ void SceneTitle::update() {
         model.pos_x = 0.0f;
         model.pos_y = 0.0f;
         model.scl_x = 1280.0f;
-        model.scl_y = 960.0f;
-        ModelColorCode2RGBA(&model, 0xffffffff);
-        model.col_a = 1.0f - (float)cnt / 30.0f;
-        p_app->applyImage(0);
+        model.scl_y = 1280.0f;
+        ModelColorCode2RGBA(&model, cnt < 0 ? 0x00000000 : 0xffffffff);
+        model.col_a = cnt < 0 ? (float)(-cnt) / 10.0f : 1.0f - (float)cnt / 30.0f;
         p_app->applyModel(&model);
+        p_app->applyImage(0);
         p_app->drawIdea();
     }
 
-    ++cnt;
+    if (cnt < 0)
+        --cnt;
+    else
+        ++cnt;
 }

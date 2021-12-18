@@ -2,5 +2,6 @@
 
 IMG_BG_LOAD IMAGE "./bg_load.png"
 IMG_BG_TITLE IMAGE "./bg_title.png"
+IMG_BG_CSELECT IMAGE "./bg_cselect.png"
 IMG_UI_FRAME IMAGE "./ui_frame.png"
 IMG_CH_KOSUZU_B0 IMAGE "./ch_kosuzu_b0.png"

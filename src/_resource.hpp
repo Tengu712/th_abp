@@ -5,6 +5,7 @@
 
 #define IMG_BG_LOAD 100
 #define IMG_BG_TITLE 101
+#define IMG_BG_CSELECT 102
 
 #define IMG_UI_FRAME 200
 

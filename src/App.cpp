@@ -164,6 +164,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         };
         bool flg = true;
         flg = flg && loadImage(IMG_BG_TITLE);
+        flg = flg && loadImage(IMG_BG_CSELECT);
         flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_KOSUZU_B0);
         if (!flg)
@@ -211,8 +212,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             DEFAULT_PITCH | FF_MODERN,
             "Elephant",
         };
-        p_inf->fnts[kIdxElephant].init(25U);
-        loadString(&logfont_elp, 1, " StarChpecoRlyQuikDgAsW20");
+        p_inf->fnts[kIdxElephant].init(26U);
+        loadString(&logfont_elp, 1, " 20aceghiklnoprstuyACDQRSW");
         if (!flg)
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
@@ -353,6 +354,7 @@ bool App::update() {
 
     p_inf->imanager.inspect();
     p_inf->dmanager.drawBegin(nullptr);
+    applyCamera(nullptr);
     p_inf->p_scene->update();
 
     if (p_inf->no_scene_nex != kSceneEscape) {

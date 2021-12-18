@@ -112,19 +112,23 @@ public:
 
 class SceneTitle : public Scene {
 private:
-    unsigned int cnt;
-    unsigned int cur;
+    int cnt;
+    int cur;
 
 public:
-    SceneTitle(App* p_app) : Scene(p_app), cnt(0U), cur(0U) {
+    SceneTitle(App* p_app) : Scene(p_app), cnt(0), cur(0) {
     }
     bool init();
     void update();
 };
 
 class SceneCharacterSelect : public Scene {
+private:
+    unsigned int cnt;
+    unsigned int cur;
+
 public:
-    SceneCharacterSelect(App* p_app) : Scene(p_app) {
+    SceneCharacterSelect(App* p_app) : Scene(p_app), cnt(0), cur(0) {
     }
     bool init();
     void update();
