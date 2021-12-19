@@ -79,35 +79,46 @@ public:
         if (strs != nullptr)
             delete[] strs;
     }
-    bool load(HMODULE h_module, unsigned int id) {
-        HRSRC h_res = FindResourceA(h_module, MAKEINTRESOURCEA(id), "IMAGE");
+    int load(HMODULE h_module, unsigned int id) {
+        HRSRC h_res = FindResourceA(h_module, MAKEINTRESOURCEA(id), "TEXT");
         if (!h_res)
-            return false;
+            return -1;
         HGLOBAL h_data = LoadResource(h_module, h_res);
         if (!h_data)
-            return false;
-        const char* str = (const char*)LockResource(h_data);
-        const int kLenStr = strlen(str);
+            return -1;
+        void* p_lock = LockResource(h_data);
+        if (p_lock == nullptr)
+            return -1;
+        const DWORD kSizeRes = SizeofResource(h_module, h_res);
+        if (kSizeRes == 0)
+            return -1;
+        unsigned char* str = new unsigned char[kSizeRes];
+        memcpy(str, p_lock, sizeof(unsigned char) * kSizeRes);
         unsigned int num = 0U;
-        for (int i = 0; i < kLenStr; ++i) {
-            if (str[i] == '\n')
+        for (int i = 0; i < kSizeRes; ++i) {
+            if (str[i] == 13)
                 ++num;
         }
         strs = new char*[num];
         unsigned int cnt = 0U;
         unsigned int start = 0U;
-        for (int i = 0; i < kLenStr; ++i) {
-            if (str[i] == '\n') {
+        for (int i = 0; i < kSizeRes; ++i) {
+            if (str[i] == 13) {
                 unsigned int len = i - start;
-                char* nstr = new char[len + 1];
-                memcpy(nstr, str + start, len);
-                nstr[len] = '\0';
-                strs[cnt] = nstr;
-                start = i + 1;
+                if (len == 0) 
+                    strs[cnt] = "\0";
+                else {
+                    char* nstr = new char[len + 1];
+                    memcpy(nstr, str + start, len);
+                    nstr[len] = '\0';
+                    strs[cnt] = nstr;
+                }
+                start = i + 2;
                 ++cnt;
+                ++i;
             }
         }
-        return true;
+        return cnt;
     }
     char* getStr(unsigned int idx) {
         return strs[idx];
@@ -241,7 +252,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->strs == nullptr)
             throw "Failed to create array of string bank.";
         memset(p_inf->strs, 0, sizeof(StringBank) * kNumStringBank);
-        if (!p_inf->strs[kStrTitle].load(h_module, TXT_TITLE))
+        int res_str_title = p_inf->strs[kStrTitle].load(h_module, IDS_TITLE);
+        if (res_str_title < 5)
             throw "Failed to load title texts.";
         debug(" - Strings : Success\n");
 
@@ -447,6 +459,8 @@ void App::drawString(const Model* p_model, unsigned int idx_bank, const char* st
     Model model = *p_model;
     const int kLenStr = strlen(str);
     for (int i = 0; i < kLenStr; ++i) {
+        if (str[i] == '\0')
+            break;
         unsigned int code = 0U;
         if (IsDBCSLeadByte(str[i])) {
             code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];

@@ -1,3 +1,4 @@
 @echo off
-rc ../res/resource.rc
-link /NOENTRY /MACHINE:X86 /DLL ../res/resource.res
+rc /fo resource.res ../res/resource.rc
+link /NOENTRY /MACHINE:X86 /DLL resource.res
+del resource.res

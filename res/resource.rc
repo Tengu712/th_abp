@@ -1,7 +1,7 @@
 #include "../src/_resource.hpp"
 
-TXT_TITLE IMAGE "./txt_title.txt"
-TXT_CSELECT IMAGE "./txt_cselect.txt"
+IDS_TITLE TEXT "./txt_title.txt"
+IDS_CSELECT TEXT "./txt_cselect.txt"
 IMG_BG_LOAD IMAGE "./bg_load.png"
 IMG_BG_TITLE IMAGE "./bg_title.png"
 IMG_BG_CSELECT IMAGE "./bg_cselect.png"
