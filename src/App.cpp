@@ -1,6 +1,8 @@
 ﻿#include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
+#include <set>
+
 // ================================================================================================================= //
 //                                          Generals                                                                 //
 // ================================================================================================================= //
@@ -25,6 +27,15 @@ int compareString(char* p1, char* p2) {
             return 0;
     }
     return *p1 - *p2;
+}
+
+unsigned int GetCode(const char* str, int* cnt) {
+    if (IsDBCSLeadByte(str[*cnt])) {
+        *cnt = *cnt + 1;
+        return (unsigned char)str[*cnt] << 8 | (unsigned char)str[*cnt + 1];
+    }
+    else
+        return (unsigned int)str[*cnt];
 }
 
 // ================================================================================================================= //
@@ -70,10 +81,11 @@ public:
 
 class StringBank {
 private:
+    unsigned int num_str;
     char** strs;
 
 public:
-    StringBank() : strs(nullptr) {
+    StringBank() : num_str(0U), strs(nullptr) {
     }
     ~StringBank() {
         if (strs != nullptr)
@@ -118,7 +130,16 @@ public:
                 ++i;
             }
         }
-        return cnt;
+        num_str = cnt;
+        return num_str;
+    }
+    void addNecCode(std::set<unsigned int>* set_code) {
+        for (int i = 0; i < num_str; ++i) {
+            const unsigned int kLen = strlen(strs[i]);
+            for (int j = 0; j < kLen; ++j) {
+                set_code->insert(GetCode(strs[i], &j));
+            }
+        }
     }
     char* getStr(unsigned int idx) {
         return strs[idx];
@@ -264,16 +285,9 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         DESIGNVECTOR design;
         if (AddFontResourceExA("C:/Windows/Fonts/ELEPHNT.TTF", FR_PRIVATE, &design) == 0)
             throw "Failed to load 'Elephant' font.";
-        auto loadString = [&](LOGFONTA* logfont, unsigned int idx_bank, const char* str) {
-            const int kLenStr = strlen(str);
-            for (int i = 0; i < kLenStr; ++i) {
-                unsigned int code = 0U;
-                if (IsDBCSLeadByte(str[i])) {
-                    code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
-                    ++i;
-                } else
-                    code = (unsigned int)str[i];
-                flg = flg && p_inf->dmanager.createFontImage(logfont, code, p_inf->fnts[idx_bank].getFontNext());
+        auto loadString = [&](LOGFONTA* logfont, unsigned int idx_bank, std::set<unsigned int>* set_code) {
+            for (auto itr = set_code->begin(); itr != set_code->end(); ++itr) {
+                flg = flg && p_inf->dmanager.createFontImage(logfont, *itr, p_inf->fnts[idx_bank].getFontNext());
             }
         };
         LOGFONTA logfont_msg = {
@@ -292,11 +306,9 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             DEFAULT_PITCH | FF_MODERN,
             "MS Gothic",
         };
-        p_inf->fnts[kIdxNormal].init(140U);
-        loadString(&logfont_msg, 0,
-            " ."
-            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたち"
-            "つてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ");
+        std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46};
+        p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
+        loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         LOGFONTA logfont_elp = {
             64,
             0,
@@ -313,8 +325,11 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             DEFAULT_PITCH | FF_MODERN,
             "Elephant",
         };
-        p_inf->fnts[kIdxElephant].init(26U);
-        loadString(&logfont_elp, 1, " 20aceghiklnoprstuyACDQRSW");
+        std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
+        p_inf->strs[kStrTitle].addNecCode(&set_code_elp);
+        p_inf->fnts[kIdxElephant].init(set_code_elp.size() + 1);
+        debug(set_code_elp.size());
+        loadString(&logfont_elp, kIdxElephant, &set_code_elp);
         if (!flg)
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
@@ -461,15 +476,9 @@ void App::drawString(const Model* p_model, unsigned int idx_bank, const char* st
     for (int i = 0; i < kLenStr; ++i) {
         if (str[i] == '\0')
             break;
-        unsigned int code = 0U;
-        if (IsDBCSLeadByte(str[i])) {
-            code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
-            ++i;
-        } else
-            code = (unsigned int)str[i];
+        unsigned int code = GetCode(str, &i);
         Image* p_image = p_inf->fnts[idx_bank].getFont(code);
-        if (p_image != nullptr)
-            model.scl_x = model.scl_y * (double)p_image->width / (double)p_image->height;
+        model.scl_x = p_image != nullptr ? model.scl_y * (double)p_image->width / (double)p_image->height : model.scl_y;
         p_inf->dmanager.applyImage(p_image);
         applyModelUI(&model);
         drawIdea();
