@@ -191,7 +191,7 @@ public:
     bool update();
     void changeScene(unsigned int no_scene_nex);
     void drawIdea();
-    void drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str);
+    void drawString(const Model* p_model, unsigned int idx_bank, const char* str);
     void applyModel(Model* p_model);
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);

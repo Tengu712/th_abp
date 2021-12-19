@@ -33,22 +33,16 @@ void SceneTitle::update() {
     model.pos_x = 30.0f;
     model.pos_y = 500.0f;
     auto drawOption = [&](const char* str, int i) {
-        model.scl_x = 40.0f;
-        model.scl_y = 60.0f;
+        model.scl_y = 75.0f;
         ModelColorCode2RGBA(&model, 0xaa303030);
         if (cur % 5 == i) {
-            model.pos_y -= 5.0f;
-            model.scl_x += 8.0f;
-            model.scl_y += 10.0f;
             const unsigned int cnt_new = cnt * 3;
             model.col_r = (float)(0.40 + 0.6 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_g = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_b = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_a = 1.0f;
         }
-        p_app->drawString(&model, -1, kIdxElephant, str);
-        if (cur % 5 == i)
-            model.pos_y += 5.0f;
+        p_app->drawString(&model, kIdxElephant, str);
         model.pos_x += 20.0f;
         model.pos_y += 70.0f;
     };
@@ -57,12 +51,6 @@ void SceneTitle::update() {
     drawOption("Score", 2);
     drawOption("Replay", 3);
     drawOption("Quit", 4);
-    model.pos_x = 640.0f;
-    model.pos_y = 933.0f;
-    model.scl_x = 14.0f;
-    model.scl_y = 22.0f;
-    ModelColorCode2RGBA(&model, 0xffffffff);
-    p_app->drawString(&model, 0, kIdxElephant, "SkyDog Assoc Work 2022");
     if (cnt < 30) {
         model.pos_x = 0.0f;
         model.pos_y = 0.0f;

@@ -374,13 +374,12 @@ bool App::update() {
     }
 
     Model model = Model();
-    model.pos_x = 1275.0f;
+    model.pos_x = 1190.0f;
     model.pos_y = 933.0f;
-    model.scl_x = 14.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
     snprintf(buf, 64, "%3.1ffps", p_inf->fps);
-    drawString(&model, 1, kIdxNormal, buf);
+    drawString(&model, kIdxNormal, buf);
     p_inf->dmanager.drawEnd();
     return false;
 }
@@ -393,13 +392,9 @@ void App::drawIdea() {
     p_inf->dmanager.drawModel(&p_inf->idea);
 }
 
-void App::drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str) {
+void App::drawString(const Model* p_model, unsigned int idx_bank, const char* str) {
     Model model = *p_model;
     const int kLenStr = strlen(str);
-    if (align == 0)
-        model.pos_x -= model.scl_x * (float)kLenStr / 2.0f;
-    else if (align == 1)
-        model.pos_x -= model.scl_x * (float)kLenStr;
     for (int i = 0; i < kLenStr; ++i) {
         unsigned int code = 0U;
         if (IsDBCSLeadByte(str[i])) {
