@@ -407,47 +407,11 @@ void App::drawString(const Model* p_model, int align, unsigned int idx_bank, con
             ++i;
         } else
             code = (unsigned int)str[i];
+        Image* p_image = p_inf->fnts[idx_bank].getFont(code);
+        if (p_image != nullptr)
+            model.scl_x = model.scl_y * (double)p_image->width / (double)p_image->height;
+        p_inf->dmanager.applyImage(p_image);
         applyModelUI(&model);
-        applyFont(idx_bank, code);
-        drawIdea();
-        model.pos_x += model.scl_x;
-    }
-}
-
-void App::drawStringWithBorder(const Model* p_model, int align, unsigned int col,
-        unsigned int idx_bank1, unsigned int idx_bank2, const char* str) {
-    const float nr = (float)(col & 0x000000ff) / 255.0f;
-    const float ng = (float)((col & 0x0000ff00) >> 8) / 255.0f;
-    const float nb = (float)((col & 0x00ff0000) >> 16) / 255.0f;
-    const float na = (float)((col & 0xff000000) >> 24) / 255.0f;
-    Model model = *p_model;
-    model.pos_x += model.scl_x / 2.0f;
-    model.pos_y -= model.scl_y / 2.0f;
-    const int kLenStr = strlen(str);
-    if (align == 0)
-        model.pos_x -= model.scl_x * (float)kLenStr / 2.0f;
-    else if (align == 1)
-        model.pos_x -= model.scl_x * (float)kLenStr;
-    for (int i = 0; i < kLenStr; ++i) {
-        unsigned int code = 0U;
-        if (IsDBCSLeadByte(str[i])) {
-            code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
-            ++i;
-        } else
-            code = (unsigned int)str[i];
-        model.col_r = nr;
-        model.col_g = ng;
-        model.col_b = nb;
-        model.col_a = na;
-        applyModel(&model);
-        applyFont(idx_bank2, code);
-        drawIdea();
-        model.col_r = p_model->col_r;
-        model.col_g = p_model->col_g;
-        model.col_b = p_model->col_b;
-        model.col_a = p_model->col_a;
-        applyModel(&model);
-        applyFont(idx_bank1, code);
         drawIdea();
         model.pos_x += model.scl_x;
     }
@@ -489,10 +453,6 @@ void App::applyImage(unsigned int id) {
             return p_inf->dmanager.applyImage(&p_inf->imgs[i]);
     }
     p_inf->dmanager.applyImage(nullptr);
-}
-
-void App::applyFont(unsigned int idx_bank, unsigned int code) {
-    p_inf->dmanager.applyImage(p_inf->fnts[idx_bank].getFont(code));
 }
 
 FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {

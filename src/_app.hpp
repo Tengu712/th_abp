@@ -2,15 +2,16 @@
 #ifndef _APP_
 #define _APP_
 
+#include <windows.h>
 #include <math.h>
 #include <stdio.h>
 
 #define PI 3.141592653589793238462643
 
-#include "../directx/_dx11.hpp"
 #include "./_resource.hpp"
 
 #pragma comment(lib, "mydx.lib")
+#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "Winmm.lib")
 
 constexpr unsigned int kSceWidth = 1280U;
@@ -26,6 +27,7 @@ constexpr unsigned int kSceneExit = 128U;
 constexpr unsigned int kSceneEscape = 255U;
 
 class App;
+struct FrameBuffer;
 
 struct Camera {
     float width, height;
@@ -190,13 +192,10 @@ public:
     void changeScene(unsigned int no_scene_nex);
     void drawIdea();
     void drawString(const Model* p_model, int align, unsigned int idx_bank, const char* str);
-    void drawStringWithBorder(const Model* p_model, int align, unsigned int col, unsigned int idx_bank1,
-        unsigned int idx_bank2, const char* str);
     void applyModel(Model* p_model);
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);
     void applyImage(unsigned int id);
-    void applyFont(unsigned int idx_bank, unsigned int code);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
     bool getKey(KEY_CODE code, KEY_STATE state);

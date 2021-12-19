@@ -37,6 +37,7 @@ struct ConstantBuffer {
 
 struct Image {
     unsigned int id;
+    unsigned int width, height;
     ComPtr<ID3D11ShaderResourceView> p_srview;
 };
 

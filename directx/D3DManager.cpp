@@ -139,18 +139,8 @@ bool D3DManager::createFrameBuffer(unsigned int width, unsigned int height, Fram
         if (p_fbuf == nullptr)
             throw "Nullptr gained when create a frame buf.";
 
-        D3D11_TEXTURE2D_DESC desc_tex = {
-            width,
-            height,
-            1U,
-            1U,
-            DXGI_FORMAT_R8G8B8A8_UNORM,
-            {1U, 0U},
-            D3D11_USAGE_DEFAULT,
-            D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE,
-            0U,
-            0U,
-        };
+        D3D11_TEXTURE2D_DESC desc_tex = {width, height, 1U, 1U, DXGI_FORMAT_R8G8B8A8_UNORM, {1U, 0U},
+            D3D11_USAGE_DEFAULT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, 0U, 0U};
         ComPtr<ID3D11Texture2D> p_tex = nullptr;
         if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_tex.GetAddressOf())))
             throw "Failed to create texture2D for frame buf.";
@@ -232,11 +222,10 @@ bool D3DManager::createImage(HMODULE h_module, unsigned int id, Image* p_image) 
                 nullptr, 1.0f, WICBitmapPaletteTypeMedianCut)))
             throw "Failed to initialize format.";
 
-        unsigned int width, height;
-        if (FAILED(p_format_converter->GetSize(&width, &height)))
+        if (FAILED(p_format_converter->GetSize(&p_image->width, &p_image->height)))
             throw "Failed to get texture size.";
 
-        D3D11_TEXTURE2D_DESC desc_tex = {width, height, 1U, 1U, DXGI_FORMAT_R8G8B8A8_UNORM, {1U, 0U},
+        D3D11_TEXTURE2D_DESC desc_tex = {p_image->width, p_image->height, 1U, 1U, DXGI_FORMAT_R8G8B8A8_UNORM, {1U, 0U},
             D3D11_USAGE_DYNAMIC, D3D11_BIND_SHADER_RESOURCE, D3D11_CPU_ACCESS_WRITE, 0U};
         ComPtr<ID3D11Texture2D> p_tex = nullptr;
         if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_tex.GetAddressOf())))
@@ -246,7 +235,8 @@ bool D3DManager::createImage(HMODULE h_module, unsigned int id, Image* p_image) 
         ZeroMemory(&res_mapped, sizeof(D3D11_MAPPED_SUBRESOURCE));
         if (FAILED(_p_context->Map(p_tex.Get(), 0U, D3D11_MAP_WRITE_DISCARD, 0U, &res_mapped)))
             throw "Failed to map.";
-        if (FAILED(p_format_converter->CopyPixels(nullptr, width * 4U, width * height * 4U, (BYTE*)res_mapped.pData)))
+        if (FAILED(p_format_converter->CopyPixels(
+                nullptr, p_image->width * 4U, p_image->width * p_image->height * 4U, (BYTE*)res_mapped.pData)))
             throw "Failed to copy pixels.";
         _p_context->Unmap(p_tex.Get(), 0U);
 
@@ -288,25 +278,15 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
         DeleteObject(h_font);
         ReleaseDC(nullptr, hdc);
 
-        const unsigned int kWidth = (unsigned int)met_glyph.gmCellIncX;
-        const unsigned int kHeight = (unsigned int)met_text.tmHeight;
-        const int kOfsX = met_glyph.gmptGlyphOrigin.x;
-        const int kOfsY = met_text.tmAscent - met_glyph.gmptGlyphOrigin.y;
+        p_image->width = (unsigned int)met_glyph.gmCellIncX + 8;
+        p_image->height = (unsigned int)met_text.tmHeight + 8;
+        const int kOfsX = met_glyph.gmptGlyphOrigin.x + 4;
+        const int kOfsY = met_text.tmAscent - met_glyph.gmptGlyphOrigin.y + 4;
         const int kWidthBmp = met_glyph.gmBlackBoxX + (4 - (met_glyph.gmBlackBoxX % 4)) % 4;
         const int kHeightBmp = met_glyph.gmBlackBoxY;
 
-        D3D11_TEXTURE2D_DESC desc_tex = {
-            kWidth,
-            kHeight,
-            1,
-            1,
-            DXGI_FORMAT_R8G8B8A8_UNORM,
-            {1, 0},
-            D3D11_USAGE_DYNAMIC,
-            D3D11_BIND_SHADER_RESOURCE,
-            D3D11_CPU_ACCESS_WRITE,
-            0,
-        };
+        D3D11_TEXTURE2D_DESC desc_tex = {p_image->width, p_image->height, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM, {1, 0},
+            D3D11_USAGE_DYNAMIC, D3D11_BIND_SHADER_RESOURCE, D3D11_CPU_ACCESS_WRITE, 0};
         ComPtr<ID3D11Texture2D> p_layer = nullptr;
         if (FAILED(_p_device->CreateTexture2D(&desc_tex, nullptr, p_layer.GetAddressOf())))
             throw "Failed to create font texture.";
@@ -314,16 +294,28 @@ bool D3DManager::createFontImage(LOGFONTA* p_logfont, unsigned int code, Image* 
         D3D11_MAPPED_SUBRESOURCE res_mapped;
         _p_context->Map(p_layer.Get(), 0U, D3D11_MAP_WRITE_DISCARD, 0U, &res_mapped);
         unsigned char* p_bits = (unsigned char*)res_mapped.pData;
-        for (int y = 0; y < kHeight; ++y) {
-            for (int x = 0; x < kWidth; ++x) {
-                if (x < kOfsX || y < kOfsY || x >= kOfsX + kWidthBmp || y >= kOfsY + kHeightBmp) {
-                    DWORD col = 0x00000000;
-                    memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
-                } else {
-                    DWORD alp = (255 * p_mono[x - kOfsX + kWidthBmp * (y - kOfsY)]) / 16;
-                    DWORD col = 0x00ffffff | (alp << 24);
-                    memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(DWORD));
-                }
+        auto getAlpha = [&](int x, int y) {
+            if (!(x < kOfsX || y < kOfsY || x >= kOfsX + kWidthBmp || y >= kOfsY + kHeightBmp))
+                return (255 * p_mono[x - kOfsX + kWidthBmp * (y - kOfsY)]) / 16;
+            else
+                return 0;
+        };
+        for (int y = 0; y < p_image->height; ++y) {
+            for (int x = 0; x < p_image->height; ++x) {
+                unsigned int col = 0x00000000;
+                if (getAlpha(x, y) < 128) {
+                    for (int dx = -4; dx <= 4; ++dx) {
+                        for (int dy = -4; dy <= 4; ++dy) {
+                            int len = abs(dx) + abs(dy);
+                            if (len * len > 16)
+                                continue;
+                            if (getAlpha(x + dx, y + dy) >= 128)
+                                col = max(col, (len == 4 ? 128 : 255) << 24);
+                        }
+                    }
+                } else
+                    col = 0xffffffff;
+                memcpy(p_bits + res_mapped.RowPitch * y + 4 * x, &col, sizeof(unsigned int));
             }
         }
         _p_context->Unmap(p_layer.Get(), 0U);
