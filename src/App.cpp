@@ -1,6 +1,13 @@
 ﻿#include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
+// ================================================================================================================= //
+//                                          Generals                                                                 //
+// ================================================================================================================= //
+
+constexpr unsigned int kNumFontBank = 2U;
+constexpr unsigned int kNumStringBank = 2U;
+
 void ModelColorCode2RGBA(Model* p_model, unsigned int col) {
     p_model->col_r = (float)(col & 0x000000ff) / 255.0f;
     p_model->col_g = (float)((col & 0x0000ff00) >> 8) / 255.0f;
@@ -12,12 +19,26 @@ double Deg2Rad(double deg) {
     return (double)deg * PI / 180.0;
 }
 
+int compareString(char* p1, char* p2) {
+    for (; *p1 == *p2; ++p1, ++p2) {
+        if (*p1 == '\0')
+            return 0;
+    }
+    return *p1 - *p2;
+}
+
+// ================================================================================================================= //
+//                                          Add Objects                                                              //
+// ================================================================================================================= //
+
 class FontBank {
 private:
     unsigned int num_font;
     Image* imgs;
+
 public:
-    FontBank() : num_font(0U), imgs(nullptr) {}
+    FontBank() : num_font(0U), imgs(nullptr) {
+    }
     ~FontBank() {
         if (imgs != nullptr)
             delete imgs;
@@ -47,6 +68,52 @@ public:
     }
 };
 
+class StringBank {
+private:
+    char** strs;
+
+public:
+    StringBank() : strs(nullptr) {
+    }
+    ~StringBank() {
+        if (strs != nullptr)
+            delete[] strs;
+    }
+    bool load(HMODULE h_module, unsigned int id) {
+        HRSRC h_res = FindResourceA(h_module, MAKEINTRESOURCEA(id), "IMAGE");
+        if (!h_res)
+            return false;
+        HGLOBAL h_data = LoadResource(h_module, h_res);
+        if (!h_data)
+            return false;
+        const char* str = (const char*)LockResource(h_data);
+        const int kLenStr = strlen(str);
+        unsigned int num = 0U;
+        for (int i = 0; i < kLenStr; ++i) {
+            if (str[i] == '\n')
+                ++num;
+        }
+        strs = new char*[num];
+        unsigned int cnt = 0U;
+        unsigned int start = 0U;
+        for (int i = 0; i < kLenStr; ++i) {
+            if (str[i] == '\n') {
+                unsigned int len = i - start;
+                char* nstr = new char[len + 1];
+                memcpy(nstr, str + start, len);
+                nstr[len] = '\0';
+                strs[cnt] = nstr;
+                start = i + 1;
+                ++cnt;
+            }
+        }
+        return true;
+    }
+    char* getStr(unsigned int idx) {
+        return strs[idx];
+    }
+};
+
 struct AppInf {
     D3DManager dmanager;
     InputManager imanager;
@@ -58,6 +125,7 @@ struct AppInf {
     float fps;
     Image* imgs;
     FontBank* fnts;
+    StringBank* strs;
     unsigned int no_scene_cur;
     unsigned int no_scene_nex;
     Scene* p_scene;
@@ -72,6 +140,7 @@ struct AppInf {
           fps(0.0f),
           imgs(nullptr),
           fnts(nullptr),
+          strs(nullptr),
           no_scene_cur(0),
           no_scene_nex(0),
           p_scene(nullptr) {
@@ -86,13 +155,9 @@ struct AppInf {
     }
 };
 
-int compareString(char* p1, char* p2) {
-    for (; *p1 == *p2; ++p1, ++p2) {
-        if (*p1 == '\0')
-            return 0;
-    }
-    return *p1 - *p2;
-}
+// ================================================================================================================= //
+//                                                System Funcs                                                       //
+// ================================================================================================================= //
 
 bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
     p_inf = new AppInf();
@@ -165,11 +230,20 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         bool flg = true;
         flg = flg && loadImage(IMG_BG_TITLE);
         flg = flg && loadImage(IMG_BG_CSELECT);
+        flg = flg && loadImage(IMG_UI_CSBOX);
         flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_KOSUZU_B0);
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
+
+        p_inf->strs = new StringBank[kNumStringBank];
+        if (p_inf->strs == nullptr)
+            throw "Failed to create array of string bank.";
+        memset(p_inf->strs, 0, sizeof(StringBank) * kNumStringBank);
+        if (!p_inf->strs[kStrTitle].load(h_module, TXT_TITLE))
+            throw "Failed to load title texts.";
+        debug(" - Strings : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
         if (p_inf->fnts == nullptr)
@@ -182,7 +256,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             const int kLenStr = strlen(str);
             for (int i = 0; i < kLenStr; ++i) {
                 unsigned int code = 0U;
-                if (IsDBCSLeadByte(str[i])) { 
+                if (IsDBCSLeadByte(str[i])) {
                     code = (unsigned char)str[i] << 8 | (unsigned char)str[i + 1];
                     ++i;
                 } else
@@ -191,8 +265,14 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             }
         };
         LOGFONTA logfont_msg = {
-            64, 0, 0, 0,
-            0, 0, 0, 0,
+            64,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             DEFAULT_CHARSET,
             OUT_TT_ONLY_PRECIS,
             CLIP_DEFAULT_PRECIS,
@@ -201,10 +281,19 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             "MS Gothic",
         };
         p_inf->fnts[kIdxNormal].init(140U);
-        loadString(&logfont_msg, 0, " .0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたちつてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ");
+        loadString(&logfont_msg, 0,
+            " ."
+            "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZあいうえおかきくけこさしすせそざじずぜぞたち"
+            "つてとだぢづでどなにぬねのはひふへほばびぶべぼぱぴぷぺぽまみむめもやゆよらりるれろわをんゃゅょ");
         LOGFONTA logfont_elp = {
-            64, 0, 0, 0,
-            0, 0, 0, 0,
+            64,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             DEFAULT_CHARSET,
             OUT_TT_ONLY_PRECIS,
             CLIP_DEFAULT_PRECIS,
@@ -219,7 +308,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         debug(" - Fonts : Success.\n");
 
         FILE* p_file_cfg = fopen("./keyconfig.cfg", "r");
-        if (!p_file_cfg) 
+        if (!p_file_cfg)
             throw "Failed to open keyconfig.cfg.";
         int cnt_key = 0;
         int cnt_buf = 0;
@@ -227,10 +316,9 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         int bufs[2] = {0, 0};
         char map_key[8] = {VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, 0x5A, 0x58, VK_SHIFT, VK_ESCAPE};
         while ((buf = fgetc(p_file_cfg)) != EOF) {
-            if (buf != 'u' && buf != 'd' && buf != 'l' && buf != 'r' 
-                    && buf != 's' && buf != 't' && buf != 'b' && buf != 'c'
-                    && buf != '1' && buf != '2' && buf != '3'
-                    && buf != 'a' && buf != 'b' && buf != 'x' && buf != 'y' && buf != ',')
+            if (buf != 'u' && buf != 'd' && buf != 'l' && buf != 'r' && buf != 's' && buf != 't' && buf != 'b' &&
+                buf != 'c' && buf != '1' && buf != '2' && buf != '3' && buf != 'a' && buf != 'b' && buf != 'x' &&
+                buf != 'y' && buf != ',')
                 continue;
             if (cnt_key >= 8 || cnt_buf > 2)
                 throw "Invalid keyconfig.";
@@ -343,50 +431,13 @@ bool App::isIconic() {
     return p_inf->dmanager.isIconic();
 }
 
-bool App::update() {
-    unsigned long time_start = timeGetTime();
-    if (time_start - p_inf->time_last > 1000L) {
-        p_inf->fps = (float)(p_inf->cnt_fps * 1000U) / (float)(time_start - p_inf->time_last);
-        p_inf->time_last = time_start;
-        p_inf->cnt_fps = 0U;
-    }
-    ++p_inf->cnt_fps;
-
-    p_inf->imanager.inspect();
-    p_inf->dmanager.drawBegin(nullptr);
-    applyCamera(nullptr);
-    p_inf->p_scene->update();
-
-    if (p_inf->no_scene_nex != kSceneEscape) {
-        delete p_inf->p_scene;
-        if (p_inf->no_scene_nex == kSceneCSelect)
-            p_inf->p_scene = new SceneCharacterSelect(this);
-        else if (p_inf->no_scene_nex == kSceneGame)
-            p_inf->p_scene = new SceneGame(this);
-        else if (p_inf->no_scene_nex == kSceneExit)
-            return true;
-        else
-            p_inf->p_scene = new SceneTitle(this);
-        p_inf->no_scene_cur = p_inf->no_scene_nex;
-        p_inf->no_scene_nex = kSceneEscape;
-        if (!p_inf->p_scene->init())
-            return true;
-    }
-
-    Model model = Model();
-    model.pos_x = 1190.0f;
-    model.pos_y = 933.0f;
-    model.scl_y = 22.0f;
-    char buf[64] = "";
-    snprintf(buf, 64, "%3.1ffps", p_inf->fps);
-    drawString(&model, kIdxNormal, buf);
-    p_inf->dmanager.drawEnd();
-    return false;
+char* App::getStr(unsigned int idx_bank, unsigned int idx_str) {
+    return p_inf->strs[idx_bank].getStr(idx_str);
 }
 
-void App::changeScene(unsigned int no_scene_nex) {
-    p_inf->no_scene_nex = no_scene_nex;
-}
+// ================================================================================================================= //
+//                                           Drawing Funcs                                                           //
+// ================================================================================================================= //
 
 void App::drawIdea() {
     p_inf->dmanager.drawModel(&p_inf->idea);
@@ -460,6 +511,10 @@ void App::applyFrameBuffer(FrameBuffer* p_fbuf) {
     p_inf->dmanager.drawBegin(p_fbuf);
 }
 
+// ================================================================================================================= //
+//                                             Input Funcs                                                           //
+// ================================================================================================================= //
+
 bool App::getKey(KEY_CODE code, KEY_STATE state) {
     char res = p_inf->imanager.getKey(static_cast<char>(code));
     if (state == KEY_STATE::Nutral)
@@ -469,22 +524,13 @@ bool App::getKey(KEY_CODE code, KEY_STATE state) {
     if (state == KEY_STATE::Pressed)
         return (res & 0b001) > 0;
     if (state == KEY_STATE::Up)
-        return (res & 0b100) > 0; 
+        return (res & 0b100) > 0;
     return false;
 }
 
-void App::initGameInf() {
-    ginf = GameInf();
-    ginf.player.init(this);
-}
-
-void App::updatePlayer() {
-    ginf.player.update();
-}
-
-void App::drawPlayer() {
-    ginf.player.draw();
-}
+// ================================================================================================================= //
+//                                             Debug Funcs                                                           //
+// ================================================================================================================= //
 
 bool App::createConsole() {
     if (!AllocConsole())
@@ -503,4 +549,61 @@ void App::debug(const char* msg) {
 void App::debug(const int msg) {
     if (p_inf->is_debug)
         printf("%d", msg);
+}
+
+// ================================================================================================================= //
+//                                              Game Funcs                                                           //
+// ================================================================================================================= //
+
+bool App::update() {
+    unsigned long time_start = timeGetTime();
+    if (time_start - p_inf->time_last > 1000L) {
+        p_inf->fps = (float)(p_inf->cnt_fps * 1000U) / (float)(time_start - p_inf->time_last);
+        p_inf->time_last = time_start;
+        p_inf->cnt_fps = 0U;
+    }
+    ++p_inf->cnt_fps;
+
+    p_inf->imanager.inspect();
+    p_inf->dmanager.drawBegin(nullptr);
+    applyCamera(nullptr);
+    p_inf->p_scene->update();
+
+    if (p_inf->no_scene_nex != kSceneEscape) {
+        delete p_inf->p_scene;
+        if (p_inf->no_scene_nex == kSceneCSelect)
+            p_inf->p_scene = new SceneCharacterSelect(this);
+        else if (p_inf->no_scene_nex == kSceneGame)
+            p_inf->p_scene = new SceneGame(this);
+        else if (p_inf->no_scene_nex == kSceneExit)
+            return true;
+        else
+            p_inf->p_scene = new SceneTitle(this);
+        p_inf->no_scene_cur = p_inf->no_scene_nex;
+        p_inf->no_scene_nex = kSceneEscape;
+        if (!p_inf->p_scene->init())
+            return true;
+    }
+
+    Model model = Model();
+    model.pos_x = 1190.0f;
+    model.pos_y = 933.0f;
+    model.scl_y = 22.0f;
+    char buf[64] = "";
+    snprintf(buf, 64, "%3.1ffps", p_inf->fps);
+    drawString(&model, kIdxNormal, buf);
+    p_inf->dmanager.drawEnd();
+    return false;
+}
+
+void App::changeScene(unsigned int no_scene_nex) {
+    p_inf->no_scene_nex = no_scene_nex;
+}
+
+void App::updatePlayer() {
+    player.update();
+}
+
+void App::drawPlayer() {
+    player.draw();
 }

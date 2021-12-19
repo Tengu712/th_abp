@@ -17,9 +17,9 @@
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
 constexpr unsigned int kNumImage = 30U;
-constexpr unsigned int kNumFontBank = 2U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxElephant = 1U;
+constexpr unsigned int kStrTitle = 0U;
 constexpr unsigned int kSceneTitle = 0U;
 constexpr unsigned int kSceneCSelect = 1U;
 constexpr unsigned int kSceneGame = 2U;
@@ -168,28 +168,23 @@ enum struct KEY_STATE {
 
 struct AppInf;
 
-struct GameInf {
-    Player player;
-    GameInf() : player(Player()) {
-    }
-};
-
 class App {
 private:
     AppInf* p_inf;
-    GameInf ginf;
+    Player player;
 
 public:
-    App() : p_inf(nullptr) {
+    App() : p_inf(nullptr), player(Player()) {
     }
     ~App() {
         if (p_inf != nullptr)
             delete p_inf;
     }
+    // System
     bool init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show);
     bool isIconic();
-    bool update();
-    void changeScene(unsigned int no_scene_nex);
+    char* getStr(unsigned int idx_bank, unsigned int idx_str);
+    // Drawing
     void drawIdea();
     void drawString(const Model* p_model, unsigned int idx_bank, const char* str);
     void applyModel(Model* p_model);
@@ -198,13 +193,17 @@ public:
     void applyImage(unsigned int id);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
+    // Input
     bool getKey(KEY_CODE code, KEY_STATE state);
-    void initGameInf();
-    void updatePlayer();
-    void drawPlayer();
+    // Debug
     bool createConsole();
     void debug(const char* msg);
     void debug(const int msg);
+    // Game
+    bool update();
+    void changeScene(unsigned int no_scene_nex);
+    void updatePlayer();
+    void drawPlayer();
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);

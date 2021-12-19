@@ -18,6 +18,10 @@ void SceneCharacterSelect::update() {
     p_app->applyModelUI(&model);
     p_app->applyImage(IMG_BG_CSELECT);
     p_app->drawIdea();
+    model.pos_x = 380.0f;
+    model.pos_y = 20.0f;
+    model.scl_y = 80.0f;
+    p_app->drawString(&model, kIdxElephant, "Weapon Select");
     
     if (cnt >= 0 && cnt < 30) {
         model.pos_x = 0.0f;

@@ -32,7 +32,7 @@ void SceneTitle::update() {
     p_app->drawIdea();
     model.pos_x = 30.0f;
     model.pos_y = 500.0f;
-    auto drawOption = [&](const char* str, int i) {
+    auto drawOption = [&](int i) {
         model.scl_y = 75.0f;
         ModelColorCode2RGBA(&model, 0xaa303030);
         if (cur % 5 == i) {
@@ -42,15 +42,15 @@ void SceneTitle::update() {
             model.col_b = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_a = 1.0f;
         }
-        p_app->drawString(&model, kIdxElephant, str);
+        p_app->drawString(&model, kIdxElephant, p_app->getStr(kStrTitle, i));
         model.pos_x += 20.0f;
         model.pos_y += 70.0f;
     };
-    drawOption("Start", 0);
-    drawOption("Chapter", 1);
-    drawOption("Score", 2);
-    drawOption("Replay", 3);
-    drawOption("Quit", 4);
+    drawOption(0);
+    drawOption(1);
+    drawOption(2);
+    drawOption(3);
+    drawOption(4);
     if (cnt < 30) {
         model.pos_x = 0.0f;
         model.pos_y = 0.0f;
