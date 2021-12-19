@@ -2,15 +2,14 @@
 
 ![Title](build/html/title.png)
 
-## 諸注意
 
-### ビルド環境
+## ビルド環境
 
 * Windows 10
 * Build Tools for Visual Studio 2022 (14.30.30705)
 * Windows Kits 10 (10.0.19041.0)
 
-### 命名規則
+## 命名規則
 
 | 種類 | 命名規則 |
 | ----- | ----- |
@@ -23,20 +22,23 @@
 ただし、ハンガリアン記法を**変に**意識した単語の順序で構成される。
 例えば、タイトルシーンはTitleSceneではなくSceneTitle。
 
-### ヘッダーファイルについて
+## ヘッダーファイルについて
 
 ヘッダーファイル名の先頭に`_`を付してある。
 
-特にDirectXラッパーライブラリに関して、_dx11.hppは完全に外部用である。
-責任者が_dx11private.hppをincludeし、適切に処理をしなければならない。
+特にDirectXラッパーライブラリに関して、一般的なオブジェクトがincludeすべきヘッダーファイルはない。責任者が_dx11private.hppをincludeし、適切に処理をしなければならない。
 
-### モデルの描画について
+## デバッグについて
+
+`App::debug`にconst char\*かintを渡す。ただし、コマンドライン引数に`debug`を与えてth_abp.exeを起動しなければならない。
+
+## モデルの描画について
 
 唯一のモデルバッファをideaと名付けてAppで保有している都合上、四角形しか描画しえない。
 
-### 文字列の描画について
+## 文字列の描画について
 
-`App::drawString`にconst char*を渡す。数値を用いたいときは、
+`App::drawString`にconst char\*を渡す。数値を用いたいときは、
 ```c++
 char buf[64] = ""; // 余分に大きく取った配列
 snprintf(buf, 64, "+%d bonus", bonus);
