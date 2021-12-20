@@ -20,6 +20,7 @@ constexpr unsigned int kNumImage = 30U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxElephant = 1U;
 constexpr unsigned int kStrTitle = 0U;
+constexpr unsigned int kStrCSelect = 1U;
 constexpr unsigned int kSceneTitle = 0U;
 constexpr unsigned int kSceneCSelect = 1U;
 constexpr unsigned int kSceneGame = 2U;
@@ -124,13 +125,13 @@ public:
     void update();
 };
 
-class SceneCharacterSelect : public Scene {
+class SceneCSelect : public Scene {
 private:
     unsigned int cnt;
     unsigned int cur;
 
 public:
-    SceneCharacterSelect(App* p_app) : Scene(p_app), cnt(0), cur(0) {
+    SceneCSelect(App* p_app) : Scene(p_app), cnt(0), cur(0) {
     }
     bool init();
     void update();

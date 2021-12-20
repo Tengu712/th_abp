@@ -133,12 +133,10 @@ public:
         num_str = cnt;
         return num_str;
     }
-    void addNecCode(std::set<unsigned int>* set_code) {
-        for (int i = 0; i < num_str; ++i) {
-            const unsigned int kLen = strlen(strs[i]);
-            for (int j = 0; j < kLen; ++j) {
-                set_code->insert(GetCode(strs[i], &j));
-            }
+    void addNecCode(std::set<unsigned int>* set_code, unsigned int idx) {
+        const unsigned int kLen = strlen(strs[idx]);
+        for (int j = 0; j < kLen; ++j) {
+            set_code->insert(GetCode(strs[idx], &j));
         }
     }
     char* getStr(unsigned int idx) {
@@ -273,9 +271,10 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->strs == nullptr)
             throw "Failed to create array of string bank.";
         memset(p_inf->strs, 0, sizeof(StringBank) * kNumStringBank);
-        int res_str_title = p_inf->strs[kStrTitle].load(h_module, IDS_TITLE);
-        if (res_str_title < 5)
+        if (p_inf->strs[kStrTitle].load(h_module, IDS_TITLE) < 5)
             throw "Failed to load title texts.";
+        if (p_inf->strs[kStrCSelect].load(h_module, IDS_CSELECT) < 11)
+            throw "Failed to load cselect texts.";        
         debug(" - Strings : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
@@ -326,7 +325,10 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             "Elephant",
         };
         std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
-        p_inf->strs[kStrTitle].addNecCode(&set_code_elp);
+        for (int i = 0; i < 5; ++i) {
+            p_inf->strs[kStrTitle].addNecCode(&set_code_elp, i);
+        }
+        p_inf->strs[kStrCSelect].addNecCode(&set_code_elp, 0);
         p_inf->fnts[kIdxElephant].init(set_code_elp.size() + 1);
         debug(set_code_elp.size());
         loadString(&logfont_elp, kIdxElephant, &set_code_elp);
@@ -595,7 +597,7 @@ bool App::update() {
     if (p_inf->no_scene_nex != kSceneEscape) {
         delete p_inf->p_scene;
         if (p_inf->no_scene_nex == kSceneCSelect)
-            p_inf->p_scene = new SceneCharacterSelect(this);
+            p_inf->p_scene = new SceneCSelect(this);
         else if (p_inf->no_scene_nex == kSceneGame)
             p_inf->p_scene = new SceneGame(this);
         else if (p_inf->no_scene_nex == kSceneExit)
