@@ -187,7 +187,7 @@ public:
     char* getStr(unsigned int idx_bank, unsigned int idx_str);
     // Drawing
     void drawIdea();
-    void drawString(const Model* p_model, unsigned int idx_bank, const char* str);
+    void drawString(const char* str, const Model* p_model, unsigned int idx_bank, int align = -1);
     void applyModel(Model* p_model);
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);

@@ -472,20 +472,35 @@ void App::drawIdea() {
     p_inf->dmanager.drawModel(&p_inf->idea);
 }
 
-void App::drawString(const Model* p_model, unsigned int idx_bank, const char* str) {
+void App::drawString(const char* str, const Model* p_model, unsigned int idx_bank, int align) {
     Model model = *p_model;
     const int kLenStr = strlen(str);
+    Image** imgs = new Image*[kLenStr];
+    float* asps = new float[kLenStr];
+    float sum = 0.0f;
     for (int i = 0; i < kLenStr; ++i) {
         if (str[i] == '\0')
             break;
         unsigned int code = GetCode(str, &i);
-        Image* p_image = p_inf->fnts[idx_bank].getFont(code);
-        model.scl_x = p_image != nullptr ? model.scl_y * (double)p_image->width / (double)p_image->height : model.scl_y;
-        p_inf->dmanager.applyImage(p_image);
+        imgs[i] = p_inf->fnts[idx_bank].getFont(code);
+        asps[i] = imgs[i] != nullptr ? (float)imgs[i]->width / (float)imgs[i]->height : 1.0f;
+        sum += model.scl_y * asps[i];
+    }
+    if (align == 0)
+        model.pos_x -= sum / 2.0f;
+    else if (align == 1)
+        model.pos_x -= sum;
+    for (int i = 0; i < kLenStr; ++i) {
+        if (str[i] == '\0')
+            break;
+        model.scl_x = asps[i] * model.scl_y;
+        p_inf->dmanager.applyImage(imgs[i]);
         applyModelUI(&model);
         drawIdea();
         model.pos_x += model.scl_x;
     }
+    delete imgs;
+    delete asps;
 }
 
 void App::applyModel(Model* p_model) {
@@ -611,12 +626,12 @@ bool App::update() {
     }
 
     Model model = Model();
-    model.pos_x = 1190.0f;
+    model.pos_x = 1275.0f;
     model.pos_y = 933.0f;
     model.scl_y = 22.0f;
     char buf[64] = "";
     snprintf(buf, 64, "%3.1ffps", p_inf->fps);
-    drawString(&model, kIdxNormal, buf);
+    drawString(buf, &model, kIdxNormal, 1);
     p_inf->dmanager.drawEnd();
     return false;
 }
