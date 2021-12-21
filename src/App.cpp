@@ -32,7 +32,7 @@ int compareString(char* p1, char* p2) {
 unsigned int GetCode(const char* str, int* cnt) {
     if (IsDBCSLeadByte(str[*cnt])) {
         *cnt = *cnt + 1;
-        return (unsigned char)str[*cnt] << 8 | (unsigned char)str[*cnt + 1];
+        return (unsigned char)str[*cnt - 1] << 8 | (unsigned char)str[*cnt];
     }
     else
         return (unsigned int)str[*cnt];
@@ -274,7 +274,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->strs[kStrTitle].load(h_module, IDS_TITLE) < 5)
             throw "Failed to load title texts.";
         if (p_inf->strs[kStrCSelect].load(h_module, IDS_CSELECT) < 11)
-            throw "Failed to load cselect texts.";        
+            throw "Failed to load cselect texts.";
         debug(" - Strings : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
@@ -294,7 +294,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             0,
             0,
             0,
-            0,
+            1000,
             0,
             0,
             0,
@@ -303,9 +303,12 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             CLIP_DEFAULT_PRECIS,
             PROOF_QUALITY,
             DEFAULT_PITCH | FF_MODERN,
-            "MS Gothic",
+            "游明朝",
         };
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46};
+        for (int i = 1; i < 11; ++i) {
+            p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
+        }
         p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         LOGFONTA logfont_elp = {
@@ -330,7 +333,6 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         }
         p_inf->strs[kStrCSelect].addNecCode(&set_code_elp, 0);
         p_inf->fnts[kIdxElephant].init(set_code_elp.size() + 1);
-        debug(set_code_elp.size());
         loadString(&logfont_elp, kIdxElephant, &set_code_elp);
         if (!flg)
             throw "Failed to load some fonts";
@@ -474,32 +476,37 @@ void App::drawIdea() {
 
 void App::drawString(const char* str, const Model* p_model, unsigned int idx_bank, int align) {
     Model model = *p_model;
+    model.scl_x = model.scl_y;
     const int kLenStr = strlen(str);
-    Image** imgs = new Image*[kLenStr];
+    unsigned int* codes = new unsigned int[kLenStr];
     float* asps = new float[kLenStr];
+    memset(codes, 0, sizeof(unsigned int) * kLenStr);
+    memset(asps, 0, sizeof(float) * kLenStr);
+    unsigned int cnt = 0U;
     float sum = 0.0f;
     for (int i = 0; i < kLenStr; ++i) {
         if (str[i] == '\0')
             break;
-        unsigned int code = GetCode(str, &i);
-        imgs[i] = p_inf->fnts[idx_bank].getFont(code);
-        asps[i] = imgs[i] != nullptr ? (float)imgs[i]->width / (float)imgs[i]->height : 1.0f;
-        sum += model.scl_y * asps[i];
+        codes[cnt] = GetCode(str, &i);
+        Image* p_image = p_inf->fnts[idx_bank].getFont(codes[cnt]);
+        asps[cnt] = p_image != nullptr ? (float)p_image->width / (float)p_image->height : 1.0f;
+        sum += model.scl_y * asps[cnt];
+        ++cnt;
     }
     if (align == 0)
         model.pos_x -= sum / 2.0f;
     else if (align == 1)
         model.pos_x -= sum;
     for (int i = 0; i < kLenStr; ++i) {
-        if (str[i] == '\0')
+        if (codes[i] == 0)
             break;
         model.scl_x = asps[i] * model.scl_y;
-        p_inf->dmanager.applyImage(imgs[i]);
+        p_inf->dmanager.applyImage(p_inf->fnts[idx_bank].getFont(codes[i]));
         applyModelUI(&model);
         drawIdea();
         model.pos_x += model.scl_x;
     }
-    delete imgs;
+    delete codes;
     delete asps;
 }
 
