@@ -28,11 +28,13 @@ void Player::init(App* p_app) {
     existing = true;
 }
 
+void Player::setInputInf(InputInfPlayer* p_iinf) {
+    iinf = *p_iinf;
+}
+
 void Player::update() {
-    const int dx = p_app->getKey(KEY_CODE::Right, KEY_STATE::Pressed) - p_app->getKey(KEY_CODE::Left, KEY_STATE::Pressed);
-    const int dy = p_app->getKey(KEY_CODE::Up, KEY_STATE::Pressed) - p_app->getKey(KEY_CODE::Down, KEY_STATE::Pressed);
-    int dxdy = abs(dx) + abs(dy);
-    deg = kDegs[dx + 1][dy + 1];
+    int dxdy = abs(iinf.dx) + abs(iinf.dy);
+    deg = kDegs[iinf.dx + 1][iinf.dy + 1];
     if (dxdy == 0)
         spd = 0.0;
     else if (dxdy == 1)

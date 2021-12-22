@@ -2,9 +2,9 @@
 #ifndef _APP_
 #define _APP_
 
-#include <windows.h>
 #include <math.h>
 #include <stdio.h>
+#include <windows.h>
 
 #define PI 3.141592653589793238462643
 
@@ -79,6 +79,13 @@ struct Model {
     }
 };
 
+struct InputInfPlayer {
+    int dx, dy;
+    int z, x, s;
+    InputInfPlayer() : dx(0), dy(0), z(0), x(0), s(0) {
+    }
+};
+
 struct Entity {
     bool moving, existing;
     double x, y;
@@ -91,14 +98,15 @@ struct Entity {
 class Player : public Entity {
 private:
     App* p_app;
+    InputInfPlayer iinf;
     unsigned int id_weapon;
     unsigned int cnt_all;
-    int lr;
 
 public:
-    Player() : Entity(), p_app(nullptr), id_weapon(0U), cnt_all(0U), lr(0) {
+    Player() : Entity(), p_app(nullptr), iinf(InputInfPlayer()), id_weapon(0U), cnt_all(0U) {
     }
     void init(App* p_app);
+    void setInputInf(InputInfPlayer* p_iinf);
     void update();
     void draw();
 };
@@ -130,9 +138,10 @@ class SceneCSelect : public Scene {
 private:
     unsigned int cnt;
     unsigned int cur;
+    Player player;
 
 public:
-    SceneCSelect(App* p_app) : Scene(p_app), cnt(0), cur(0) {
+    SceneCSelect(App* p_app) : Scene(p_app), cnt(0), cur(0), player(Player()) {
     }
     bool init();
     void update();
@@ -173,10 +182,9 @@ struct AppInf;
 class App {
 private:
     AppInf* p_inf;
-    Player player;
 
 public:
-    App() : p_inf(nullptr), player(Player()) {
+    App() : p_inf(nullptr) {
     }
     ~App() {
         if (p_inf != nullptr)
@@ -204,8 +212,6 @@ public:
     // Game
     bool update();
     void changeScene(unsigned int no_scene_nex);
-    void updatePlayer();
-    void drawPlayer();
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);

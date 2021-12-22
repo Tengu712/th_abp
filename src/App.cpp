@@ -640,11 +640,3 @@ bool App::update() {
 void App::changeScene(unsigned int no_scene_nex) {
     p_inf->no_scene_nex = no_scene_nex;
 }
-
-void App::updatePlayer() {
-    player.update();
-}
-
-void App::drawPlayer() {
-    player.draw();
-}

@@ -5,10 +5,6 @@ bool SceneGame::init() {
 }
 
 void SceneGame::update() {
-    p_app->updatePlayer();
-
-    p_app->drawPlayer();
-
     Model model = Model();
     model.scl_x = 1280.0f;
     model.scl_y = 1280.0f;

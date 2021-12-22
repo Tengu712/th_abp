@@ -1,6 +1,9 @@
 #include "_app.hpp"
 
 bool SceneCSelect::init() {
+    player.init(p_app);
+    player.x = 330.0;
+    player.y = -220.0;
     return true;
 }
 
@@ -16,6 +19,8 @@ void SceneCSelect::update() {
     if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
         p_app->changeScene(kSceneTitle);
     }
+
+    player.draw();
 
     Model model = Model();
     model.scl_x = 1280.0f;
