@@ -330,7 +330,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && RemoveFontMemResourceEx(h_normal);
         if (!flg)
             throw "Failed to load some fonts";
-        debug(" - Fonts : Success.\n");
+        debug(" - Fonts : Success\n");
 
         FILE* p_file_cfg = fopen("./keyconfig.cfg", "r");
         if (!p_file_cfg)

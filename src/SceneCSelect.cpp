@@ -24,10 +24,10 @@ void SceneCSelect::update() {
     p_app->applyImage(IMG_BG_CSELECT);
     p_app->drawIdea();
     model.pos_x = 640.0f;
-    model.pos_y = 20.0f;
+    model.pos_y = 30.0f;
     model.scl_y = 80.0f;
     p_app->drawString(p_app->getStr(kStrCSelect, 0), &model, kIdxOption, 0);
-    model.pos_y = 90.0f;
+    model.pos_y = 100.0f;
     model.scl_y = 50.0f;
     p_app->drawString(p_app->getStr(kStrCSelect, 1), &model, kIdxNormal, 0);
     model.pos_x = 100.0f;
