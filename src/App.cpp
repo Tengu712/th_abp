@@ -319,7 +319,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         LOGFONTA logfont_elp = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Copperplate Gothic Bold"};
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Elephant"};
         std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
         for (int i = 0; i < 5; ++i) {
             p_inf->strs[kStrTitle].addNecCode(&set_code_elp, i);
