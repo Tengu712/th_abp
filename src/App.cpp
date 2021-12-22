@@ -628,9 +628,9 @@ bool App::update() {
 
     Model model = Model();
     model.pos_x = 1275.0f;
-    model.pos_y = 933.0f;
-    model.scl_y = 22.0f;
-    char buf[64] = "";
+    model.pos_y = 925.0f;
+    model.scl_y = 30.0f;
+    char buf[16] = "";
     snprintf(buf, 64, "%3.1ffps", p_inf->fps);
     drawString(buf, &model, kIdxNormal, 1);
     p_inf->dmanager.drawEnd();
