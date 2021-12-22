@@ -280,7 +280,12 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_BG_CSELECT);
         flg = flg && loadImage(IMG_UI_CSBOX);
         flg = flg && loadImage(IMG_UI_FRAME);
+        flg = flg && loadImage(IMG_CH_ATARI);
+        flg = flg && loadImage(IMG_CH_SLOWCIRCLE);
         flg = flg && loadImage(IMG_CH_KOSUZU_B0);
+        flg = flg && loadImage(IMG_CH_KOSUZU_B1);
+        flg = flg && loadImage(IMG_CH_KOSUZU_B2);
+        flg = flg && loadImage(IMG_CH_KOSUZU_B3);
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");

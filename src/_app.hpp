@@ -109,6 +109,7 @@ public:
     void setInputInf(InputInfPlayer* p_iinf);
     void update();
     void draw();
+    void drawSlow();
 };
 
 class Scene {

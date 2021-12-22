@@ -39,10 +39,11 @@ void SceneCSelect::update() {
     if (cnt_player % 360 < 180)
         iinf.s = 0;
     else
-        ++iinf.s;
+        iinf.s = 1;
     player.setInputInf(&iinf);
     player.update();
     player.draw();
+    player.drawSlow();
 
     Model model = Model();
     model.scl_x = 1280.0f;
@@ -62,10 +63,10 @@ void SceneCSelect::update() {
     auto drawOption = [&](unsigned int idx) {
         if (cur % 3 == idx / 3) {
             Model box = Model();
-            box.pos_x = model.pos_x - 50.0f;
-            box.pos_y = model.pos_y - 20.0f;
-            box.scl_x = 512.0f * 1.4f;
-            box.scl_y = 128.0f * 1.4f;
+            box.pos_x = model.pos_x;
+            box.pos_y = model.pos_y + 10.0f;
+            box.scl_x = 512.0f;
+            box.scl_y = 128.0f * 0.95f;
             box.col_a = (float)(0.6 + 0.3 * sin(Deg2Rad((double)cnt_all / 4.0)));
             p_app->applyModelUI(&box);
             p_app->applyImage(IMG_UI_CSBOX);
