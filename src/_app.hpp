@@ -92,20 +92,42 @@ struct Entity {
     double deg, spd;
     Entity() : moving(false), existing(false), x(0.0), y(0.0), deg(0.0), spd(0.0) {
     }
+    void run();
     void move();
+};
+
+class Option : public Entity {
+private:
+    App* p_app;
+    unsigned int cnt;
+
+public:
+    Option(App* p_app) : p_app(p_app), cnt(0U) {
+    }
+    void draw();
 };
 
 class Player : public Entity {
 private:
     App* p_app;
+    Option options[4];
     InputInfPlayer iinf;
     unsigned int id_weapon;
     unsigned int cnt_all;
+    double opt_x_03, opt_x_12, opt_y_12;
 
 public:
-    Player() : Entity(), p_app(nullptr), iinf(InputInfPlayer()), id_weapon(0U), cnt_all(0U) {
+    Player(App* p_app, unsigned int id_weapon)
+        : Entity(),
+          p_app(p_app),
+          options{Option(p_app), Option(p_app), Option(p_app), Option(p_app)},
+          iinf(InputInfPlayer()),
+          id_weapon(id_weapon),
+          cnt_all(0U),
+          opt_x_03(0.0),
+          opt_x_12(0.0),
+          opt_y_12(0.0) {
     }
-    void init(App* p_app, unsigned int id_weapon);
     void setInputInf(InputInfPlayer* p_iinf);
     void update();
     void draw();
@@ -140,10 +162,9 @@ private:
     unsigned int cnt_all;
     unsigned int cnt_player;
     unsigned int cur;
-    Player player;
 
 public:
-    SceneCSelect(App* p_app) : Scene(p_app), cnt_all(0U), cnt_player(0U), cur(0U), player(Player()) {
+    SceneCSelect(App* p_app) : Scene(p_app), cnt_all(0U), cnt_player(0U), cur(0U) {
     }
     bool init();
     void update();
@@ -184,9 +205,10 @@ struct AppInf;
 class App {
 private:
     AppInf* p_inf;
+    Player player;
 
 public:
-    App() : p_inf(nullptr) {
+    App() : p_inf(nullptr), player(Player(this, 0U)) {
     }
     ~App() {
         if (p_inf != nullptr)
@@ -214,6 +236,8 @@ public:
     // Game
     bool update();
     void changeScene(unsigned int no_scene_nex);
+    Player* getPlayer();
+    void initPlayer(unsigned int id_weapon);
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);

@@ -4,6 +4,11 @@
 //                                              Entity                                                               //
 // ================================================================================================================= //
 
+void Entity::run() {
+    moving = true;
+    existing = true;
+}
+
 void Entity::move() {
     if (!(moving && existing))
         return;
@@ -13,17 +18,27 @@ void Entity::move() {
 }
 
 // ================================================================================================================= //
+//                                              Option                                                               //
+// ================================================================================================================= //
+
+void Option::draw() {
+    Model model = Model();
+    model.pos_x = (float)x;
+    model.pos_y = (float)y;
+    model.scl_x = 24.0f;
+    model.scl_y = 24.0f;
+    model.deg_z = (float)deg - 90.0f;
+    p_app->applyModel(&model);
+    p_app->applyImage(IMG_CH_OPTION0 + ((cnt / 4) % 2));
+    p_app->drawIdea();
+    ++cnt;
+}
+
+// ================================================================================================================= //
 //                                              Player                                                               //
 // ================================================================================================================= //
 
 const int kDegs[3][3] = {{225, 180, 135}, {270, 999, 90}, {315, 0, 45}};
-
-void Player::init(App* p_app, unsigned int id_weapon) {
-    this->p_app = p_app;
-    this->id_weapon = id_weapon;
-    moving = true;
-    existing = true;
-}
 
 void Player::setInputInf(InputInfPlayer* p_iinf) {
     iinf.dx = p_iinf->dx;
@@ -44,6 +59,37 @@ void Player::update() {
         spd *= iinf.s > 0 ? 0.5 : 1.0;
     }
     move();
+    if (id_weapon == 0) {
+        opt_x_03 = max(min(iinf.s * 20.0 + 60.0, 100.0), max(opt_x_03 - 20.0, 60.0));
+        opt_x_12 = max(min(iinf.s * 10.0 + 30.0, 50.0), max(opt_x_12 - 10.0, 30.0));
+        opt_y_12 = max(min(iinf.s * 30.0, 60.0), max(opt_y_12 - 30.0, 0.0));
+        options[0].x = x - opt_x_03;
+        options[0].y = y;
+        options[3].x = x + opt_x_03;
+        options[3].y = y;
+        options[1].x = x - opt_x_12;
+        options[1].y = y + opt_y_12 - 50.0;
+        options[2].x = x + opt_x_12;
+        options[2].y = y + opt_y_12 - 50.0;
+        if (iinf.s > 0) {
+        } else {
+            options[0].deg = 110.0;
+            options[1].deg = 100.0;
+            options[2].deg = 80.0;
+            options[3].deg = 70.0;
+        }
+    } else if (id_weapon == 1) {
+        opt_x_12 = max(min(iinf.s / 5.0, 1.0), max(opt_x_12 - 0.2, 0.0));
+        opt_y_12 = max(min(iinf.s / 5.0, 1.0), max(opt_y_12 - 0.2, 0.0));
+        options[0].x = x;
+        options[0].y = y + 70.0;
+        options[0].deg = 90.0;
+        for (int i = 1; i < 4; ++i) {
+            options[i].x = x + 80.0 * sin(Deg2Rad((double)cnt_all * 4.0 + (double)i * 120.0)) * (1.0 - opt_x_12);
+            options[i].y = y + 60.0 + 10.0 * opt_y_12;
+            options[i].deg = 90.0;
+        }
+    }
     ++cnt_all;
 }
 
@@ -56,6 +102,9 @@ void Player::draw() {
     p_app->applyModel(&model);
     p_app->applyImage(IMG_CH_KOSUZU_B0 + ((cnt_all / 6) % 4));
     p_app->drawIdea();
+    for (int i = 0; i < 4; ++i) {
+        options[i].draw();
+    }
 }
 
 void Player::drawSlow() {

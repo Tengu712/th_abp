@@ -282,6 +282,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_ATARI);
         flg = flg && loadImage(IMG_CH_SLOWCIRCLE);
+        flg = flg && loadImage(IMG_CH_OPTION0);
+        flg = flg && loadImage(IMG_CH_OPTION1);
         flg = flg && loadImage(IMG_CH_KOSUZU_B0);
         flg = flg && loadImage(IMG_CH_KOSUZU_B1);
         flg = flg && loadImage(IMG_CH_KOSUZU_B2);
@@ -644,4 +646,12 @@ bool App::update() {
 
 void App::changeScene(unsigned int no_scene_nex) {
     p_inf->no_scene_nex = no_scene_nex;
+}
+
+Player* App::getPlayer() {
+    return &player;
+}
+
+void App::initPlayer(unsigned int id_weapon) {
+    player = Player(this, id_weapon);
 }

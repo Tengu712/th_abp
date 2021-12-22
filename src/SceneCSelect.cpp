@@ -1,9 +1,9 @@
 #include "_app.hpp"
 
 bool SceneCSelect::init() {
-    player.init(p_app, 0);
-    player.x = 330.0;
-    player.y = -220.0;
+    p_app->getPlayer()->x = 330.0;
+    p_app->getPlayer()->y = -220.0;
+    p_app->getPlayer()->run();
     return true;
 }
 
@@ -14,10 +14,10 @@ void SceneCSelect::update() {
     if (cnt_all >= 0 && ud == -1)
         cur += 2;
     if (cnt_all >= 0 && ud != 0) {
-        player = Player();
-        player.init(p_app, cur % 3);
-        player.x = 330.0;
-        player.y = -220.0;
+        p_app->initPlayer(cur % 3);
+        p_app->getPlayer()->x = 330.0;
+        p_app->getPlayer()->y = -230.0;
+        p_app->getPlayer()->run();
         cnt_player = 0U;
     }
     if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
@@ -40,10 +40,10 @@ void SceneCSelect::update() {
         iinf.s = 0;
     else
         iinf.s = 1;
-    player.setInputInf(&iinf);
-    player.update();
-    player.draw();
-    player.drawSlow();
+    p_app->getPlayer()->setInputInf(&iinf);
+    p_app->getPlayer()->update();
+    p_app->getPlayer()->draw();
+    p_app->getPlayer()->drawSlow();
 
     Model model = Model();
     model.scl_x = 1280.0f;
@@ -67,11 +67,14 @@ void SceneCSelect::update() {
             box.pos_y = model.pos_y + 10.0f;
             box.scl_x = 512.0f;
             box.scl_y = 128.0f * 0.95f;
-            box.col_a = (float)(0.6 + 0.3 * sin(Deg2Rad((double)cnt_all / 4.0)));
             p_app->applyModelUI(&box);
             p_app->applyImage(IMG_UI_CSBOX);
             p_app->drawIdea();
-            ModelColorCode2RGBA(&model, 0xffffffff);
+            const float col = (float)(0.7 + 0.3 * fabs(sin(Deg2Rad((double)cnt_all * 4.0))));
+            model.col_r = col;
+            model.col_g = col;
+            model.col_b = col;
+            model.col_a = 1.0f;
         }
         else
             ModelColorCode2RGBA(&model, 0xff666666);
@@ -83,7 +86,7 @@ void SceneCSelect::update() {
         p_app->drawString(p_app->getStr(kStrCSelect, idx + 1), &model, kIdxNormal);
         model.pos_y += 30.0f;
         p_app->drawString(p_app->getStr(kStrCSelect, idx + 2), &model, kIdxNormal);
-        model.pos_x -= 20.0f;
+        model.pos_x -= 30.0f;
         model.pos_y += 110.0f;
     };
     drawOption(2);
