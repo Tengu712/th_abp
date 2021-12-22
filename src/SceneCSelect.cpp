@@ -21,7 +21,7 @@ void SceneCSelect::update() {
     model.pos_x = 640.0f;
     model.pos_y = 20.0f;
     model.scl_y = 80.0f;
-    p_app->drawString(p_app->getStr(kStrCSelect, 0), &model, kIdxElephant, 0);
+    p_app->drawString(p_app->getStr(kStrCSelect, 0), &model, kIdxOption, 0);
     model.pos_y = 90.0f;
     model.scl_y = 40.0f;
     p_app->drawString(p_app->getStr(kStrCSelect, 1), &model, kIdxNormal, 0);

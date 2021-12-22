@@ -3,7 +3,6 @@
 #include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
-
 // ================================================================================================================= //
 //                                          Generals                                                                 //
 // ================================================================================================================= //
@@ -36,6 +35,23 @@ unsigned int GetCode(const char* str, int* cnt) {
         return (unsigned char)str[*cnt - 1] << 8 | (unsigned char)str[*cnt];
     } else
         return (unsigned int)str[*cnt];
+}
+
+HANDLE AddFontFromPrivateResource(unsigned int code) {
+    HRSRC h_font_res = FindResourceA(nullptr, MAKEINTRESOURCEA(code), "IMAGE");
+    if (!h_font_res)
+        return nullptr;
+    HGLOBAL h_font_data = LoadResource(nullptr, h_font_res);
+    if (!h_font_data)
+        return nullptr;
+    void* p_lock = LockResource(h_font_data);
+    if (!p_lock)
+        return nullptr;
+    DWORD size_res = SizeofResource(nullptr, h_font_res);
+    if (size_res == 0)
+        return nullptr;
+    DWORD cnt_font = 0;
+    return AddFontMemResourceEx(p_lock, size_res, NULL, &cnt_font);
 }
 
 // ================================================================================================================= //
@@ -243,6 +259,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         applyModelUI(&model_load);
         drawIdea();
         p_inf->dmanager.drawEnd();
+        debug(" - DLLResource : Success\n");
+
         debug("Load begins ...\n");
 
         p_inf->imgs = new Image[kNumImage];
@@ -281,16 +299,19 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->fnts == nullptr)
             throw "Failed to create array of fonts.";
         memset(p_inf->fnts, 0, sizeof(FontBank) * kNumFontBank);
-        DESIGNVECTOR design;
-        if (AddFontResourceExA("C:/Windows/Fonts/ELEPHNT.TTF", FR_PRIVATE, &design) == 0)
-            throw "Failed to load 'Elephant' font.";
+        HANDLE h_normal = AddFontFromPrivateResource(FNT_NORMAL);
+        if (!h_normal)
+            throw "Failed to load '源ノ明朝' font.";
+        HANDLE h_option = AddFontFromPrivateResource(FNT_OPTION);
+        if (!h_option)
+            throw "Failed to load 'Copperplate' font.";
         auto loadString = [&](LOGFONTA* logfont, unsigned int idx_bank, std::set<unsigned int>* set_code) {
             for (auto itr = set_code->begin(); itr != set_code->end(); ++itr) {
                 flg = flg && p_inf->dmanager.createFontImage(logfont, *itr, p_inf->fnts[idx_bank].getFontNext());
             }
         };
-        LOGFONTA logfont_msg = {64, 0, 0, 0, 1000, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "游明朝"};
+        LOGFONTA logfont_msg = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "源ノ明朝 Heavy"};
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46};
         for (int i = 1; i < 11; ++i) {
             p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
@@ -298,14 +319,15 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         LOGFONTA logfont_elp = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Elephant"};
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Copperplate Gothic Bold"};
         std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
         for (int i = 0; i < 5; ++i) {
             p_inf->strs[kStrTitle].addNecCode(&set_code_elp, i);
         }
         p_inf->strs[kStrCSelect].addNecCode(&set_code_elp, 0);
-        p_inf->fnts[kIdxElephant].init(set_code_elp.size() + 1);
-        loadString(&logfont_elp, kIdxElephant, &set_code_elp);
+        p_inf->fnts[kIdxOption].init(set_code_elp.size() + 1);
+        loadString(&logfont_elp, kIdxOption, &set_code_elp);
+        flg = flg && RemoveFontMemResourceEx(h_normal);
         if (!flg)
             throw "Failed to load some fonts";
         debug(" - Fonts : Success.\n");
