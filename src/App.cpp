@@ -1,7 +1,8 @@
-﻿#include "../directx/_dx11private.hpp"
+﻿#include <set>
+
+#include "../directx/_dx11private.hpp"
 #include "_app.hpp"
 
-#include <set>
 
 // ================================================================================================================= //
 //                                          Generals                                                                 //
@@ -33,8 +34,7 @@ unsigned int GetCode(const char* str, int* cnt) {
     if (IsDBCSLeadByte(str[*cnt])) {
         *cnt = *cnt + 1;
         return (unsigned char)str[*cnt - 1] << 8 | (unsigned char)str[*cnt];
-    }
-    else
+    } else
         return (unsigned int)str[*cnt];
 }
 
@@ -117,7 +117,7 @@ public:
         for (int i = 0; i < kSizeRes; ++i) {
             if (str[i] == 13) {
                 unsigned int len = i - start;
-                if (len == 0) 
+                if (len == 0)
                     strs[cnt] = "\0";
                 else {
                     char* nstr = new char[len + 1];
@@ -289,44 +289,16 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
                 flg = flg && p_inf->dmanager.createFontImage(logfont, *itr, p_inf->fnts[idx_bank].getFontNext());
             }
         };
-        LOGFONTA logfont_msg = {
-            64,
-            0,
-            0,
-            0,
-            1000,
-            0,
-            0,
-            0,
-            DEFAULT_CHARSET,
-            OUT_TT_ONLY_PRECIS,
-            CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY,
-            DEFAULT_PITCH | FF_MODERN,
-            "游明朝",
-        };
+        LOGFONTA logfont_msg = {64, 0, 0, 0, 1000, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "游明朝"};
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46};
         for (int i = 1; i < 11; ++i) {
             p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
         }
         p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         loadString(&logfont_msg, kIdxNormal, &set_code_normal);
-        LOGFONTA logfont_elp = {
-            64,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            DEFAULT_CHARSET,
-            OUT_TT_ONLY_PRECIS,
-            CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY,
-            DEFAULT_PITCH | FF_MODERN,
-            "Elephant",
-        };
+        LOGFONTA logfont_elp = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Elephant"};
         std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
         for (int i = 0; i < 5; ++i) {
             p_inf->strs[kStrTitle].addNecCode(&set_code_elp, i);
