@@ -1,7 +1,7 @@
 #include "_app.hpp"
 
 bool SceneCSelect::init() {
-    player.init(p_app);
+    player.init(p_app, 0);
     player.x = 330.0;
     player.y = -220.0;
     return true;
@@ -9,10 +9,17 @@ bool SceneCSelect::init() {
 
 void SceneCSelect::update() {
     int ud = p_app->getKey(KEY_CODE::Down, KEY_STATE::Down) - p_app->getKey(KEY_CODE::Up, KEY_STATE::Down);
-    if (cnt >= 0 && ud == 1)
+    if (cnt_all >= 0 && ud == 1) 
         ++cur;
-    if (cnt >= 0 && ud == -1)
+    if (cnt_all >= 0 && ud == -1)
         cur += 2;
+    if (cnt_all >= 0 && ud != 0) {
+        player = Player();
+        player.init(p_app, cur % 3);
+        player.x = 330.0;
+        player.y = -220.0;
+        cnt_player = 0U;
+    }
     if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
         //!
     }
@@ -20,6 +27,21 @@ void SceneCSelect::update() {
         p_app->changeScene(kSceneTitle);
     }
 
+    InputInfPlayer iinf = InputInfPlayer();
+    if (cnt_player % 180 < 60)
+        iinf.dx = 0;
+    else if (cnt_player % 180 < 90)
+        iinf.dx = 1;
+    else if (cnt_player % 180 < 150)
+        iinf.dx = -1;
+    else
+        iinf.dx = 1;
+    if (cnt_player % 360 < 180)
+        iinf.s = 0;
+    else
+        ++iinf.s;
+    player.setInputInf(&iinf);
+    player.update();
     player.draw();
 
     Model model = Model();
@@ -44,7 +66,7 @@ void SceneCSelect::update() {
             box.pos_y = model.pos_y - 20.0f;
             box.scl_x = 512.0f * 1.4f;
             box.scl_y = 128.0f * 1.4f;
-            box.col_a = (float)(0.6 + 0.3 * sin(Deg2Rad((double)cnt / 4.0)));
+            box.col_a = (float)(0.6 + 0.3 * sin(Deg2Rad((double)cnt_all / 4.0)));
             p_app->applyModelUI(&box);
             p_app->applyImage(IMG_UI_CSBOX);
             p_app->drawIdea();
@@ -67,17 +89,18 @@ void SceneCSelect::update() {
     drawOption(5);
     drawOption(8);
     
-    if (cnt >= 0 && cnt < 30) {
+    if (cnt_all >= 0 && cnt_all < 30) {
         model.pos_x = 0.0f;
         model.pos_y = 0.0f;
         model.scl_x = 1280.0f;
         model.scl_y = 1280.0f;
         ModelColorCode2RGBA(&model, 0xff000000);
-        model.col_a = 1.0f - (float)cnt / 30.0f;
+        model.col_a = 1.0f - (float)cnt_all / 30.0f;
         p_app->applyModel(&model);
         p_app->applyImage(0);
         p_app->drawIdea();
     }
 
-    ++cnt;
+    ++cnt_all;
+    ++cnt_player;
 }

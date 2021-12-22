@@ -22,8 +22,9 @@ const int kDegs[3][3] = {
     {315, 0, 45}
 };
 
-void Player::init(App* p_app) {
+void Player::init(App* p_app, unsigned int id_weapon) {
     this->p_app = p_app;
+    this->id_weapon = id_weapon;
     moving = true;
     existing = true;
 }
@@ -37,10 +38,11 @@ void Player::update() {
     deg = kDegs[iinf.dx + 1][iinf.dy + 1];
     if (dxdy == 0)
         spd = 0.0;
-    else if (dxdy == 1)
-        spd = 4.0; //!
-    else
-        spd = 4.0 * sqrt(2.0); //!
+    else {
+        spd = id_weapon == 1 ? 6.0 : 4.0;
+        spd *= dxdy == 1 ? 1.0 : sqrt(2.0);
+        spd *= iinf.s > 0 ? 0.5 : 1.0;
+    }
     move();
 }
 

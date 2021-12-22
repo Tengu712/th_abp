@@ -105,7 +105,7 @@ private:
 public:
     Player() : Entity(), p_app(nullptr), iinf(InputInfPlayer()), id_weapon(0U), cnt_all(0U) {
     }
-    void init(App* p_app);
+    void init(App* p_app, unsigned int id_weapon);
     void setInputInf(InputInfPlayer* p_iinf);
     void update();
     void draw();
@@ -136,12 +136,13 @@ public:
 
 class SceneCSelect : public Scene {
 private:
-    unsigned int cnt;
+    unsigned int cnt_all;
+    unsigned int cnt_player;
     unsigned int cur;
     Player player;
 
 public:
-    SceneCSelect(App* p_app) : Scene(p_app), cnt(0), cur(0), player(Player()) {
+    SceneCSelect(App* p_app) : Scene(p_app), cnt_all(0U), cnt_player(0U), cur(0U), player(Player()) {
     }
     bool init();
     void update();
