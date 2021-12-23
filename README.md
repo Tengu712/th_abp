@@ -59,8 +59,8 @@ p_app->drawString(buf); // 文字のあるところまで適応される
 
 ### 全体の流れ
 
-![Initialize](uml/uml.png)
+![Initialize](uml/allflow.png)
 
 ### 描画
 
-![Draw](uml/uml_001.png)
+![Draw](uml/drawing.png)

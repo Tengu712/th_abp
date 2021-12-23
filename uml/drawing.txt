@@ -1,32 +1,6 @@
 @startuml
 !theme cerulean
 == Initialize ==
-Activate main
-main->App: init()
-Activate App
-App->D3DManager: init()
-Activate D3DManager
-D3DManager-->App: fail?
-App->InputManager: init()
-Activate InputManager
-InputManager-->App: fail?
-App->Scene: init()
-Activate Scene
-Scene-->App: fail?
-App-->main: fail?
-== Update ==
-loop
-  main->App: update()
-  App->Scene: update()
-  break
-    App-->main: end?
-  end
-end
-@enduml
-
-@startuml
-!theme cerulean
-== Initialize ==
 Activate App
 Activate D3DManager
 [->App: createFrameBuffer()
