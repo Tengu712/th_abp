@@ -45,17 +45,11 @@ snprintf(buf, 64, "+%d bonus", bonus);
 p_app->drawString(buf); // 文字のあるところまで適応される
 ```
 
-## Class
-
-| クラス | 説明 |
-| ----- | ---------- |
-| App | アプリ全体を調停する |
-| Camera | カメラ |
-| Model | モデル |
-| Entity | エンティティすべてが継承する |
-| Scene | 各シーンを管理する |
-
 ## UML
+
+### ゲームオブジェクト
+
+![Class](uml/class.png)
 
 ### 全体の流れ
 
