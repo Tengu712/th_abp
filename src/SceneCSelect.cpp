@@ -40,9 +40,18 @@ void SceneCSelect::update() {
         iinf.s = 0;
     else
         iinf.s = 1;
+    if (cnt_player % 60 < 55)
+        iinf.z = 1;
+    else
+        iinf.z = 0;
+        
     p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
+    p_app->updateBulletPlayer();
     p_app->getPlayer()->draw();
+    p_app->enableOverlay(true);
+    p_app->drawBulletPlayer();
+    p_app->enableOverlay(false);
     p_app->getPlayer()->drawSlow();
 
     Model model = Model();

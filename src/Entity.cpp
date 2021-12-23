@@ -45,24 +45,25 @@ void OptionManager::update(unsigned int id_weapon) {
         options[2].y = kPY + prevs[2] - 50.0;
         if (kSlow > 0) {
         } else {
-            options[0].deg = 110.0;
-            options[1].deg = 100.0;
-            options[2].deg = 80.0;
-            options[3].deg = 70.0;
+            const double kDX = -p_app->getInputInf()->dx * 8.0;
+            options[0].deg = 95.0 + kDX;
+            options[1].deg = 90.0 + kDX;
+            options[2].deg = 90.0 + kDX;
+            options[3].deg = 85.0 + kDX;
         }
     } else if (id_weapon == 1) {
-        prevs[1] = max(min(kSlow / 5.0, 1.0), max(prevs[1] - 0.2, 0.0));
-        prevs[2] = max(min(kSlow / 5.0, 1.0), max(prevs[2] - 0.2, 0.0));
+        prevs[1] = max(min(kSlow / 4.0, 1.0), max(prevs[1] - 0.25, 0.0));
+        prevs[2] = max(min(kSlow / 4.0, 1.0), max(prevs[2] - 0.25, 0.0));
         options[0].x = kPX;
         options[0].y = kPY + 70.0;
         options[0].deg = 90.0;
         for (int i = 1; i < 4; ++i) {
-            options[i].x = kPX + 80.0 * sin(Deg2Rad((double)cnt * 4.0 + (double)i * 120.0)) * (1.0 - prevs[1]);
+            options[i].x = kPX + 70.0 * sin(Deg2Rad((double)cnt * 6.0 + (double)i * 120.0)) * (1.0 - prevs[1]);
             options[i].y = kPY + 60.0 + 10.0 * prevs[2];
             options[i].deg = 90.0;
         }
     } else {
-        prevs[1] = max(min(kSlow * 10.0, 20.0), max(prevs[1] - 10.0, 0.0));
+        prevs[1] = max(min(kSlow * 12.0, 24.0), max(prevs[1] - 12.0, 0.0));
         prevs[2] = max(min(kSlow * 10.0, 20.0), max(prevs[2] - 10.0, 0.0));
         options[0].x = kPX + prevs[1] - 60.0;
         options[3].x = kPX - prevs[1] + 60.0;
@@ -73,14 +74,15 @@ void OptionManager::update(unsigned int id_weapon) {
         options[1].y = kPY + 50.0;
         options[2].y = kPY + 50.0;
         if (kSlow > 0) {
-            for (int i = 0; i < 4; ++i) {
-                options[i].deg = 90.0;
-            }
+            options[0].deg = 87.0;
+            options[1].deg = 87.5;
+            options[2].deg = 92.5;
+            options[3].deg = 93.0;
         } else {
-            options[0].deg = 100.0;
-            options[1].deg = 90.0;
-            options[2].deg = 90.0;
-            options[3].deg = 80.0;
+            options[0].deg = 92.5;
+            options[1].deg = 87.5;
+            options[2].deg = 92.5;
+            options[3].deg = 87.5;
         }
     }
     ++cnt;
@@ -116,6 +118,50 @@ void Player::update() {
     }
     move();
     omanager.update(id_weapon);
+    if (p_app->getInputInf()->z > 0) {
+        if (id_weapon == 0 && cnt_all % 6 == 0) {
+            Bullet bul = Bullet();
+            bul.spd = 30.0;
+            if (p_app->getInputInf()->s > 0)
+                bul.init(p_app, IMG_BU_JIKI_HARI, 0, 10, 0xff8888ff, 0);
+            else
+                bul.init(p_app, IMG_BU_JIKI_HARI, 0, 10, 0xffffffff, 0);
+            for (int i = 0; i < 4; ++i) {
+                bul.x = omanager.options[i].x;
+                bul.y = omanager.options[i].y + 10.0;
+                bul.deg = omanager.options[i].deg;
+                p_app->pushBulletPlayer(&bul);
+            }
+        } else if (id_weapon == 1 && cnt_all % 4 == 0) {
+            Bullet bul = Bullet();
+            bul.spd = 34.0;
+            bul.deg = 90.0;
+            bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 8, 0xff8888ff, 0);
+            bul.x = omanager.options[0].x;
+            bul.y = omanager.options[0].y + 10.0;
+            if (cnt_all % 8 == 0)
+                p_app->pushBulletPlayer(&bul);
+            bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 4, 0xffffffff, 0);
+            for (int i = 1; i < 4; ++i) {
+                bul.x = omanager.options[i].x;
+                bul.y = omanager.options[i].y + 10.0;
+                p_app->pushBulletPlayer(&bul);
+            }
+        } else if (id_weapon == 2 && cnt_all % 6 == 0) {
+            Bullet bul = Bullet();
+            bul.spd = 30.0;
+            if (p_app->getInputInf()->s > 0)
+                bul.init(p_app, IMG_BU_JIKI_HARI, 0, 14, 0xff8888ff, 0);
+            else
+                bul.init(p_app, IMG_BU_JIKI_HARI, 0, 12, 0xffffffff, 0);
+            for (int i = 0; i < 4; ++i) {
+                bul.x = omanager.options[i].x;
+                bul.y = omanager.options[i].y + 10.0;
+                bul.deg = omanager.options[i].deg;
+                p_app->pushBulletPlayer(&bul);
+            }
+        }
+    }
     ++cnt_all;
 }
 
@@ -167,3 +213,40 @@ void Player::drawSlow() {
 // ================================================================================================================= //
 //                                              Bullet                                                               //
 // ================================================================================================================= //
+
+void Bullet::init(App* p_app, unsigned int knd, unsigned int mov, unsigned int dmg, unsigned int col, int cnt) {
+    this->p_app = p_app;
+    this->knd = knd;
+    this->mov = mov;
+    this->dmg = dmg;
+    this->col = col;
+    this->cnt = cnt;
+    existing = true;
+}
+
+void Bullet::update() {
+    if (cnt == 0)
+        moving = true;
+    if (!moving)
+        return;
+    move();
+    if (x < -520.0 || x > 520.0 || y < -520.0 || y > 520.0)
+        existing = false;
+    ++cnt;
+}
+
+void Bullet::draw() {
+    Model model = Model();
+    setModelPosDeg(&model);
+    ModelColorCode2RGBA(&model, col);
+    if (knd == IMG_BU_JIKI_HARI) {
+        model.scl_x = 45.0f;
+        model.scl_y = 45.0f;
+    } else if (knd == IMG_BU_JIKI_BIGHARI) {
+        model.scl_x = 64.0f;
+        model.scl_y = 64.0f;
+    }
+    p_app->applyModel(&model);
+    p_app->applyImage(knd);
+    p_app->drawIdea();
+}

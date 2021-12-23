@@ -288,6 +288,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_CH_KOSUZU_B1);
         flg = flg && loadImage(IMG_CH_KOSUZU_B2);
         flg = flg && loadImage(IMG_CH_KOSUZU_B3);
+        flg = flg && loadImage(IMG_BU_JIKI_HARI);
+        flg = flg && loadImage(IMG_BU_JIKI_BIGHARI);
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
@@ -451,6 +453,12 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         p_inf->no_scene_nex = kSceneEscape;
         debug(" - Title Scene : Success\n");
 
+        buls_p = new Bullet[kNumBulletPlayer];
+        if (buls_p == nullptr)
+            throw "Failed to create array of bullets of player.";
+        memset(buls_p, 0, sizeof(Bullet)* kNumBulletPlayer);
+        debug(" - Game Object : Success\n");
+
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
     } catch (const char* error) {
         ErrorMessage(error);
@@ -557,6 +565,10 @@ FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
 
 void App::applyFrameBuffer(FrameBuffer* p_fbuf) {
     p_inf->dmanager.drawBegin(p_fbuf);
+}
+
+void App::enableOverlay(bool is_enable) {
+    p_inf->dmanager.setVectorParamsY(is_enable ? 1.0 : 0.0);
 }
 
 // ================================================================================================================= //
@@ -666,4 +678,30 @@ void App::setInputInf(InputInf* p_iinf) {
     iinf.z = p_iinf->z > 0 ? iinf.z + 1 : 0;
     iinf.x = p_iinf->x > 0 ? 1 : 0;
     iinf.s = p_iinf->s > 0 ? iinf.s + 1 : 0;
+}
+
+void App::pushBulletPlayer(Bullet* p_bul) {
+    for (int i = 0; i < kNumBulletPlayer; ++i) {
+        if (buls_p[i].existing)
+            continue;
+        buls_p[i] = *p_bul;
+        return;
+    }
+    debug("a");
+}
+
+void App::updateBulletPlayer() {
+    for (int i = 0; i < kNumBulletPlayer; ++i) {
+        if (!buls_p[i].existing)
+            continue;
+        buls_p[i].update();
+    }
+}
+
+void App::drawBulletPlayer() {
+    for (int i = 0; i < kNumBulletPlayer; ++i) {
+        if (!buls_p[i].existing)
+            continue;
+        buls_p[i].draw();
+    }
 }

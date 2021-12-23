@@ -18,6 +18,7 @@
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
 constexpr unsigned int kNumImage = 30U;
+constexpr unsigned int kNumBulletPlayer = 128U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxOption = 1U;
 constexpr unsigned int kStrTitle = 0U;
@@ -88,13 +89,28 @@ struct InputInf {
 
 struct Entity {
     bool moving, existing;
-    double x, y;
+    double x, y, r;
     double deg, spd;
-    Entity() : moving(false), existing(false), x(0.0), y(0.0), deg(0.0), spd(0.0) {
+    Entity() : moving(false), existing(false), x(0.0), y(0.0), r(0.0), deg(0.0), spd(0.0) {
     }
     void run();
     void move();
     void setModelPosDeg(Model* p_model);
+};
+
+class Bullet : public Entity {
+private:
+    App* p_app;
+    int cnt;
+    unsigned int knd, mov, dmg;
+    unsigned int col;
+
+public:
+    Bullet() : p_app(nullptr), cnt(0U), knd(0U), mov(0U), dmg(0U), col(0xffffffff) {
+    }
+    void init(App* p_app, unsigned int knd, unsigned int mov, unsigned int dmg, unsigned int col, int cnt);
+    void update();
+    void draw();
 };
 
 class OptionManager {
@@ -121,11 +137,7 @@ private:
 
 public:
     Player(App* p_app, unsigned int id_weapon)
-        : Entity(),
-          p_app(p_app),
-          id_weapon(id_weapon),
-          cnt_all(0U),
-          omanager(OptionManager(p_app)) {
+        : Entity(), p_app(p_app), id_weapon(id_weapon), cnt_all(0U), omanager(OptionManager(p_app)) {
     }
     void update();
     void draw();
@@ -205,13 +217,16 @@ private:
     AppInf* p_inf;
     InputInf iinf;
     Player player;
+    Bullet* buls_p;
 
 public:
-    App() : p_inf(nullptr), player(Player(this, 0U)) {
+    App() : p_inf(nullptr), iinf(InputInf()), player(Player(this, 0U)), buls_p(nullptr) {
     }
     ~App() {
         if (p_inf != nullptr)
             delete p_inf;
+        if (buls_p != nullptr)
+            delete buls_p;
     }
     // System
     bool init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show);
@@ -226,6 +241,7 @@ public:
     void applyImage(unsigned int id);
     FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
+    void enableOverlay(bool is_enable);
     // Input
     bool getKey(KEY_CODE code, KEY_STATE state);
     // Debug
@@ -239,6 +255,9 @@ public:
     void initPlayer(unsigned int id_weapon);
     InputInf* getInputInf();
     void setInputInf(InputInf* p_iinf);
+    void pushBulletPlayer(Bullet* p_bul);
+    void updateBulletPlayer();
+    void drawBulletPlayer();
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);

@@ -24,4 +24,7 @@
 #define IMG_CH_KOSUZU_B2 1002
 #define IMG_CH_KOSUZU_B3 1003
 
+#define IMG_BU_JIKI_HARI 5000
+#define IMG_BU_JIKI_BIGHARI 5001
+
 #endif
