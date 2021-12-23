@@ -27,7 +27,7 @@ void SceneCSelect::update() {
         p_app->changeScene(kSceneTitle);
     }
 
-    InputInfPlayer iinf = InputInfPlayer();
+    InputInf iinf = InputInf();
     if (cnt_player % 180 < 60)
         iinf.dx = 0;
     else if (cnt_player % 180 < 90)
@@ -40,7 +40,7 @@ void SceneCSelect::update() {
         iinf.s = 0;
     else
         iinf.s = 1;
-    p_app->getPlayer()->setInputInf(&iinf);
+    p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
     p_app->getPlayer()->draw();
     p_app->getPlayer()->drawSlow();

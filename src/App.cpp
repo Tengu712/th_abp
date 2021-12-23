@@ -655,3 +655,15 @@ Player* App::getPlayer() {
 void App::initPlayer(unsigned int id_weapon) {
     player = Player(this, id_weapon);
 }
+
+InputInf* App::getInputInf() {
+    return &iinf;
+}
+
+void App::setInputInf(InputInf* p_iinf) {
+    iinf.dx = p_iinf->dx;
+    iinf.dy = p_iinf->dy;
+    iinf.z = p_iinf->z > 0 ? iinf.z + 1 : 0;
+    iinf.x = p_iinf->x > 0 ? 1 : 0;
+    iinf.s = p_iinf->s > 0 ? iinf.s + 1 : 0;
+}

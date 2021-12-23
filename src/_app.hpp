@@ -79,10 +79,10 @@ struct Model {
     }
 };
 
-struct InputInfPlayer {
+struct InputInf {
     int dx, dy;
     int z, x, s;
-    InputInfPlayer() : dx(0), dy(0), z(0), x(0), s(0) {
+    InputInf() : dx(0), dy(0), z(0), x(0), s(0) {
     }
 };
 
@@ -94,41 +94,39 @@ struct Entity {
     }
     void run();
     void move();
+    void setModelPosDeg(Model* p_model);
 };
 
-class Option : public Entity {
+class OptionManager {
 private:
     App* p_app;
     unsigned int cnt;
+    double prevs[3];
 
 public:
-    Option(App* p_app) : p_app(p_app), cnt(0U) {
+    Entity options[4];
+    OptionManager(App* p_app)
+        : p_app(p_app), cnt(0U), prevs{0.0, 0.0, 0.0}, options{Entity(), Entity(), Entity(), Entity()} {
     }
+    void update(unsigned int id_weapon);
     void draw();
 };
 
 class Player : public Entity {
 private:
     App* p_app;
-    Option options[4];
-    InputInfPlayer iinf;
     unsigned int id_weapon;
     unsigned int cnt_all;
-    double opt_x_03, opt_x_12, opt_y_12;
+    OptionManager omanager;
 
 public:
     Player(App* p_app, unsigned int id_weapon)
         : Entity(),
           p_app(p_app),
-          options{Option(p_app), Option(p_app), Option(p_app), Option(p_app)},
-          iinf(InputInfPlayer()),
           id_weapon(id_weapon),
           cnt_all(0U),
-          opt_x_03(0.0),
-          opt_x_12(0.0),
-          opt_y_12(0.0) {
+          omanager(OptionManager(p_app)) {
     }
-    void setInputInf(InputInfPlayer* p_iinf);
     void update();
     void draw();
     void drawSlow();
@@ -205,6 +203,7 @@ struct AppInf;
 class App {
 private:
     AppInf* p_inf;
+    InputInf iinf;
     Player player;
 
 public:
@@ -238,6 +237,8 @@ public:
     void changeScene(unsigned int no_scene_nex);
     Player* getPlayer();
     void initPlayer(unsigned int id_weapon);
+    InputInf* getInputInf();
+    void setInputInf(InputInf* p_iinf);
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);
