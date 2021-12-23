@@ -144,6 +144,15 @@ public:
     void drawSlow();
 };
 
+class Enemy : public Entity {
+private:
+    App* p_app;
+
+public:
+    Enemy(App* p_app) : p_app(p_app) {
+    }
+};
+
 class Scene {
 protected:
     App* p_app;
@@ -217,10 +226,11 @@ private:
     AppInf* p_inf;
     InputInf iinf;
     Player player;
+    Enemy enemy;
     Bullet* buls_p;
 
 public:
-    App() : p_inf(nullptr), iinf(InputInf()), player(Player(this, 0U)), buls_p(nullptr) {
+    App() : p_inf(nullptr), iinf(InputInf()), player(Player(this, 0U)), enemy(Enemy(this)), buls_p(nullptr) {
     }
     ~App() {
         if (p_inf != nullptr)
@@ -253,6 +263,7 @@ public:
     void changeScene(unsigned int no_scene_nex);
     Player* getPlayer();
     void initPlayer(unsigned int id_weapon);
+    Enemy* getEnemy();
     InputInf* getInputInf();
     void setInputInf(InputInf* p_iinf);
     void pushBulletPlayer(Bullet* p_bul);
@@ -262,5 +273,6 @@ public:
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);
 double Deg2Rad(double deg);
+double Homing(double sx, double sy, double gx, double gy);
 
 #endif

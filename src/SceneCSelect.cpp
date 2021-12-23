@@ -4,6 +4,8 @@ bool SceneCSelect::init() {
     p_app->getPlayer()->x = 330.0;
     p_app->getPlayer()->y = -220.0;
     p_app->getPlayer()->run();
+    p_app->getEnemy()->x = 330.0;
+    p_app->getEnemy()->y = 120.0;
     return true;
 }
 
@@ -44,7 +46,7 @@ void SceneCSelect::update() {
         iinf.z = 1;
     else
         iinf.z = 0;
-        
+
     p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
     p_app->updateBulletPlayer();

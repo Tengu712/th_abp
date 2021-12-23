@@ -21,6 +21,10 @@ double Deg2Rad(double deg) {
     return (double)deg * PI / 180.0;
 }
 
+double Homing(double sx, double sy, double gx, double gy) {
+    return atan2(sy - gy, sx - gx) * 180.0 / PI + 180.0;
+}
+
 int compareString(char* p1, char* p2) {
     for (; *p1 == *p2; ++p1, ++p2) {
         if (*p1 == '\0')
@@ -456,7 +460,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         buls_p = new Bullet[kNumBulletPlayer];
         if (buls_p == nullptr)
             throw "Failed to create array of bullets of player.";
-        memset(buls_p, 0, sizeof(Bullet)* kNumBulletPlayer);
+        memset(buls_p, 0, sizeof(Bullet) * kNumBulletPlayer);
         debug(" - Game Object : Success\n");
 
         debug("\nAll initializations succeeded.\nWelcome Bullet-Hell!\n\n");
@@ -666,6 +670,10 @@ Player* App::getPlayer() {
 
 void App::initPlayer(unsigned int id_weapon) {
     player = Player(this, id_weapon);
+}
+
+Enemy* App::getEnemy() {
+    return &enemy;
 }
 
 InputInf* App::getInputInf() {

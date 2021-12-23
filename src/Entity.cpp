@@ -44,6 +44,9 @@ void OptionManager::update(unsigned int id_weapon) {
         options[1].y = kPY + prevs[2] - 50.0;
         options[2].y = kPY + prevs[2] - 50.0;
         if (kSlow > 0) {
+            for (int i = 0; i < 4; ++i) {
+                options[i].deg = Homing(options[i].x, options[i].y, p_app->getEnemy()->x, p_app->getEnemy()->y);
+            }
         } else {
             const double kDX = -p_app->getInputInf()->dx * 8.0;
             options[0].deg = 95.0 + kDX;
