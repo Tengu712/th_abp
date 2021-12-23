@@ -12,7 +12,7 @@ void Entity::run() {
 void Entity::move() {
     if (!(moving && existing))
         return;
-    const double rad = (double)deg / 180.0 * PI;
+    const double rad = Deg2Rad(deg);
     x += cos(rad) * spd;
     y += sin(rad) * spd;
 }
