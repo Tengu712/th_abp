@@ -282,6 +282,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         bool flg = true;
         flg = flg && loadImage(IMG_BG_TITLE);
         flg = flg && loadImage(IMG_BG_CSELECT);
+        flg = flg && loadImage(IMG_BG_CS_SCROLL);
         flg = flg && loadImage(IMG_UI_CSBOX);
         flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_ATARI);
@@ -292,6 +293,10 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_CH_KOSUZU_B1);
         flg = flg && loadImage(IMG_CH_KOSUZU_B2);
         flg = flg && loadImage(IMG_CH_KOSUZU_B3);
+        flg = flg && loadImage(IMG_CH_KOSUZU_L0);
+        flg = flg && loadImage(IMG_CH_KOSUZU_L1);
+        flg = flg && loadImage(IMG_CH_KOSUZU_R0);
+        flg = flg && loadImage(IMG_CH_KOSUZU_R1);
         flg = flg && loadImage(IMG_BU_JIKI_HARI);
         flg = flg && loadImage(IMG_BU_JIKI_BIGHARI);
         if (!flg)

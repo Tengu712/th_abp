@@ -77,10 +77,9 @@ void OptionManager::update(unsigned int id_weapon) {
         options[1].y = kPY + 50.0;
         options[2].y = kPY + 50.0;
         if (kSlow > 0) {
-            options[0].deg = 87.0;
-            options[1].deg = 87.5;
-            options[2].deg = 92.5;
-            options[3].deg = 93.0;
+            for (int i = 0; i < 4; ++i) {
+                options[i].deg = 90.0;
+            }
         } else {
             options[0].deg = 92.5;
             options[1].deg = 87.5;
@@ -175,7 +174,12 @@ void Player::draw() {
     model.scl_x = 86.0f;
     model.scl_y = 86.0f;
     p_app->applyModel(&model);
-    p_app->applyImage(IMG_CH_KOSUZU_B0 + ((cnt_all / 6) % 4));
+    if (p_app->getInputInf()->dx == 1)
+        p_app->applyImage(IMG_CH_KOSUZU_R0 + ((cnt_all / 4) % 2));
+    else if (p_app->getInputInf()->dx == -1)
+        p_app->applyImage(IMG_CH_KOSUZU_L0 + ((cnt_all / 4) % 2));
+    else
+        p_app->applyImage(IMG_CH_KOSUZU_B0 + ((cnt_all / 6) % 4));
     p_app->drawIdea();
     omanager.draw();
 }

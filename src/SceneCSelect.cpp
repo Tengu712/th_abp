@@ -50,13 +50,27 @@ void SceneCSelect::update() {
     p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
     p_app->updateBulletPlayer();
+
+
+    Model model = Model();
+    p_app->applyImage(IMG_BG_CS_SCROLL);
+    model.scl_x = 700.0f;
+    model.scl_y = 700.0f;
+    model.pos_x = 330.0f;
+    model.pos_y = (float)(cnt_all % 140) * -5.0f;
+    p_app->applyModel(&model);
+    p_app->drawIdea();
+    model.pos_y += 700.0f;
+    p_app->applyModel(&model);
+    p_app->drawIdea();
     p_app->getPlayer()->draw();
     p_app->enableOverlay(true);
     p_app->drawBulletPlayer();
     p_app->enableOverlay(false);
     p_app->getPlayer()->drawSlow();
 
-    Model model = Model();
+    model.pos_x = 0.0f;
+    model.pos_y = 0.0f;
     model.scl_x = 1280.0f;
     model.scl_y = 1280.0f;
     p_app->applyModelUI(&model);
