@@ -229,6 +229,15 @@ void Bullet::init(App* p_app, unsigned int knd, unsigned int mov, unsigned int d
     this->col = col;
     this->cnt = cnt;
     existing = true;
+    if (knd == IMG_BU_JIKI_HARI) {
+        r = 45.0f;
+        scl_x = 45.0f;
+        scl_y = 45.0f;
+    } else if (knd == IMG_BU_JIKI_BIGHARI) {
+        r = 50.0f;
+        scl_x = 64.0f;
+        scl_y = 64.0f;
+    }
 }
 
 void Bullet::update() {
@@ -245,15 +254,21 @@ void Bullet::update() {
 void Bullet::draw() {
     Model model = Model();
     setModelPosDeg(&model);
+    model.scl_x = scl_x;
+    model.scl_y = scl_y;
     ModelColorCode2RGBA(&model, col);
-    if (knd == IMG_BU_JIKI_HARI) {
-        model.scl_x = 45.0f;
-        model.scl_y = 45.0f;
-    } else if (knd == IMG_BU_JIKI_BIGHARI) {
-        model.scl_x = 64.0f;
-        model.scl_y = 64.0f;
-    }
     p_app->applyModel(&model);
     p_app->applyImage(knd);
     p_app->drawIdea();
+}
+
+int Bullet::isHit(Entity* p_trg) {
+    if (p_trg == nullptr)
+        return 0;
+    const double kDis = (x - p_trg->x) * (x - p_trg->x) + (y - p_trg->y) * (y - p_trg->y);
+    if (kDis < (r + p_trg->r) * (r + p_trg->r))
+        return 1;
+    else if (kDis < (2 * r + p_trg->r) * (2 * r + p_trg->r))
+        return 2;
+    return 0;
 }

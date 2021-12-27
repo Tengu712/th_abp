@@ -3,12 +3,10 @@ setlocal enabledelayedexpansion
 
 set kOptInclude=^
 /I "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.30.30705\include" ^
-/I "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Auxiliary\VS\include" ^
 /I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt" ^
 /I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um" ^
 /I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared" ^
-/I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt" ^
-/I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\cppwinrt"
+/I "C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt"
 
 set delimiter= 
 set pathFiles=

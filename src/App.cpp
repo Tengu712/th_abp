@@ -700,7 +700,6 @@ void App::pushBulletPlayer(Bullet* p_bul) {
         buls_p[i] = *p_bul;
         return;
     }
-    debug("a");
 }
 
 void App::updateBulletPlayer() {
@@ -708,6 +707,10 @@ void App::updateBulletPlayer() {
         if (!buls_p[i].existing)
             continue;
         buls_p[i].update();
+        const int flg_hit = buls_p[i].isHit(&enemy);
+        if (flg_hit == 1) {
+            buls_p[i].existing = false;
+        }
     }
 }
 

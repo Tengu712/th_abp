@@ -104,13 +104,15 @@ private:
     int cnt;
     unsigned int knd, mov, dmg;
     unsigned int col;
+    float scl_x, scl_y;
 
 public:
-    Bullet() : p_app(nullptr), cnt(0U), knd(0U), mov(0U), dmg(0U), col(0xffffffff) {
+    Bullet() : p_app(nullptr), cnt(0U), knd(0U), mov(0U), dmg(0U), col(0xffffffff), scl_x(0.0f), scl_y(0.0f) {
     }
     void init(App* p_app, unsigned int knd, unsigned int mov, unsigned int dmg, unsigned int col, int cnt);
     void update();
     void draw();
+    int isHit(Entity* p_trg);
 };
 
 class OptionManager {
@@ -150,6 +152,7 @@ private:
 
 public:
     Enemy(App* p_app) : p_app(p_app) {
+        r = 10.0f;
     }
 };
 
