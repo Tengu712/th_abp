@@ -137,7 +137,7 @@ void Player::update() {
         } else if (id_weapon == 1 && p_app->getInputInf()->s > 0) {
             Bullet bul = Bullet();
             bul.deg = 90.0;
-            bul.init(p_app, IMG_BU_LAZER, 0, 1, 0xffffffff, 0);
+            bul.init(p_app, IMG_BU_LAZER, 0, 1, 0xff65d5ff, 0);
             bul.x = x;
             bul.y = omanager.options[0].y + 20.0;
             p_app->pushBulletPlayer(&bul);
@@ -271,12 +271,12 @@ void Bullet::update() {
 void Bullet::draw() {
     Model model = Model();
     setModelPosDeg(&model);
-    model.scl_x = scl_x;
-    model.scl_y = scl_y;
     if (knd == IMG_BU_LAZER) {
         model.pos_x = (float)(x + scl_y / 2.0 * cos(Deg2Rad(deg)));
         model.pos_y = (float)(y + scl_y / 2.0 * sin(Deg2Rad(deg)));
     }
+    model.scl_x = scl_x;
+    model.scl_y = scl_y;
     ModelColorCode2RGBA(&model, col);
     p_app->applyModel(&model);
     p_app->applyImage(knd);
