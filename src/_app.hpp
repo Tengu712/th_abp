@@ -107,7 +107,18 @@ private:
     float scl_x, scl_y;
 
 public:
-    Bullet() : p_app(nullptr), cnt(0U), knd(0U), mov(0U), dmg(0U), col(0xffffffff), scl_x(0.0f), scl_y(0.0f) {
+    bool del;
+    Bullet()
+        : Entity(),
+          p_app(nullptr),
+          cnt(0U),
+          knd(0U),
+          mov(0U),
+          dmg(0U),
+          col(0xffffffff),
+          scl_x(0.0f),
+          scl_y(0.0f),
+          del(false) {
     }
     void init(App* p_app, unsigned int knd, unsigned int mov, unsigned int dmg, unsigned int col, int cnt);
     void update();
@@ -151,7 +162,7 @@ private:
     App* p_app;
 
 public:
-    Enemy(App* p_app) : p_app(p_app) {
+    Enemy(App* p_app) : Entity(), p_app(p_app) {
         r = 10.0f;
     }
 };

@@ -30,6 +30,7 @@ void SceneCSelect::update() {
     }
 
     InputInf iinf = InputInf();
+    iinf.z = 1;
     if (cnt_player % 180 < 60)
         iinf.dx = 0;
     else if (cnt_player % 180 < 90)
@@ -42,15 +43,9 @@ void SceneCSelect::update() {
         iinf.s = 0;
     else
         iinf.s = 1;
-    if (cnt_player % 60 < 55)
-        iinf.z = 1;
-    else
-        iinf.z = 0;
-
     p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
     p_app->updateBulletPlayer();
-
 
     Model model = Model();
     p_app->applyImage(IMG_BG_CS_SCROLL);

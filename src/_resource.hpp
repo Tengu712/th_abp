@@ -31,5 +31,6 @@
 
 #define IMG_BU_JIKI_HARI 5000
 #define IMG_BU_JIKI_BIGHARI 5001
+#define IMG_BU_LAZER 5002
 
 #endif

@@ -299,6 +299,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_CH_KOSUZU_R1);
         flg = flg && loadImage(IMG_BU_JIKI_HARI);
         flg = flg && loadImage(IMG_BU_JIKI_BIGHARI);
+        flg = flg && loadImage(IMG_BU_LAZER);
         if (!flg)
             throw "Failed to load some images.";
         debug(" - Images : Success\n");
@@ -709,7 +710,7 @@ void App::updateBulletPlayer() {
         buls_p[i].update();
         const int flg_hit = buls_p[i].isHit(&enemy);
         if (flg_hit == 1) {
-            buls_p[i].existing = false;
+            buls_p[i].del = true;
         }
     }
 }
