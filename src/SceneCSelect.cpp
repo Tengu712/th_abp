@@ -48,6 +48,7 @@ void SceneCSelect::update() {
     p_app->updateBulletPlayer();
 
     Model model = Model();
+    // Back ground
     p_app->applyImage(IMG_BG_CS_SCROLL);
     model.scl_x = 700.0f;
     model.scl_y = 700.0f;
@@ -58,10 +59,23 @@ void SceneCSelect::update() {
     model.pos_y += 700.0f;
     p_app->applyModel(&model);
     p_app->drawIdea();
+    // Player
     p_app->getPlayer()->draw();
+    // Enemy
+    model.pos_x = 330.0f;
+    model.pos_y = 120.0f;
+    model.scl_x = 64.0f;
+    model.scl_y = 64.0f;
+    model.deg_z = cnt_all;
+    p_app->applyModel(&model);
+    p_app->applyImage(IMG_CH_ENEMY);
+    p_app->drawIdea();
+    model.deg_z = 0.0f;
+    // Bullets
     p_app->enableOverlay(true);
     p_app->drawBulletPlayer();
     p_app->enableOverlay(false);
+    // Slow
     p_app->getPlayer()->drawSlow();
 
     model.pos_x = 0.0f;

@@ -297,6 +297,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_CH_KOSUZU_L1);
         flg = flg && loadImage(IMG_CH_KOSUZU_R0);
         flg = flg && loadImage(IMG_CH_KOSUZU_R1);
+        flg = flg && loadImage(IMG_CH_ENEMY);
         flg = flg && loadImage(IMG_BU_JIKI_HARI);
         flg = flg && loadImage(IMG_BU_JIKI_BIGHARI);
         flg = flg && loadImage(IMG_BU_LAZER);
