@@ -675,10 +675,6 @@ Player* App::getPlayer() {
     return &player;
 }
 
-void App::initPlayer(unsigned int id_weapon) {
-    player = Player(this, id_weapon);
-}
-
 Enemy* App::getEnemy() {
     return &enemy;
 }

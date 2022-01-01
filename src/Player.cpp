@@ -2,20 +2,38 @@
 
 const int kDegs[3][3] = {{225, 180, 135}, {270, 999, 90}, {315, 0, 45}};
 
+void Player::init(int id_weapon, double x, double y, double x_min, double x_max, double y_min, double y_max) {
+    if (id_weapon != -1)
+        this->id_weapon = id_weapon;
+    this->x = x;
+    this->y = y;
+    this->x_max = x_max;
+    this->x_min = x_min;
+    this->y_max = y_max;
+    this->y_min = y_min;
+    cnt = 0U;
+    moving = true;
+    existing = true;
+    if (id_weapon != -1)
+        omanager = OptionManager(p_app, id_weapon);
+}
+
 void Player::update() {
     int dxdy = abs(p_app->getInputInf()->dx) + abs(p_app->getInputInf()->dy);
     deg = kDegs[p_app->getInputInf()->dx + 1][p_app->getInputInf()->dy + 1];
     if (dxdy == 0)
         spd = 0.0;
     else {
-        spd = id_weapon == 1 ? 6.0 : 4.0;
+        spd = id_weapon == 1 ? 10.0 : 8.0;
         spd *= dxdy == 1 ? 1.0 : sqrt(2.0);
         spd *= p_app->getInputInf()->s > 0 ? 0.5 : 1.0;
     }
     move();
-    omanager.update(id_weapon);
+    x = max(min(x, x_max), x_min);
+    y = max(min(y, y_max), y_min);
+    omanager.update();
     if (p_app->getInputInf()->z > 0) {
-        if (id_weapon == 0 && cnt_all % 6 == 0) {
+        if (id_weapon == 0 && cnt % 6 == 0) {
             Bullet bul = Bullet();
             bul.setSpd(30.0);
             if (p_app->getInputInf()->s > 0)
@@ -33,12 +51,12 @@ void Player::update() {
             bul.setPos(x, y + 90.0);
             bul.init(p_app, IMG_BU_LAZER, 0, 1, 0xff65d5ff, 0);
             p_app->pushBulletPlayer(&bul);
-        } else if (id_weapon == 1 && cnt_all % 4 == 0) {
+        } else if (id_weapon == 1 && cnt % 4 == 0) {
             Bullet bul = Bullet();
             bul.setPos(omanager.options[0].getX(), omanager.options[0].getY() + 10.0);
             bul.setSpd(34.0);
             bul.setDeg(90.0);
-            if (cnt_all % 8 == 0) {
+            if (cnt % 8 == 0) {
                 bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 8, 0xff8888ff, 0);
                 p_app->pushBulletPlayer(&bul);
             }
@@ -47,7 +65,7 @@ void Player::update() {
                 bul.setPos(omanager.options[i].getX(), omanager.options[i].getY() + 10.0);
                 p_app->pushBulletPlayer(&bul);
             }
-        } else if (id_weapon == 2 && cnt_all % 6 == 0) {
+        } else if (id_weapon == 2 && cnt % 6 == 0) {
             Bullet bul = Bullet();
             bul.setSpd(30.0);
             if (p_app->getInputInf()->s > 0)
@@ -61,7 +79,7 @@ void Player::update() {
             }
         }
     }
-    ++cnt_all;
+    ++cnt;
 }
 
 void Player::draw() {
@@ -72,11 +90,11 @@ void Player::draw() {
     model.scl_y = 86.0f;
     p_app->applyModel(&model);
     if (p_app->getInputInf()->dx == 1)
-        p_app->applyImage(IMG_CH_KOSUZU_R0 + ((cnt_all / 4) % 2));
+        p_app->applyImage(IMG_CH_KOSUZU_R0 + ((cnt / 4) % 2));
     else if (p_app->getInputInf()->dx == -1)
-        p_app->applyImage(IMG_CH_KOSUZU_L0 + ((cnt_all / 4) % 2));
+        p_app->applyImage(IMG_CH_KOSUZU_L0 + ((cnt / 4) % 2));
     else
-        p_app->applyImage(IMG_CH_KOSUZU_B0 + ((cnt_all / 6) % 4));
+        p_app->applyImage(IMG_CH_KOSUZU_B0 + ((cnt / 6) % 4));
     p_app->drawIdea();
     omanager.draw();
 }
