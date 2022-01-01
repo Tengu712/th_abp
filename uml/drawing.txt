@@ -9,7 +9,7 @@ App->D3DManager: createFrameBuffer()
 App-->[: Ptr of FBuffer
 Deactivate App
 == Update ==
-[->App: applyFrameBuffer()
+[->App: drawBeginWithFrameBuffer()
 App->D3DManager: drawBegin()
 [->App: applyCamera()
 App->D3DManager: setMatrixView()

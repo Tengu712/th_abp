@@ -29,6 +29,25 @@ constexpr unsigned int kSceneGame = 2U;
 constexpr unsigned int kSceneExit = 128U;
 constexpr unsigned int kSceneEscape = 255U;
 
+enum struct KEY_CODE {
+    None,
+    Up,
+    Down,
+    Left,
+    Right,
+    Z,
+    X,
+    Shift,
+    Escape,
+};
+
+enum struct KEY_STATE {
+    Nutral,
+    Down,
+    Pressed,
+    Up,
+};
+
 class App;
 struct FrameBuffer;
 
@@ -233,44 +252,27 @@ public:
     void update();
 };
 
-class ASceneGame : public Scene {
-protected:
-    int cnt;
+class SceneGame : public Scene {
+private:
+    int cnt, cur;
+    bool is_pause;
+    FrameBuffer* p_fbuf;
 
 public:
-    ASceneGame(App* p_app) : Scene(p_app), cnt(0) {
+    SceneGame(App* p_app) : Scene(p_app), cnt(0), cur(0), is_pause(false), p_fbuf(nullptr) {
+    }
+    ~SceneGame() {
+        if (p_fbuf != nullptr)
+            delete p_fbuf;
     }
     bool init();
-    virtual void update() = 0;
-    void updateGame();
+    void updatePausing();
+    void updateGaming();
+    void update();
     void drawGame();
     void drawUI();
-};
-
-class SceneGame : public ASceneGame {
-public:
-    SceneGame(App* p_app) : ASceneGame(p_app) {
-    }
-    void update();
-};
-
-enum struct KEY_CODE {
-    None,
-    Up,
-    Down,
-    Left,
-    Right,
-    Z,
-    X,
-    Shift,
-    Escape,
-};
-
-enum struct KEY_STATE {
-    Nutral,
-    Down,
-    Pressed,
-    Up,
+    void drawFrameBuffer();
+    void drawFrame();
 };
 
 struct AppInf;
@@ -315,9 +317,11 @@ public:
     void applyModelUI(Model* p_model);
     void applyCamera(Camera* p_camera);
     void applyImage(unsigned int id);
-    FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
     void applyFrameBuffer(FrameBuffer* p_fbuf);
+    FrameBuffer* createFrameBuffer(unsigned int width, unsigned int height);
+    void drawBeginWithFrameBuffer(FrameBuffer* p_fbuf);
     void enableOverlay(bool is_enable);
+    void enableMosaic(bool is_enable);
     // Input
     bool getKey(KEY_CODE code, KEY_STATE state);
     // Debug

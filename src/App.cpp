@@ -568,18 +568,26 @@ void App::applyImage(unsigned int id) {
     p_inf->dmanager.applyImage(nullptr);
 }
 
+void App::applyFrameBuffer(FrameBuffer* p_fbuf) {
+    p_inf->dmanager.applyImage(&p_fbuf->image);
+}
+
 FrameBuffer* App::createFrameBuffer(unsigned int width, unsigned int height) {
     FrameBuffer* res = new FrameBuffer();
     p_inf->dmanager.createFrameBuffer(width, height, res);
     return res;
 }
 
-void App::applyFrameBuffer(FrameBuffer* p_fbuf) {
+void App::drawBeginWithFrameBuffer(FrameBuffer* p_fbuf) {
     p_inf->dmanager.drawBegin(p_fbuf);
 }
 
 void App::enableOverlay(bool is_enable) {
     p_inf->dmanager.setVectorParamsY(is_enable ? 1.0 : 0.0);
+}
+
+void App::enableMosaic(bool is_enable) {
+    p_inf->dmanager.setVectorParamsY(is_enable ? 2.0 : 0.0);
 }
 
 // ================================================================================================================= //
