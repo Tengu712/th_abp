@@ -23,10 +23,14 @@ void SceneCSelect::update() {
         cnt_player = 0U;
     }
     if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
-        //!
+        cnt_all = -1;
     }
     if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
         p_app->changeScene(kSceneTitle);
+    }
+
+    if (cnt_all < -10) {
+        p_app->changeScene(kSceneGame);
     }
 
     InputInf iinf = InputInf();
@@ -127,18 +131,21 @@ void SceneCSelect::update() {
     drawOption(5);
     drawOption(8);
     
-    if (cnt_all >= 0 && cnt_all < 30) {
+    if (cnt_all < 30) {
         model.pos_x = 0.0f;
         model.pos_y = 0.0f;
         model.scl_x = 1280.0f;
         model.scl_y = 1280.0f;
         ModelColorCode2RGBA(&model, 0xff000000);
-        model.col_a = 1.0f - (float)cnt_all / 30.0f;
+        model.col_a = cnt_all < 0 ? (float)(-cnt_all) / 10.0f : 1.0f - (float)cnt_all / 30.0f;
         p_app->applyModel(&model);
         p_app->applyImage(0);
         p_app->drawIdea();
     }
 
-    ++cnt_all;
+    if (cnt_all < 0)
+        --cnt_all;
+    else
+        ++cnt_all;
     ++cnt_player;
 }

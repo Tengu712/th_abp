@@ -192,12 +192,11 @@ public:
 
 class SceneCSelect : public Scene {
 private:
-    unsigned int cnt_all;
-    unsigned int cnt_player;
+    int cnt_all, cnt_player;
     unsigned int cur;
 
 public:
-    SceneCSelect(App* p_app) : Scene(p_app), cnt_all(0U), cnt_player(0U), cur(0U) {
+    SceneCSelect(App* p_app) : Scene(p_app), cnt_all(0), cnt_player(0), cur(0U) {
     }
     bool init();
     void update();
