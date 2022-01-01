@@ -23,68 +23,110 @@ void Entity::setModelPosDeg(Model* p_model) {
     p_model->deg_z = (float)deg - 90.0f;
 }
 
+bool Entity::isExisting() {
+    return existing;
+}
+
+double Entity::getX() {
+    return x;
+}
+
+double Entity::getY() {
+    return y;
+}
+
+double Entity::getR() {
+    return r;
+}
+
+double Entity::getDeg() {
+    return deg;
+}
+double Entity::getSpd() {
+    return spd;
+}
+
+void Entity::setPos(double x, double y) {
+    this->x = x;
+    this->y = y;
+}
+
+void Entity::setDeg(double deg) {
+    this->deg = deg;
+}
+
+void Entity::setSpd(double spd) {
+    this->spd = spd;
+}
+
+void Entity::transPos(double dx, double dy) {
+    x += dx;
+    y += dy;
+}
+
+void Entity::transDeg(double ddeg) {
+    deg += ddeg;
+}
+
+void Entity::transSpd(double dspd) {
+    spd += dspd;
+}
+
 // ================================================================================================================= //
 //                                              Option                                                               //
 // ================================================================================================================= //
 
 void OptionManager::update(unsigned int id_weapon) {
     const int kSlow = p_app->getInputInf()->s;
-    const double kPX = p_app->getPlayer()->x;
-    const double kPY = p_app->getPlayer()->y;
+    const double kPX = p_app->getPlayer()->getX();
+    const double kPY = p_app->getPlayer()->getY();
     if (id_weapon == 0) {
         prevs[0] = max(min(kSlow * 20.0 + 60.0, 100.0), max(prevs[0] - 20.0, 60.0));
         prevs[1] = max(min(kSlow * 10.0 + 30.0, 50.0), max(prevs[1] - 10.0, 30.0));
         prevs[2] = max(min(kSlow * 30.0, 60.0), max(prevs[2] - 30.0, 0.0));
-        options[0].x = kPX - prevs[0];
-        options[3].x = kPX + prevs[0];
-        options[0].y = kPY;
-        options[3].y = kPY;
-        options[1].x = kPX - prevs[1];
-        options[2].x = kPX + prevs[1];
-        options[1].y = kPY + prevs[2] - 50.0;
-        options[2].y = kPY + prevs[2] - 50.0;
+        options[0].setPos(kPX - prevs[0], kPY);
+        options[1].setPos(kPX - prevs[1], kPY + prevs[2] - 50.0);
+        options[2].setPos(kPX + prevs[1], kPY + prevs[2] - 50.0);
+        options[3].setPos(kPX + prevs[0], kPY);
         if (kSlow > 0) {
             for (int i = 0; i < 4; ++i) {
-                options[i].deg = Homing(options[i].x, options[i].y, p_app->getEnemy()->x, p_app->getEnemy()->y);
+                options[i].setDeg(
+                    Homing(options[i].getX(), options[i].getY(), p_app->getEnemy()->getX(), p_app->getEnemy()->getY()));
             }
         } else {
             const double kDX = -p_app->getInputInf()->dx * 8.0;
-            options[0].deg = 95.0 + kDX;
-            options[1].deg = 90.0 + kDX;
-            options[2].deg = 90.0 + kDX;
-            options[3].deg = 85.0 + kDX;
+            options[0].setDeg(95.0 + kDX);
+            options[1].setDeg(90.0 + kDX);
+            options[2].setDeg(90.0 + kDX);
+            options[3].setDeg(85.0 + kDX);
         }
     } else if (id_weapon == 1) {
         prevs[1] = max(min(kSlow / 4.0, 1.0), max(prevs[1] - 0.25, 0.0));
         prevs[2] = max(min(kSlow / 4.0, 1.0), max(prevs[2] - 0.25, 0.0));
-        options[0].x = kPX;
-        options[0].y = kPY + 70.0;
-        options[0].deg = 90.0;
+        const double kY123 = kPY + 60.0 + 10.0 * prevs[2];
+        options[0].setPos(kPX, kPY + 70.0);
+        options[0].setDeg(90.0);
         for (int i = 1; i < 4; ++i) {
-            options[i].x = kPX + 70.0 * sin(Deg2Rad((double)cnt * 6.0 + (double)i * 120.0)) * (1.0 - prevs[1]);
-            options[i].y = kPY + 60.0 + 10.0 * prevs[2];
-            options[i].deg = 90.0;
+            options[i].setPos(
+                kPX + 70.0 * sin(Deg2Rad((double)cnt * 6.0 + (double)i * 120.0)) * (1.0 - prevs[1]), kY123);
+            options[i].setDeg(90.0);
         }
     } else {
         prevs[1] = max(min(kSlow * 12.0, 24.0), max(prevs[1] - 12.0, 0.0));
         prevs[2] = max(min(kSlow * 10.0, 20.0), max(prevs[2] - 10.0, 0.0));
-        options[0].x = kPX + prevs[1] - 60.0;
-        options[3].x = kPX - prevs[1] + 60.0;
-        options[0].y = kPY + prevs[2];
-        options[3].y = kPY + prevs[2];
-        options[1].x = kPX + prevs[1] - 40.0;
-        options[2].x = kPX - prevs[1] + 40.0;
-        options[1].y = kPY + 50.0;
-        options[2].y = kPY + 50.0;
+        options[0].setPos(kPX + prevs[1] - 60.0, kPY + prevs[2]);
+        options[1].setPos(kPX + prevs[1] - 40.0, kPY + 50.0);
+        options[2].setPos(kPX - prevs[1] + 40.0, kPY + 50.0);
+        options[3].setPos(kPX - prevs[1] + 60.0, kPY + prevs[2]);
         if (kSlow > 0) {
             for (int i = 0; i < 4; ++i) {
-                options[i].deg = 90.0;
+                options[i].setDeg(90.0);
             }
         } else {
-            options[0].deg = 92.5;
-            options[1].deg = 87.5;
-            options[2].deg = 92.5;
-            options[3].deg = 87.5;
+            options[0].setDeg(92.5);
+            options[1].setDeg(87.5);
+            options[2].setDeg(92.5);
+            options[3].setDeg(87.5);
         }
     }
     ++cnt;
@@ -123,50 +165,46 @@ void Player::update() {
     if (p_app->getInputInf()->z > 0) {
         if (id_weapon == 0 && cnt_all % 6 == 0) {
             Bullet bul = Bullet();
-            bul.spd = 30.0;
+            bul.setSpd(30.0);
             if (p_app->getInputInf()->s > 0)
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 10, 0xff8888ff, 0);
             else
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 10, 0xffffffff, 0);
             for (int i = 0; i < 4; ++i) {
-                bul.x = omanager.options[i].x;
-                bul.y = omanager.options[i].y + 10.0;
-                bul.deg = omanager.options[i].deg;
+                bul.setPos(omanager.options[i].getX(), omanager.options[i].getY() + 10.0);
+                bul.setDeg(omanager.options[i].getDeg());
                 p_app->pushBulletPlayer(&bul);
             }
         } else if (id_weapon == 1 && p_app->getInputInf()->s > 0) {
             Bullet bul = Bullet();
-            bul.deg = 90.0;
+            bul.setDeg(90.0);
+            bul.setPos(x, y + 90.0);
             bul.init(p_app, IMG_BU_LAZER, 0, 1, 0xff65d5ff, 0);
-            bul.x = x;
-            bul.y = omanager.options[0].y + 20.0;
             p_app->pushBulletPlayer(&bul);
         } else if (id_weapon == 1 && cnt_all % 4 == 0) {
             Bullet bul = Bullet();
-            bul.spd = 34.0;
-            bul.deg = 90.0;
-            bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 8, 0xff8888ff, 0);
-            bul.x = omanager.options[0].x;
-            bul.y = omanager.options[0].y + 10.0;
-            if (cnt_all % 8 == 0)
+            bul.setPos(omanager.options[0].getX(), omanager.options[0].getY() + 10.0);
+            bul.setSpd(34.0);
+            bul.setDeg(90.0);
+            if (cnt_all % 8 == 0) {
+                bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 8, 0xff8888ff, 0);
                 p_app->pushBulletPlayer(&bul);
+            }
             bul.init(p_app, IMG_BU_JIKI_BIGHARI, 0, 4, 0xffffffff, 0);
             for (int i = 1; i < 4; ++i) {
-                bul.x = omanager.options[i].x;
-                bul.y = omanager.options[i].y + 10.0;
+                bul.setPos(omanager.options[i].getX(), omanager.options[i].getY() + 10.0);
                 p_app->pushBulletPlayer(&bul);
             }
         } else if (id_weapon == 2 && cnt_all % 6 == 0) {
             Bullet bul = Bullet();
-            bul.spd = 30.0;
+            bul.setSpd(30.0);
             if (p_app->getInputInf()->s > 0)
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 14, 0xff8888ff, 0);
             else
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 12, 0xffffffff, 0);
             for (int i = 0; i < 4; ++i) {
-                bul.x = omanager.options[i].x;
-                bul.y = omanager.options[i].y + 10.0;
-                bul.deg = omanager.options[i].deg;
+                bul.setPos(omanager.options[i].getX(), omanager.options[i].getY() + 10.0);
+                bul.setDeg(omanager.options[i].getDeg());
                 p_app->pushBulletPlayer(&bul);
             }
         }
@@ -295,8 +333,8 @@ int Bullet::isHit(Entity* p_trg) {
     if (p_trg == nullptr)
         return 0;
     if (knd == IMG_BU_LAZER) {
-        double nx = p_trg->x - x;
-        double ny = p_trg->y - y;
+        double nx = p_trg->getX() - x;
+        double ny = p_trg->getY() - y;
         RotVec(&nx, &ny, deg - 90.0);
         if (ny < 0)
             return 0;
@@ -307,10 +345,10 @@ int Bullet::isHit(Entity* p_trg) {
             return 2;
         return 0;
     }
-    const double kDis = (x - p_trg->x) * (x - p_trg->x) + (y - p_trg->y) * (y - p_trg->y);
-    if (kDis < (r + p_trg->r) * (r + p_trg->r))
+    const double kDis = (x - p_trg->getX()) * (x - p_trg->getX()) + (y - p_trg->getY()) * (y - p_trg->getY());
+    if (kDis < (r + p_trg->getR()) * (r + p_trg->getR()))
         return 1;
-    else if (kDis < (2 * r + p_trg->r) * (2 * r + p_trg->r))
+    else if (kDis < (2 * r + p_trg->getR()) * (2 * r + p_trg->getR()))
         return 2;
     return 0;
 }

@@ -697,7 +697,7 @@ void App::setInputInf(InputInf* p_iinf) {
 
 void App::pushBulletPlayer(Bullet* p_bul) {
     for (int i = 0; i < kNumBulletPlayer; ++i) {
-        if (buls_p[i].existing)
+        if (buls_p[i].isExisting())
             continue;
         buls_p[i] = *p_bul;
         return;
@@ -706,7 +706,7 @@ void App::pushBulletPlayer(Bullet* p_bul) {
 
 void App::updateBulletPlayer() {
     for (int i = 0; i < kNumBulletPlayer; ++i) {
-        if (!buls_p[i].existing)
+        if (!buls_p[i].isExisting())
             continue;
         buls_p[i].update();
         const int flg_hit = buls_p[i].isHit(&enemy);
@@ -718,7 +718,7 @@ void App::updateBulletPlayer() {
 
 void App::drawBulletPlayer() {
     for (int i = 0; i < kNumBulletPlayer; ++i) {
-        if (!buls_p[i].existing)
+        if (!buls_p[i].isExisting())
             continue;
         buls_p[i].draw();
     }

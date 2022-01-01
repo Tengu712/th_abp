@@ -1,8 +1,6 @@
 #include "_app.hpp"
 
-bool SceneGame::init() {
-    return true;
-}
+
 
 void SceneGame::update() {
     Model model = Model();

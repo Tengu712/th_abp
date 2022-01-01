@@ -87,15 +87,30 @@ struct InputInf {
     }
 };
 
-struct Entity {
+class Entity {
+protected:
     bool moving, existing;
     double x, y, r;
     double deg, spd;
+
+public:
     Entity() : moving(false), existing(false), x(0.0), y(0.0), r(0.0), deg(0.0), spd(0.0) {
     }
     void run();
     void move();
     void setModelPosDeg(Model* p_model);
+    bool isExisting();
+    double getX();
+    double getY();
+    double getR();
+    double getDeg();
+    double getSpd();
+    void setPos(double x, double y);
+    void setDeg(double deg);
+    void setSpd(double spd);
+    void transPos(double dx, double dy);
+    void transDeg(double ddeg);
+    void transSpd(double dspd);
 };
 
 class Bullet : public Entity {
@@ -202,14 +217,21 @@ public:
     void update();
 };
 
-class SceneGame : public Scene {
-private:
-    unsigned int cnt;
+class ASceneGame : public Scene {
+protected:
+    int cnt;
 
 public:
-    SceneGame(App* p_app) : Scene(p_app), cnt(0U) {
+    ASceneGame(App* p_app) : Scene(p_app), cnt(0) {
     }
     bool init();
+    virtual void update() = 0;
+};
+
+class SceneGame : public ASceneGame {
+public:
+    SceneGame(App* p_app) : ASceneGame(p_app) {
+    }
     void update();
 };
 

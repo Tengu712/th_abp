@@ -1,11 +1,9 @@
 #include "_app.hpp"
 
 bool SceneCSelect::init() {
-    p_app->getPlayer()->x = 330.0;
-    p_app->getPlayer()->y = -220.0;
+    p_app->getPlayer()->setPos(330.0, -220.0);
     p_app->getPlayer()->run();
-    p_app->getEnemy()->x = 330.0;
-    p_app->getEnemy()->y = 120.0;
+    p_app->getEnemy()->setPos(330.0, 120.0);
     return true;
 }
 
@@ -17,8 +15,7 @@ void SceneCSelect::update() {
         cur += 2;
     if (cnt_all >= 0 && ud != 0) {
         p_app->initPlayer(cur % 3);
-        p_app->getPlayer()->x = 330.0;
-        p_app->getPlayer()->y = -230.0;
+        p_app->getPlayer()->setPos(330.0, -230.0);
         p_app->getPlayer()->run();
         cnt_player = 0U;
     }
