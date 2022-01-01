@@ -5,6 +5,7 @@
 
 #define IDS_TITLE 10
 #define IDS_CSELECT 11
+#define IDS_GAME 12
 
 #define IMG_BG_LOAD 100
 #define IMG_BG_TITLE 101

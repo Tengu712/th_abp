@@ -46,6 +46,27 @@ void SceneGame::drawUI() {
     p_app->drawString(buf, &model, kIdxNormal, 1);
 }
 
+void SceneGame::drawOption() {
+    Model model = Model();
+    auto drawOption = [&](unsigned int idx) {
+        if (cur % 3 == idx)
+            ModelColorCode2RGBA(&model, 0xffffffff);
+        else
+            ModelColorCode2RGBA(&model, 0xff888888);
+        p_app->drawString(p_app->getStr(kStrGame, idx + 1), &model, kIdxNormal, 0);
+        model.pos_y += 60.0f;
+    };
+    model.pos_x = 640.0f;
+    model.pos_y = 380.0f;
+    model.scl_y = 80.0f;
+    p_app->drawString(p_app->getStr(kStrGame, 0), &model, kIdxNormal, 0);
+    model.pos_y = 500.0f;
+    model.scl_y = 60.0f;
+    drawOption(0);
+    drawOption(1);
+    drawOption(2);
+}
+
 void SceneGame::drawFrameBuffer() {
     if (is_pause)
         p_app->enableMosaic(true);
@@ -55,8 +76,13 @@ void SceneGame::drawFrameBuffer() {
     p_app->applyModel(&model);
     p_app->applyFrameBuffer(p_fbuf);
     p_app->drawIdea();
-    if (is_pause)
+    if (is_pause) {
         p_app->enableMosaic(false);
+        ModelColorCode2RGBA(&model, 0x44000000);
+        p_app->applyModel(&model);
+        p_app->applyImage(0);
+        p_app->drawIdea();
+    }
 }
 
 void SceneGame::drawFrame() {
@@ -113,5 +139,7 @@ void SceneGame::update() {
     drawUI();
     p_app->drawBeginWithFrameBuffer(nullptr);
     drawFrameBuffer();
+    if (is_pause)
+        drawOption();
     drawFrame();
 }

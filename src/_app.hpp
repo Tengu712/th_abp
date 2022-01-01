@@ -23,6 +23,7 @@ constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxOption = 1U;
 constexpr unsigned int kStrTitle = 0U;
 constexpr unsigned int kStrCSelect = 1U;
+constexpr unsigned int kStrGame = 2U;
 constexpr unsigned int kSceneTitle = 0U;
 constexpr unsigned int kSceneCSelect = 1U;
 constexpr unsigned int kSceneGame = 2U;
@@ -271,6 +272,7 @@ public:
     void update();
     void drawGame();
     void drawUI();
+    void drawOption();
     void drawFrameBuffer();
     void drawFrame();
 };

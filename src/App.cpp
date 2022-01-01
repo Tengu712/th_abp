@@ -8,7 +8,7 @@
 // ================================================================================================================= //
 
 constexpr unsigned int kNumFontBank = 2U;
-constexpr unsigned int kNumStringBank = 2U;
+constexpr unsigned int kNumStringBank = 3U;
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col) {
     p_model->col_r = (float)(col & 0x000000ff) / 255.0f;
@@ -313,6 +313,8 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to load title texts.";
         if (p_inf->strs[kStrCSelect].load(h_module, IDS_CSELECT) < 11)
             throw "Failed to load cselect texts.";
+        if (p_inf->strs[kStrGame].load(h_module, IDS_GAME) < 2)
+            throw "Failed to load game texts.";
         debug(" - Strings : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
@@ -335,6 +337,9 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46, 32};
         for (int i = 1; i < 11; ++i) {
             p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
+        }
+        for (int i = 0; i < 50; ++i) {
+            p_inf->strs[kStrGame].addNecCode(&set_code_normal, i);
         }
         p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         loadString(&logfont_msg, kIdxNormal, &set_code_normal);
