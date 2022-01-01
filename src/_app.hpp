@@ -144,15 +144,20 @@ public:
 class OptionManager {
 private:
     App* p_app;
+    unsigned int id_weapon;
     unsigned int cnt;
     double prevs[3];
 
 public:
     Entity options[4];
-    OptionManager(App* p_app)
-        : p_app(p_app), cnt(0U), prevs{0.0, 0.0, 0.0}, options{Entity(), Entity(), Entity(), Entity()} {
+    OptionManager(App* p_app, unsigned int id_weapon)
+        : p_app(p_app),
+          cnt(0U),
+          id_weapon(id_weapon),
+          prevs{0.0, 0.0, 0.0},
+          options{Entity(), Entity(), Entity(), Entity()} {
     }
-    void update(unsigned int id_weapon);
+    void update();
     void draw();
 };
 
@@ -160,13 +165,23 @@ class Player : public Entity {
 private:
     App* p_app;
     unsigned int id_weapon;
-    unsigned int cnt_all;
+    unsigned int cnt;
+    double x_max, x_min, y_max, y_min;
     OptionManager omanager;
 
 public:
-    Player(App* p_app, unsigned int id_weapon)
-        : Entity(), p_app(p_app), id_weapon(id_weapon), cnt_all(0U), omanager(OptionManager(p_app)) {
+    Player(App* p_app)
+        : Entity(),
+          p_app(p_app),
+          id_weapon(0U),
+          cnt(0U),
+          x_max(0.0),
+          x_min(0.0),
+          y_max(0.0),
+          y_min(0.0),
+          omanager(OptionManager(p_app, 0U)) {
     }
+    void init(int id_weapon, double x, double y, double x_min, double x_max, double y_min, double y_max);
     void update();
     void draw();
     void drawSlow();
@@ -180,6 +195,7 @@ public:
     Enemy(App* p_app) : Entity(), p_app(p_app) {
         r = 10.0f;
     }
+    void draw();
 };
 
 class Scene {
@@ -226,6 +242,9 @@ public:
     }
     bool init();
     virtual void update() = 0;
+    void updateGame();
+    void drawGame();
+    void drawUI();
 };
 
 class SceneGame : public ASceneGame {
@@ -260,12 +279,24 @@ class App {
 private:
     AppInf* p_inf;
     InputInf iinf;
+    unsigned long long hiscore, score;
+    unsigned int graze;
+    double rank;
     Player player;
     Enemy enemy;
     Bullet* buls_p;
 
 public:
-    App() : p_inf(nullptr), iinf(InputInf()), player(Player(this, 0U)), enemy(Enemy(this)), buls_p(nullptr) {
+    App()
+        : p_inf(nullptr),
+          iinf(InputInf()),
+          hiscore(0LL),
+          score(0LL),
+          graze(0U),
+          rank(0.0),
+          player(Player(this)),
+          enemy(Enemy(this)),
+          buls_p(nullptr) {
     }
     ~App() {
         if (p_inf != nullptr)
@@ -296,14 +327,25 @@ public:
     // Game
     bool update();
     void changeScene(unsigned int no_scene_nex);
-    Player* getPlayer();
-    void initPlayer(unsigned int id_weapon);
-    Enemy* getEnemy();
     InputInf* getInputInf();
+    unsigned long long getHiScore();
+    unsigned long long getScore();
+    unsigned int getGraze();
+    double getRank();
+    Player* getPlayer();
+    Enemy* getEnemy();
     void setInputInf(InputInf* p_iinf);
+    void setHiScore(unsigned long long hiscore);
+    void setScore(unsigned long long score);
+    void setGraze(unsigned int graze);
+    void setRank(double rank);
+    void transScore(unsigned long long d_score);
+    void transGraze(unsigned int d_graze);
+    void transRank(double d_rank);
     void pushBulletPlayer(Bullet* p_bul);
     void updateBulletPlayer();
     void drawBulletPlayer();
+    void clearBulletPlayer();
 };
 
 void ModelColorCode2RGBA(Model* p_model, unsigned int col);

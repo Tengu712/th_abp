@@ -25,7 +25,6 @@ void Player::update() {
         spd = 0.0;
     else {
         spd = id_weapon == 1 ? 10.0 : 8.0;
-        spd *= dxdy == 1 ? 1.0 : sqrt(2.0);
         spd *= p_app->getInputInf()->s > 0 ? 0.5 : 1.0;
     }
     move();
@@ -35,7 +34,7 @@ void Player::update() {
     if (p_app->getInputInf()->z > 0) {
         if (id_weapon == 0 && cnt % 6 == 0) {
             Bullet bul = Bullet();
-            bul.setSpd(30.0);
+            bul.setSpd(50.0);
             if (p_app->getInputInf()->s > 0)
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 10, 0xff8888ff, 0);
             else
@@ -67,7 +66,7 @@ void Player::update() {
             }
         } else if (id_weapon == 2 && cnt % 6 == 0) {
             Bullet bul = Bullet();
-            bul.setSpd(30.0);
+            bul.setSpd(50.0);
             if (p_app->getInputInf()->s > 0)
                 bul.init(p_app, IMG_BU_JIKI_HARI, 0, 14, 0xff8888ff, 0);
             else
@@ -101,6 +100,8 @@ void Player::draw() {
 
 void Player::drawSlow() {
     const int kSlow = p_app->getInputInf()->s;
+    if (kSlow <= 0)
+        return;
     Model model = Model();
     model.pos_x = (float)x;
     model.pos_y = (float)y;

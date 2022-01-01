@@ -332,7 +332,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         };
         LOGFONTA logfont_msg = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
             PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "源ノ明朝 Heavy"};
-        std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46};
+        std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46, 32};
         for (int i = 1; i < 11; ++i) {
             p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
         }
@@ -671,6 +671,26 @@ void App::changeScene(unsigned int no_scene_nex) {
     p_inf->no_scene_nex = no_scene_nex;
 }
 
+InputInf* App::getInputInf() {
+    return &iinf;
+}
+
+unsigned long long App::getHiScore() {
+    return hiscore;
+}
+
+unsigned long long App::getScore() {
+    return score;
+}
+
+unsigned int App::getGraze() {
+    return graze;
+}
+
+double App::getRank() {
+    return rank;
+}
+
 Player* App::getPlayer() {
     return &player;
 }
@@ -679,16 +699,40 @@ Enemy* App::getEnemy() {
     return &enemy;
 }
 
-InputInf* App::getInputInf() {
-    return &iinf;
-}
-
 void App::setInputInf(InputInf* p_iinf) {
     iinf.dx = p_iinf->dx;
     iinf.dy = p_iinf->dy;
     iinf.z = p_iinf->z > 0 ? iinf.z + 1 : 0;
     iinf.x = p_iinf->x > 0 ? 1 : 0;
     iinf.s = p_iinf->s > 0 ? iinf.s + 1 : 0;
+}
+
+void App::setHiScore(unsigned long long hiscore) {
+    this->hiscore = hiscore;
+}
+
+void App::setScore(unsigned long long score) {
+    this->score = score;
+}
+
+void App::setGraze(unsigned int graze) {
+    this->graze = graze;
+}
+
+void App::setRank(double rank) {
+    this->rank = rank;
+}
+
+void App::transScore(unsigned long long d_score) {
+    score += d_score;
+}
+
+void App::transGraze(unsigned int d_graze) {
+    graze = min(graze + d_graze, 9999);
+}
+
+void App::transRank(double d_rank) {
+    rank = max(min(rank + d_rank, 50.0), 0.0);
 }
 
 void App::pushBulletPlayer(Bullet* p_bul) {
@@ -717,5 +761,11 @@ void App::drawBulletPlayer() {
         if (!buls_p[i].isExisting())
             continue;
         buls_p[i].draw();
+    }
+}
+
+void App::clearBulletPlayer() {
+    for (int i = 0; i < kNumBulletPlayer; ++i) {
+        buls_p[i] = Bullet();
     }
 }

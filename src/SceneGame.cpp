@@ -1,12 +1,14 @@
 #include "_app.hpp"
 
-
-
 void SceneGame::update() {
-    Model model = Model();
-    model.scl_x = 1280.0f;
-    model.scl_y = 1280.0f;
-    p_app->applyModelUI(&model);
-    p_app->applyImage(IMG_UI_FRAME);
-    p_app->drawIdea();
+    InputInf iinf = InputInf();
+    iinf.dx = p_app->getKey(KEY_CODE::Right, KEY_STATE::Pressed) - p_app->getKey(KEY_CODE::Left, KEY_STATE::Pressed);
+    iinf.dy = p_app->getKey(KEY_CODE::Up, KEY_STATE::Pressed) - p_app->getKey(KEY_CODE::Down, KEY_STATE::Pressed);
+    iinf.z = p_app->getKey(KEY_CODE::Z, KEY_STATE::Pressed);
+    iinf.x = p_app->getKey(KEY_CODE::X, KEY_STATE::Down);
+    iinf.s = p_app->getKey(KEY_CODE::Shift, KEY_STATE::Pressed);
+    p_app->setInputInf(&iinf);
+    updateGame();
+    drawGame();
+    drawUI();
 }
