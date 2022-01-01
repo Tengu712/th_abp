@@ -1,6 +1,6 @@
 #include "_app.hpp"
 
-void OptionManager::update(unsigned int id_weapon) {
+void OptionManager::update() {
     const int kSlow = p_app->getInputInf()->s;
     const double kPX = p_app->getPlayer()->getX();
     const double kPY = p_app->getPlayer()->getY();
