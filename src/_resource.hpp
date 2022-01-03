@@ -3,9 +3,8 @@
 #ifndef _RESOURCE_H_
 #define _RESOURCE_H_
 
-#define IDS_TITLE 10
-#define IDS_CSELECT 11
-#define IDS_GAME 12
+#define IDS_OPTION 10
+#define IDS_LOGUE 11
 
 #define IMG_BG_LOAD 100
 #define IMG_BG_TITLE 101

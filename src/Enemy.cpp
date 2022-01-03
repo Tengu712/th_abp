@@ -1,5 +1,25 @@
 #include "_app.hpp"
 
+int Enemy::getHP() {
+    return hp;
+}
+
+int Enemy::getMaxHP() {
+    return hp_max;
+}
+
+void Enemy::setHP(int hp) {
+    this->hp = hp;
+}
+
+void Enemy::setMaxHP(int hp_max) {
+    this->hp_max = hp_max;
+}
+
+void Enemy::transHP(int dhp) {
+    hp += dhp;
+}
+
 void Enemy::draw() {
     Model model = Model();
     model.pos_x = (float)x;

@@ -309,12 +309,10 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->strs == nullptr)
             throw "Failed to create array of string bank.";
         memset(p_inf->strs, 0, sizeof(StringBank) * kNumStringBank);
-        if (p_inf->strs[kStrTitle].load(h_module, IDS_TITLE) < 5)
-            throw "Failed to load title texts.";
-        if (p_inf->strs[kStrCSelect].load(h_module, IDS_CSELECT) < 11)
-            throw "Failed to load cselect texts.";
-        if (p_inf->strs[kStrGame].load(h_module, IDS_GAME) < 2)
-            throw "Failed to load game texts.";
+        if (p_inf->strs[kStrOption].load(h_module, IDS_OPTION) < 20)
+            throw "Failed to load option texts.";
+        if (p_inf->strs[kStrLogue].load(h_module, IDS_LOGUE) < 2)
+            throw "Failed to load logue texts.";
         debug(" - Strings : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
@@ -335,22 +333,35 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         LOGFONTA logfont_msg = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
             PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "源ノ明朝 Heavy"};
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46, 32};
-        for (int i = 1; i < 11; ++i) {
-            p_inf->strs[kStrCSelect].addNecCode(&set_code_normal, i);
-        }
-        for (int i = 0; i < 50; ++i) {
-            p_inf->strs[kStrGame].addNecCode(&set_code_normal, i);
-        }
-        p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
-        loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         LOGFONTA logfont_elp = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
             PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Elephant"};
         std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
-        for (int i = 0; i < 5; ++i) {
-            p_inf->strs[kStrTitle].addNecCode(&set_code_elp, i);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 0);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 1);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 2);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 3);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 4);
+        p_inf->strs[kStrOption].addNecCode(&set_code_elp, 5);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 6);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 7);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 8);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 9);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 10);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 11);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 12);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 13);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 14);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 15);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 16);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 17);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 18);
+        p_inf->strs[kStrOption].addNecCode(&set_code_normal, 19);
+        for (int i = 0; i < 80; ++i) {
+            p_inf->strs[kStrLogue].addNecCode(&set_code_normal, i);
         }
-        p_inf->strs[kStrCSelect].addNecCode(&set_code_elp, 0);
+        p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
         p_inf->fnts[kIdxOption].init(set_code_elp.size() + 1);
+        loadString(&logfont_msg, kIdxNormal, &set_code_normal);
         loadString(&logfont_elp, kIdxOption, &set_code_elp);
         flg = flg && RemoveFontMemResourceEx(h_normal);
         if (!flg)
@@ -688,6 +699,10 @@ InputInf* App::getInputInf() {
     return &iinf;
 }
 
+unsigned int App::getChapter() {
+    return cnt_chapter;
+}
+
 unsigned long long App::getHiScore() {
     return hiscore;
 }
@@ -720,6 +735,10 @@ void App::setInputInf(InputInf* p_iinf) {
     iinf.s = p_iinf->s > 0 ? iinf.s + 1 : 0;
 }
 
+void App::setChapter(unsigned int cnt_chapter) {
+    this->cnt_chapter = cnt_chapter;
+}
+
 void App::setHiScore(unsigned long long hiscore) {
     this->hiscore = hiscore;
 }
@@ -734,6 +753,10 @@ void App::setGraze(unsigned int graze) {
 
 void App::setRank(double rank) {
     this->rank = rank;
+}
+
+void App::nextChapter() {
+    ++cnt_chapter;
 }
 
 void App::transScore(unsigned long long d_score) {
@@ -765,6 +788,7 @@ void App::updateBulletPlayer() {
         const int flg_hit = buls_p[i].isHit(&enemy);
         if (flg_hit == 1) {
             buls_p[i].del = true;
+            enemy.transHP(buls_p[i].getDamage() * -1);
         }
     }
 }

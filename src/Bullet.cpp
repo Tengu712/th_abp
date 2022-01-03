@@ -63,6 +63,10 @@ void RotVec(double* p_x, double* p_y, double deg) {
     *p_y = kY;
 }
 
+unsigned int Bullet::getDamage() {
+    return dmg;
+}
+
 int Bullet::isHit(Entity* p_trg) {
     if (p_trg == nullptr)
         return 0;

@@ -88,14 +88,14 @@ void SceneCSelect::update() {
     model.pos_x = 640.0f;
     model.pos_y = 30.0f;
     model.scl_y = 80.0f;
-    p_app->drawString(p_app->getStr(kStrCSelect, 0), &model, kIdxOption, 0);
+    p_app->drawString(p_app->getStr(kStrOption, 5), &model, kIdxOption, 0);
     model.pos_y = 100.0f;
     model.scl_y = 50.0f;
-    p_app->drawString(p_app->getStr(kStrCSelect, 1), &model, kIdxNormal, 0);
+    p_app->drawString(p_app->getStr(kStrOption, 6), &model, kIdxNormal, 0);
     model.pos_x = 100.0f;
     model.pos_y = 250.0f;
-    auto drawOption = [&](unsigned int idx) {
-        if (cur % 3 == idx / 3) {
+    auto drawOption = [&](unsigned int mod_cur, unsigned int idx_str) {
+        if (cur % 3 == mod_cur) {
             Model box = Model();
             box.pos_x = model.pos_x;
             box.pos_y = model.pos_y + 10.0f;
@@ -113,19 +113,19 @@ void SceneCSelect::update() {
         else
             ModelColorCode2RGBA(&model, 0xff666666);
         model.scl_y = 70.0f;
-        p_app->drawString(p_app->getStr(kStrCSelect, idx), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal);
         model.scl_y = 40.0f;
         model.pos_x += 30.0f;
         model.pos_y += 60.0f;
-        p_app->drawString(p_app->getStr(kStrCSelect, idx + 1), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str + 1), &model, kIdxNormal);
         model.pos_y += 30.0f;
-        p_app->drawString(p_app->getStr(kStrCSelect, idx + 2), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str + 2), &model, kIdxNormal);
         model.pos_x -= 30.0f;
         model.pos_y += 110.0f;
     };
-    drawOption(2);
-    drawOption(5);
-    drawOption(8);
+    drawOption(0, 7);
+    drawOption(1, 10);
+    drawOption(2, 13);
     
     if (cnt_all < 30) {
         model.pos_x = 0.0f;

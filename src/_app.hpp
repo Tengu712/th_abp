@@ -21,9 +21,8 @@ constexpr unsigned int kNumImage = 30U;
 constexpr unsigned int kNumBulletPlayer = 128U;
 constexpr unsigned int kIdxNormal = 0U;
 constexpr unsigned int kIdxOption = 1U;
-constexpr unsigned int kStrTitle = 0U;
-constexpr unsigned int kStrCSelect = 1U;
-constexpr unsigned int kStrGame = 2U;
+constexpr unsigned int kStrOption = 0U;
+constexpr unsigned int kStrLogue = 1U;
 constexpr unsigned int kSceneTitle = 0U;
 constexpr unsigned int kSceneCSelect = 1U;
 constexpr unsigned int kSceneGame = 2U;
@@ -158,6 +157,7 @@ public:
     void init(App* p_app, unsigned int knd, unsigned int mov, unsigned int dmg, unsigned int col, int cnt);
     void update();
     void draw();
+    unsigned int getDamage();
     int isHit(Entity* p_trg);
 };
 
@@ -210,11 +210,18 @@ public:
 class Enemy : public Entity {
 private:
     App* p_app;
+    int hp;
+    int hp_max;
 
 public:
-    Enemy(App* p_app) : Entity(), p_app(p_app) {
+    Enemy(App* p_app) : Entity(), p_app(p_app), hp(0), hp_max(0) {
         r = 10.0f;
     }
+    int getHP();
+    int getMaxHP();
+    void setHP(int hp);
+    void setMaxHP(int hp_max);
+    void transHP(int dhp);
     void draw();
 };
 
@@ -257,10 +264,12 @@ class SceneGame : public Scene {
 private:
     int cnt, cur;
     bool is_pause;
+    unsigned int idx_log_1, idx_log_2;
     FrameBuffer* p_fbuf;
 
 public:
-    SceneGame(App* p_app) : Scene(p_app), cnt(0), cur(0), is_pause(false), p_fbuf(nullptr) {
+    SceneGame(App* p_app)
+        : Scene(p_app), cnt(0), cur(0), is_pause(false), idx_log_1(-1), idx_log_2(-1), p_fbuf(nullptr) {
     }
     ~SceneGame() {
         if (p_fbuf != nullptr)
@@ -272,6 +281,7 @@ public:
     void update();
     void drawGame();
     void drawUI();
+    void drawLogue();
     void drawOption();
     void drawFrameBuffer();
     void drawFrame();
@@ -283,6 +293,7 @@ class App {
 private:
     AppInf* p_inf;
     InputInf iinf;
+    unsigned int cnt_chapter;
     unsigned long long hiscore, score;
     unsigned int graze;
     double rank;
@@ -294,6 +305,7 @@ public:
     App()
         : p_inf(nullptr),
           iinf(InputInf()),
+          cnt_chapter(0U),
           hiscore(0LL),
           score(0LL),
           graze(0U),
@@ -334,6 +346,7 @@ public:
     bool update();
     void changeScene(unsigned int no_scene_nex);
     InputInf* getInputInf();
+    unsigned int getChapter();
     unsigned long long getHiScore();
     unsigned long long getScore();
     unsigned int getGraze();
@@ -341,10 +354,12 @@ public:
     Player* getPlayer();
     Enemy* getEnemy();
     void setInputInf(InputInf* p_iinf);
+    void setChapter(unsigned int cnt_chapter);
     void setHiScore(unsigned long long hiscore);
     void setScore(unsigned long long score);
     void setGraze(unsigned int graze);
     void setRank(double rank);
+    void nextChapter();
     void transScore(unsigned long long d_score);
     void transGraze(unsigned int d_graze);
     void transRank(double d_rank);

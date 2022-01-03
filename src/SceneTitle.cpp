@@ -42,7 +42,7 @@ void SceneTitle::update() {
             model.col_b = (float)(0.06 + 0.2 * fabs(sin(Deg2Rad(cnt_new))));
             model.col_a = 1.0f;
         }
-        p_app->drawString(p_app->getStr(kStrTitle, i), &model, kIdxOption);
+        p_app->drawString(p_app->getStr(kStrOption, i), &model, kIdxOption);
         model.pos_x += 20.0f;
         model.pos_y += 70.0f;
     };

@@ -1,8 +1,7 @@
 #include "../src/_resource.hpp"
 
-IDS_TITLE TEXT "./txt_title.txt"
-IDS_CSELECT TEXT "./txt_cselect.txt"
-IDS_GAME TEXT "./txt_game.txt"
+IDS_OPTION TEXT "./txt_option.txt"
+IDS_LOGUE TEXT "./txt_logue.txt"
 IMG_BG_LOAD IMAGE "./bg_load.png"
 IMG_BG_TITLE IMAGE "./bg_title.png"
 IMG_BG_CSELECT IMAGE "./bg_cselect.png"
