@@ -89,54 +89,44 @@ void SceneGame::update() {
         return;
     }
     // Logue
-    if (idx_log_1 == -1)
-        return;
-    model.pos_x = 0.0f;
-    model.pos_y = -320.0f;
-    model.scl_x = 700.0f;
-    model.scl_y = 120.0f;
-    ModelColorCode2RGBA(&model, 0x88000000);
-    p_app->applyModel(&model);
-    p_app->applyImage(0);
-    p_app->drawIdea();
-    model.pos_x = 320.0f;
-    model.pos_y = 750.0f;
-    model.scl_y = 42.0f;
-    ModelColorCode2RGBA(&model, 0xffffffff);
-    p_app->drawString(p_app->getStr(kStrLogue, idx_log_1), &model, kIdxNormal);
-    if (idx_log_2 == -1)
-        return;
-    model.pos_y += 42.0f;
-    p_app->drawString(p_app->getStr(kStrLogue, idx_log_2), &model, kIdxNormal);
+    lmanager.draw();
 }
 
 void SceneGame::updateGaming() {
-    bool is_log = false;
+    bool shotable = false;
     const unsigned int kChapter = p_app->getChapter();
-    // Chapter 1 [0-] : moving
+    // Chapter 1 [0-10] : moving
     if (kChapter == 0) {
-        idx_log_1 = 0;
-        idx_log_2 = -1;
-        is_log = true;
-    } else if (kChapter == 1) {
-        idx_log_1 = 1;
-        idx_log_2 = -1;
-        is_log = true;
-    } else if (kChapter == 2) {
-        idx_log_1 = 2;
-        idx_log_2 = 3;
-        is_log = true;
-    } else if (kChapter == 3) {
-        idx_log_1 = -1;
-        idx_log_2 = -1;
+
+    }
+    if (kChapter == 1)
+        lmanager.set(0, -1, true);
+    else if (kChapter == 2)
+        lmanager.set(1, -1, false);
+    else if (kChapter == 3)
+        lmanager.set(2, 3, true);
+    else if (kChapter == 4)
+        lmanager.set(4, -1, false);
+    else if (kChapter == 5)
+        lmanager.set(5, -1, true);
+    else if (kChapter == 6)
+        lmanager.set(6, 7, true);
+    else if (kChapter == 7)
+        lmanager.set(8, 9, true);
+    else if (kChapter == 8)
+        lmanager.set(10, -1, false);
+    else if (kChapter == 9) {
         p_app->getEnemy()->setHP(1000);
         p_app->getEnemy()->setMaxHP(1000);
         p_app->nextChapter();
+        shotable = true;
+    } else if (kChapter == 10) {
+        shotable = true;
     }
-    if (is_log && p_app->getKey(KEY_CODE::Z, KEY_STATE::Down))
+    if (!shotable && p_app->getKey(KEY_CODE::Z, KEY_STATE::Down))
         p_app->nextChapter();
     InputInf iinf = InputInf();
-    if (!is_log) {
+    if (shotable) {
         iinf.z = p_app->getKey(KEY_CODE::Z, KEY_STATE::Pressed);
         iinf.x = p_app->getKey(KEY_CODE::X, KEY_STATE::Down);
     }

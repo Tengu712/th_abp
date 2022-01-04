@@ -106,6 +106,20 @@ struct InputInf {
     }
 };
 
+class LogueManager {
+private:
+    App* p_app;
+    unsigned int idx1, idx2;
+    bool is_right;
+    bool is_active;
+
+public:
+    LogueManager(App* p_app) : p_app(p_app), idx1(-1), idx2(-1), is_right(false), is_active(false) {
+    }
+    void set(unsigned int idx1, unsigned int idx2, bool is_right);
+    void draw();
+};
+
 class Entity {
 protected:
     bool moving, existing;
@@ -263,9 +277,9 @@ class SceneGame : public Scene {
 private:
     int cnt, cur;
     bool is_pause;
-    unsigned int idx_log_1, idx_log_2;
     FrameBuffer* p_fbuf;
     Camera camera;
+    LogueManager lmanager;
 
 public:
     SceneGame(App* p_app)
@@ -273,10 +287,9 @@ public:
           cnt(0),
           cur(0),
           is_pause(false),
-          idx_log_1(-1),
-          idx_log_2(-1),
           p_fbuf(nullptr),
-          camera(Camera()) {
+          camera(Camera()),
+          lmanager(LogueManager(p_app)) {
     }
     ~SceneGame() {
         if (p_fbuf != nullptr)
