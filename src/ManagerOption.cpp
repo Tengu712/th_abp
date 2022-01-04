@@ -1,6 +1,6 @@
 #include "_app.hpp"
 
-void OptionManager::update() {
+void ManagerOption::update() {
     const int kSlow = p_app->getInputInf()->s;
     const double kPX = p_app->getPlayer()->getX();
     const double kPY = p_app->getPlayer()->getY();
@@ -56,7 +56,7 @@ void OptionManager::update() {
     ++cnt;
 }
 
-void OptionManager::draw() {
+void ManagerOption::draw() {
     Model model = Model();
     model.scl_x = 24.0f;
     model.scl_y = 24.0f;

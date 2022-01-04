@@ -113,7 +113,7 @@ void SceneCSelect::update() {
             model.col_a = 1.0f;
         }
         else
-            ModelColorCode2RGBA(&model, 0xff666666);
+            SetModelColor(&model, 0xff666666);
         model.scl_y = 70.0f;
         p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal);
         model.scl_y = 40.0f;
@@ -134,7 +134,7 @@ void SceneCSelect::update() {
         model.pos_y = 0.0f;
         model.scl_x = 1280.0f;
         model.scl_y = 1280.0f;
-        ModelColorCode2RGBA(&model, 0xff000000);
+        SetModelColor(&model, 0xff000000);
         model.col_a = cnt_all < 0 ? (float)(-cnt_all) / 10.0f : 1.0f - (float)cnt_all / 30.0f;
         p_app->applyModel(&model);
         p_app->applyImage(0);

@@ -49,7 +49,7 @@ void Bullet::draw() {
     }
     model.scl_x = scl_x;
     model.scl_y = scl_y;
-    ModelColorCode2RGBA(&model, col);
+    SetModelColor(&model, col);
     p_app->applyModel(&model);
     p_app->applyImage(knd);
     p_app->drawIdea();

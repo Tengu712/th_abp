@@ -106,7 +106,7 @@ struct InputInf {
     }
 };
 
-class LogueManager {
+class ManagerLogue {
 private:
     App* p_app;
     unsigned int idx1, idx2;
@@ -114,7 +114,7 @@ private:
     bool is_active;
 
 public:
-    LogueManager(App* p_app) : p_app(p_app), idx1(-1), idx2(-1), is_right(false), is_active(false) {
+    ManagerLogue(App* p_app) : p_app(p_app), idx1(-1), idx2(-1), is_right(false), is_active(false) {
     }
     void set(unsigned int idx1, unsigned int idx2, bool is_right);
     void draw();
@@ -175,7 +175,7 @@ public:
     int isHit(Entity* p_trg);
 };
 
-class OptionManager {
+class ManagerOption {
 private:
     App* p_app;
     unsigned int id_weapon;
@@ -184,7 +184,7 @@ private:
 
 public:
     Entity options[4];
-    OptionManager(App* p_app, unsigned int id_weapon)
+    ManagerOption(App* p_app, unsigned int id_weapon)
         : p_app(p_app),
           cnt(0U),
           id_weapon(id_weapon),
@@ -201,7 +201,7 @@ private:
     unsigned int id_weapon;
     unsigned int cnt;
     double x_max, x_min, y_max, y_min;
-    OptionManager omanager;
+    ManagerOption omanager;
 
 public:
     Player(App* p_app)
@@ -213,7 +213,7 @@ public:
           x_min(0.0),
           y_max(0.0),
           y_min(0.0),
-          omanager(OptionManager(p_app, 0U)) {
+          omanager(ManagerOption(p_app, 0U)) {
     }
     void init(int id_weapon, double x, double y, double x_min, double x_max, double y_min, double y_max);
     void update();
@@ -279,7 +279,7 @@ private:
     bool is_pause;
     FrameBuffer* p_fbuf;
     Camera camera;
-    LogueManager lmanager;
+    ManagerLogue lmanager;
 
 public:
     SceneGame(App* p_app)
@@ -289,7 +289,7 @@ public:
           is_pause(false),
           p_fbuf(nullptr),
           camera(Camera()),
-          lmanager(LogueManager(p_app)) {
+          lmanager(ManagerLogue(p_app)) {
     }
     ~SceneGame() {
         if (p_fbuf != nullptr)
@@ -303,7 +303,7 @@ public:
     void drawBackGround();
 };
 
-class ScoreManager {
+class ManagerScore {
 private:
     App* p_app;
     unsigned long long hiscore, score;
@@ -311,7 +311,7 @@ private:
     double rank;
 
 public:
-    ScoreManager(App* p_app) : p_app(p_app), hiscore(0LL), score(0LL), graze(0U), rank(0.0) {
+    ManagerScore(App* p_app) : p_app(p_app), hiscore(0LL), score(0LL), graze(0U), rank(0.0) {
     }
     void init();
     void draw();
@@ -340,7 +340,7 @@ class App {
 private:
     AppInf* p_inf;
     InputInf iinf;
-    ScoreManager smanager;
+    ManagerScore smanager;
     GameArguments garg;
     unsigned int cnt_chapter;
     Player player;
@@ -351,7 +351,7 @@ public:
     App()
         : p_inf(nullptr),
           iinf(InputInf()),
-          smanager(ScoreManager(this)),
+          smanager(ManagerScore(this)),
           garg(GameArguments()),
           cnt_chapter(0U),
           player(Player(this)),
@@ -392,7 +392,7 @@ public:
     void initGame(unsigned int cnt_chapter_start, double rank_start, bool is_practice);
     void restartGame();
     InputInf* getInputInf();
-    ScoreManager* getScoreManager();
+    ManagerScore* getScoreManager();
     unsigned int getChapter();
     bool isPractice();
     Player* getPlayer();
@@ -405,7 +405,7 @@ public:
     void clearBulletPlayer();
 };
 
-void ModelColorCode2RGBA(Model* p_model, unsigned int col);
+void SetModelColor(Model* p_model, unsigned int col);
 double Deg2Rad(double deg);
 double Homing(double sx, double sy, double gx, double gy);
 

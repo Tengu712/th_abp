@@ -1,11 +1,11 @@
 #include "_app.hpp"
 
-void ScoreManager::init() {
+void ManagerScore::init() {
     score = 0LL;
     graze = 0U;
 }
 
-void ScoreManager::draw() {
+void ManagerScore::draw() {
     // Score
     Model model = Model();
     char buf[64];
@@ -34,38 +34,38 @@ void ScoreManager::draw() {
     p_app->drawString(buf, &model, kIdxNormal, 1);
 }
 
-unsigned long long ScoreManager::getHiScore() {
+unsigned long long ManagerScore::getHiScore() {
     return hiscore;
 }
 
-unsigned long long ScoreManager::getScore() {
+unsigned long long ManagerScore::getScore() {
     return score;
 }
 
-unsigned int ScoreManager::getGraze() {
+unsigned int ManagerScore::getGraze() {
     return graze;
 }
 
-double ScoreManager::getRank() {
+double ManagerScore::getRank() {
     return rank;
 }
 
-void ScoreManager::setHiScore(unsigned long long hiscore) {
+void ManagerScore::setHiScore(unsigned long long hiscore) {
     this->hiscore = hiscore;
 }
 
-void ScoreManager::setRank(double rank) {
+void ManagerScore::setRank(double rank) {
     this->rank = rank;
 }
 
-void ScoreManager::transScore(unsigned long long d_score) {
+void ManagerScore::transScore(unsigned long long d_score) {
     score += d_score;
 }
 
-void ScoreManager::transGraze(unsigned int d_graze) {
+void ManagerScore::transGraze(unsigned int d_graze) {
     graze = min(graze + d_graze, 9999);
 }
 
-void ScoreManager::transRank(double d_rank) {
+void ManagerScore::transRank(double d_rank) {
     rank = max(min(rank + d_rank, 50.0), 0.0);
 }

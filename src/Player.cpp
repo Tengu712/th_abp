@@ -15,7 +15,7 @@ void Player::init(int id_weapon, double x, double y, double x_min, double x_max,
     moving = true;
     existing = true;
     if (id_weapon != -1)
-        omanager = OptionManager(p_app, id_weapon);
+        omanager = ManagerOption(p_app, id_weapon);
 }
 
 void Player::update() {

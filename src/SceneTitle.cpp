@@ -34,7 +34,7 @@ void SceneTitle::update() {
     model.pos_y = 500.0f;
     auto drawOption = [&](int i) {
         model.scl_y = 75.0f;
-        ModelColorCode2RGBA(&model, 0xaa303030);
+        SetModelColor(&model, 0xaa303030);
         if (cur % 5 == i) {
             const unsigned int cnt_new = cnt * 3;
             model.col_r = (float)(0.40 + 0.6 * fabs(sin(Deg2Rad(cnt_new))));
@@ -56,7 +56,7 @@ void SceneTitle::update() {
         model.pos_y = 0.0f;
         model.scl_x = 1280.0f;
         model.scl_y = 1280.0f;
-        ModelColorCode2RGBA(&model, cnt < 0 ? 0x00000000 : 0xffffffff);
+        SetModelColor(&model, cnt < 0 ? 0x00000000 : 0xffffffff);
         model.col_a = cnt < 0 ? (float)(-cnt) / 10.0f : 1.0f - (float)cnt / 30.0f;
         p_app->applyModel(&model);
         p_app->applyImage(0);

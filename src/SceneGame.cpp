@@ -49,7 +49,7 @@ void SceneGame::update() {
     p_app->drawBeginWithFrameBuffer(nullptr);
     if (is_pause) {
         p_app->enableMosaic(true);
-        ModelColorCode2RGBA(&model, 0xff555555);
+        SetModelColor(&model, 0xff555555);
     }
     model.scl_x = 1280.0f;
     model.scl_y = 960.0f;
@@ -59,7 +59,7 @@ void SceneGame::update() {
     p_app->enableMosaic(false);
     // ============= UI ============= //
     // Frame
-    ModelColorCode2RGBA(&model, 0xffffffff);
+    SetModelColor(&model, 0xffffffff);
     model.pos_x = 0.0f;
     model.pos_y = 0.0f;
     model.scl_x = 1280.0f;
@@ -71,9 +71,9 @@ void SceneGame::update() {
     if (is_pause) {
         auto drawOption = [&](unsigned int mod_cur, unsigned int idx_str) {
             if (cur % 3 == mod_cur)
-                ModelColorCode2RGBA(&model, 0xffffffff);
+                SetModelColor(&model, 0xffffffff);
             else
-                ModelColorCode2RGBA(&model, 0xff888888);
+                SetModelColor(&model, 0xff888888);
             p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal, 0);
             model.pos_y += 60.0f;
         };

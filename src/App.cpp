@@ -10,7 +10,7 @@
 constexpr unsigned int kNumFontBank = 2U;
 constexpr unsigned int kNumStringBank = 3U;
 
-void ModelColorCode2RGBA(Model* p_model, unsigned int col) {
+void SetModelColor(Model* p_model, unsigned int col) {
     p_model->col_r = (float)(col & 0x000000ff) / 255.0f;
     p_model->col_g = (float)((col & 0x0000ff00) >> 8) / 255.0f;
     p_model->col_b = (float)((col & 0x00ff0000) >> 16) / 255.0f;
@@ -723,7 +723,7 @@ InputInf* App::getInputInf() {
     return &iinf;
 }
 
-ScoreManager* App::getScoreManager() {
+ManagerScore* App::getScoreManager() {
     return &smanager;
 }
 
