@@ -1,0 +1,24 @@
+@startuml
+!theme cerulean
+start
+if (Paused?) then (Yes)
+  if (Goto Title) then (Yes)
+    end
+  elseif (Restart) then (Yes)
+    end
+  elseif (Resume) then (Yes)
+    :Unpause;
+  else (Keep paused)
+    :Enable mosaic;
+  endif
+else (No)
+  :Launch bullets;
+  :Set input information;
+  :Update player;
+  :Update bullets;
+endif
+:Draw background;
+:Draw entities;
+:Draw UI;
+stop
+@enduml

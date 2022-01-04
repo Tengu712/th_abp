@@ -58,3 +58,7 @@ p_app->drawString(buf); // 文字のあるところまで適応される
 ### 描画
 
 ![Draw](uml/drawing.png)
+
+### ゲームの流れ
+
+![GameFlow](uml/gameflow.png)
