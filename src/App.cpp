@@ -703,28 +703,36 @@ void App::changeScene(unsigned int no_scene_nex) {
     p_inf->no_scene_nex = no_scene_nex;
 }
 
+void App::initGame(unsigned int cnt_chapter_start, double rank_start, bool is_practice) {
+    garg.cnt_chapter_start = cnt_chapter_start;
+    garg.rank_start = rank_start;
+    garg.is_practice = is_practice;
+    cnt_chapter = cnt_chapter_start;
+    smanager.setRank(rank_start);
+    smanager.init();
+    player.init(-1, 0.0, -260.0, -380.0, 380.0, -460.0, 350.0);
+    enemy.setPos(0.0, 300.0);
+    clearBulletPlayer();
+}
+
+void App::restartGame() {
+    initGame(garg.cnt_chapter_start, garg.rank_start, garg.is_practice);
+}
+
 InputInf* App::getInputInf() {
     return &iinf;
+}
+
+ScoreManager* App::getScoreManager() {
+    return &smanager;
 }
 
 unsigned int App::getChapter() {
     return cnt_chapter;
 }
 
-unsigned long long App::getHiScore() {
-    return hiscore;
-}
-
-unsigned long long App::getScore() {
-    return score;
-}
-
-unsigned int App::getGraze() {
-    return graze;
-}
-
-double App::getRank() {
-    return rank;
+bool App::isPractice() {
+    return garg.is_practice;
 }
 
 Player* App::getPlayer() {
@@ -743,40 +751,8 @@ void App::setInputInf(InputInf* p_iinf) {
     iinf.s = p_iinf->s > 0 ? iinf.s + 1 : 0;
 }
 
-void App::setChapter(unsigned int cnt_chapter) {
-    this->cnt_chapter = cnt_chapter;
-}
-
-void App::setHiScore(unsigned long long hiscore) {
-    this->hiscore = hiscore;
-}
-
-void App::setScore(unsigned long long score) {
-    this->score = score;
-}
-
-void App::setGraze(unsigned int graze) {
-    this->graze = graze;
-}
-
-void App::setRank(double rank) {
-    this->rank = rank;
-}
-
 void App::nextChapter() {
     ++cnt_chapter;
-}
-
-void App::transScore(unsigned long long d_score) {
-    score += d_score;
-}
-
-void App::transGraze(unsigned int d_graze) {
-    graze = min(graze + d_graze, 9999);
-}
-
-void App::transRank(double d_rank) {
-    rank = max(min(rank + d_rank, 50.0), 0.0);
 }
 
 void App::pushBulletPlayer(Bullet* p_bul) {
@@ -797,7 +773,7 @@ void App::updateBulletPlayer() {
         if (flg_hit == 1) {
             buls_p[i].del = true;
             enemy.transHP(buls_p[i].getDamage() * -1);
-            score += 100; //! SCORE
+            smanager.transScore(100); //! SCORE
         }
     }
 }

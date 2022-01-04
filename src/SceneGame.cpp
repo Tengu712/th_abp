@@ -1,15 +1,10 @@
 #include "_app.hpp"
 
 bool SceneGame::init() {
-    camera.pos_z = -10.0f;
     p_fbuf = p_app->createFrameBuffer(kSceWidth, kSceHeight);
     if (p_fbuf == nullptr)
         return false;
-    p_app->setScore(0LL);
-    p_app->setGraze(0U);
-    p_app->getPlayer()->init(-1, 0.0, -260.0, -380.0, 380.0, -460.0, 350.0);
-    p_app->getEnemy()->setPos(0.0, 300.0);
-    p_app->clearBulletPlayer();
+    camera.pos_z = -10.0f;
     return true;
 }
 
@@ -26,10 +21,15 @@ void SceneGame::update() {
         if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
             if (cur % 3 == 0)
                 is_pause = false;
-            else if (cur % 3 == 1)
+            else if (cur % 3 == 1) {
                 p_app->changeScene(kSceneTitle);
-            else
+                return;
+            }
+            else {
+                p_app->restartGame();
                 p_app->changeScene(kSceneGame);
+                return;
+            }
         } else if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
             is_pause = false;
         }
@@ -37,50 +37,20 @@ void SceneGame::update() {
         updateGaming();
 
     Model model = Model();
-    p_app->drawBeginWithFrameBuffer(p_fbuf);
     // ============= Objects ============= //
+    p_app->drawBeginWithFrameBuffer(p_fbuf);
     drawBackGround();
     p_app->getEnemy()->draw();
     p_app->getPlayer()->draw();
-    p_app->enableOverlay(true);
     p_app->drawBulletPlayer();
-    p_app->enableOverlay(false);
     p_app->getPlayer()->drawSlow();
     p_app->getEnemy()->drawHPBar();
-    // ============= GameUI ============= //
-    // Score
-    char buf[64];
-    model.pos_x = 250.0f;
-    model.pos_y = 30.0f;
-    model.scl_y = 45.0f;
-    memset(buf, 0, sizeof(char) * 64);
-    snprintf(buf, 64, "%011lld", p_app->getScore());
-    p_app->drawString(buf, &model, kIdxNormal);
-    // Hiscore
-    model.pos_x = 1030.0f;
-    memset(buf, 0, sizeof(char) * 64);
-    snprintf(buf, 64, "%011lld", p_app->getHiScore());
-    p_app->drawString(buf, &model, kIdxNormal, 1);
-    // Rank
-    model.pos_x = 250.0f;
-    model.pos_y += 40.0f;
-    model.scl_y = 40.0f;
-    memset(buf, 0, sizeof(char) * 64);
-    snprintf(buf, 64, "%04.1lf", p_app->getRank());
-    p_app->drawString(buf, &model, kIdxNormal);
-    // Graze
-    model.pos_x = 1030.0f;
-    memset(buf, 0, sizeof(char) * 64);
-    snprintf(buf, 64, "%d", p_app->getGraze());
-    p_app->drawString(buf, &model, kIdxNormal, 1);
-    // ============= FrameBuffer ============= //
+    p_app->getScoreManager()->draw();
     p_app->drawBeginWithFrameBuffer(nullptr);
     if (is_pause) {
         p_app->enableMosaic(true);
         ModelColorCode2RGBA(&model, 0xff555555);
     }
-    model.pos_x = 0.0f;
-    model.pos_y = 0.0f;
     model.scl_x = 1280.0f;
     model.scl_y = 960.0f;
     p_app->applyModel(&model);

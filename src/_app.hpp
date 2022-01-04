@@ -290,16 +290,46 @@ public:
     void drawBackGround();
 };
 
+class ScoreManager {
+private:
+    App* p_app;
+    unsigned long long hiscore, score;
+    unsigned int graze;
+    double rank;
+
+public:
+    ScoreManager(App* p_app) : p_app(p_app), hiscore(0LL), score(0LL), graze(0U), rank(0.0) {
+    }
+    void init();
+    void draw();
+    unsigned long long getHiScore();
+    unsigned long long getScore();
+    unsigned int getGraze();
+    double getRank();
+    void setHiScore(unsigned long long hiscore);
+    void setRank(double rank);
+    void transScore(unsigned long long d_score);
+    void transGraze(unsigned int d_graze);
+    void transRank(double d_rank);
+};
+
+struct GameArguments {
+    unsigned int cnt_chapter_start;
+    double rank_start;
+    bool is_practice;
+    GameArguments() : cnt_chapter_start(0U), rank_start(0.0), is_practice(false) {
+    }
+};
+
 struct AppInf;
 
 class App {
 private:
     AppInf* p_inf;
     InputInf iinf;
+    ScoreManager smanager;
+    GameArguments garg;
     unsigned int cnt_chapter;
-    unsigned long long hiscore, score;
-    unsigned int graze;
-    double rank;
     Player player;
     Enemy enemy;
     Bullet* buls_p;
@@ -308,11 +338,9 @@ public:
     App()
         : p_inf(nullptr),
           iinf(InputInf()),
+          smanager(ScoreManager(this)),
+          garg(GameArguments()),
           cnt_chapter(0U),
-          hiscore(0LL),
-          score(0LL),
-          graze(0U),
-          rank(0.0),
           player(Player(this)),
           enemy(Enemy(this)),
           buls_p(nullptr) {
@@ -348,24 +376,16 @@ public:
     // Game
     bool update();
     void changeScene(unsigned int no_scene_nex);
+    void initGame(unsigned int cnt_chapter_start, double rank_start, bool is_practice);
+    void restartGame();
     InputInf* getInputInf();
+    ScoreManager* getScoreManager();
     unsigned int getChapter();
-    unsigned long long getHiScore();
-    unsigned long long getScore();
-    unsigned int getGraze();
-    double getRank();
+    bool isPractice();
     Player* getPlayer();
     Enemy* getEnemy();
     void setInputInf(InputInf* p_iinf);
-    void setChapter(unsigned int cnt_chapter);
-    void setHiScore(unsigned long long hiscore);
-    void setScore(unsigned long long score);
-    void setGraze(unsigned int graze);
-    void setRank(double rank);
     void nextChapter();
-    void transScore(unsigned long long d_score);
-    void transGraze(unsigned int d_graze);
-    void transRank(double d_rank);
     void pushBulletPlayer(Bullet* p_bul);
     void updateBulletPlayer();
     void drawBulletPlayer();

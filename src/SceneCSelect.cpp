@@ -26,7 +26,9 @@ void SceneCSelect::update() {
     }
 
     if (cnt_all < -10) {
+        p_app->initGame(0, 20.0, false);
         p_app->changeScene(kSceneGame);
+        return;
     }
 
     InputInf iinf = InputInf();
