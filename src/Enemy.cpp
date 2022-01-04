@@ -1,13 +1,5 @@
 #include "_app.hpp"
 
-int Enemy::getHP() {
-    return hp;
-}
-
-int Enemy::getMaxHP() {
-    return hp_max;
-}
-
 void Enemy::setHP(int hp) {
     this->hp = hp;
 }
@@ -28,5 +20,18 @@ void Enemy::draw() {
     model.scl_y = 100.0f;
     p_app->applyModel(&model);
     p_app->applyImage(IMG_CH_ENEMY);
+    p_app->drawIdea();
+}
+
+void Enemy::drawHPBar() {
+    if (hp_max <= 0)
+        return;
+    Model model = Model();
+    model.scl_x = 700.0f * max(hp, 0.0f) / hp_max;
+    model.scl_y = 5.0f;
+    model.pos_x = model.scl_x / 2.0f - 350.0f;
+    model.pos_y = 450.0f;
+    p_app->applyModel(&model);
+    p_app->applyImage(0);
     p_app->drawIdea();
 }

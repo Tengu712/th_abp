@@ -217,12 +217,11 @@ public:
     Enemy(App* p_app) : Entity(), p_app(p_app), hp(0), hp_max(0) {
         r = 10.0f;
     }
-    int getHP();
-    int getMaxHP();
     void setHP(int hp);
     void setMaxHP(int hp_max);
     void transHP(int dhp);
     void draw();
+    void drawHPBar();
 };
 
 class Scene {
@@ -266,25 +265,29 @@ private:
     bool is_pause;
     unsigned int idx_log_1, idx_log_2;
     FrameBuffer* p_fbuf;
+    Camera camera;
 
 public:
     SceneGame(App* p_app)
-        : Scene(p_app), cnt(0), cur(0), is_pause(false), idx_log_1(-1), idx_log_2(-1), p_fbuf(nullptr) {
+        : Scene(p_app),
+          cnt(0),
+          cur(0),
+          is_pause(false),
+          idx_log_1(-1),
+          idx_log_2(-1),
+          p_fbuf(nullptr),
+          camera(Camera()) {
     }
     ~SceneGame() {
         if (p_fbuf != nullptr)
             delete p_fbuf;
     }
+    // General
     bool init();
-    void updatePausing();
-    void updateGaming();
     void update();
-    void drawGame();
-    void drawUI();
-    void drawLogue();
-    void drawOption();
-    void drawFrameBuffer();
-    void drawFrame();
+    // Pattern
+    void updateGaming();
+    void drawBackGround();
 };
 
 struct AppInf;

@@ -275,7 +275,14 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             for (int i = 0; i < kNumImage; ++i) {
                 if (p_inf->imgs[i].id != 0U)
                     continue;
-                return p_inf->dmanager.createImage(h_module, id, &p_inf->imgs[i]);
+                bool res = p_inf->dmanager.createImage(h_module, id, &p_inf->imgs[i]);
+                if (!res) {
+                    debug("\n");
+                    debug(id);
+                    debug(" image resource not loaded.\n");
+                    return false;
+                }
+                return true;
             }
             return false;
         };
@@ -283,6 +290,7 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         flg = flg && loadImage(IMG_BG_TITLE);
         flg = flg && loadImage(IMG_BG_CSELECT);
         flg = flg && loadImage(IMG_BG_CS_SCROLL);
+        flg = flg && loadImage(IMG_BG_MOUNTAIN);
         flg = flg && loadImage(IMG_UI_CSBOX);
         flg = flg && loadImage(IMG_UI_FRAME);
         flg = flg && loadImage(IMG_CH_ATARI);
@@ -789,6 +797,7 @@ void App::updateBulletPlayer() {
         if (flg_hit == 1) {
             buls_p[i].del = true;
             enemy.transHP(buls_p[i].getDamage() * -1);
+            score += 100; //! SCORE
         }
     }
 }

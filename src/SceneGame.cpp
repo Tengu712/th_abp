@@ -1,6 +1,7 @@
 #include "_app.hpp"
 
 bool SceneGame::init() {
+    camera.pos_z = -10.0f;
     p_fbuf = p_app->createFrameBuffer(kSceWidth, kSceHeight);
     if (p_fbuf == nullptr)
         return false;
@@ -12,104 +13,83 @@ bool SceneGame::init() {
     return true;
 }
 
-void SceneGame::drawGame() {
+void SceneGame::update() {
+    if (p_app->getKey(KEY_CODE::Escape, KEY_STATE::Down)) {
+        is_pause = !is_pause;
+    }
+    if (is_pause) {
+        int ud = p_app->getKey(KEY_CODE::Down, KEY_STATE::Down) - p_app->getKey(KEY_CODE::Up, KEY_STATE::Down);
+        if (ud == 1)
+            ++cur;
+        else if (ud == -1)
+            cur += 2;
+        if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
+            if (cur % 3 == 0)
+                is_pause = false;
+            else if (cur % 3 == 1)
+                p_app->changeScene(kSceneTitle);
+            else
+                p_app->changeScene(kSceneGame);
+        } else if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
+            is_pause = false;
+        }
+    } else
+        updateGaming();
+
+    Model model = Model();
+    p_app->drawBeginWithFrameBuffer(p_fbuf);
+    // ============= Objects ============= //
+    drawBackGround();
     p_app->getEnemy()->draw();
     p_app->getPlayer()->draw();
     p_app->enableOverlay(true);
     p_app->drawBulletPlayer();
     p_app->enableOverlay(false);
     p_app->getPlayer()->drawSlow();
-}
-
-void SceneGame::drawLogue() {
-    if (idx_log_1 == -1)
-        return;
-    Model model = Model();
-    model.pos_x = 300.0f;
-    model.pos_y = 800.0f;
-    model.scl_y = 40.0f;
-    p_app->drawString(p_app->getStr(kStrLogue, idx_log_1), &model, kIdxNormal);
-    if (idx_log_2 == -1)
-        return;
-    model.pos_y += 40.0f;
-    p_app->drawString(p_app->getStr(kStrLogue, idx_log_2), &model, kIdxNormal);
-}
-
-void SceneGame::drawUI() {
-    Model model = Model();
-    if (p_app->getEnemy()->getMaxHP() > 0) {
-        model.scl_x = 700.0f * max(p_app->getEnemy()->getHP(), 0.0f) / p_app->getEnemy()->getMaxHP();
-        model.scl_y = 5.0f;
-        model.pos_x = model.scl_x / 2.0f - 350.0f;
-        model.pos_y = 450.0f;
-        p_app->applyModel(&model);
-        p_app->applyImage(0);
-        p_app->drawIdea();
-    }
+    p_app->getEnemy()->drawHPBar();
+    // ============= GameUI ============= //
+    // Score
+    char buf[64];
     model.pos_x = 250.0f;
     model.pos_y = 30.0f;
     model.scl_y = 45.0f;
-    char buf[64];
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%011lld", p_app->getScore());
     p_app->drawString(buf, &model, kIdxNormal);
+    // Hiscore
     model.pos_x = 1030.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%011lld", p_app->getHiScore());
     p_app->drawString(buf, &model, kIdxNormal, 1);
+    // Rank
     model.pos_x = 250.0f;
     model.pos_y += 40.0f;
     model.scl_y = 40.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%04.1lf", p_app->getRank());
     p_app->drawString(buf, &model, kIdxNormal);
+    // Graze
     model.pos_x = 1030.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%d", p_app->getGraze());
     p_app->drawString(buf, &model, kIdxNormal, 1);
-}
-
-void SceneGame::drawOption() {
-    Model model = Model();
-    auto drawOption = [&](unsigned int mod_cur, unsigned int idx_str) {
-        if (cur % 3 == mod_cur)
-            ModelColorCode2RGBA(&model, 0xffffffff);
-        else
-            ModelColorCode2RGBA(&model, 0xff888888);
-        p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal, 0);
-        model.pos_y += 60.0f;
-    };
-    model.pos_x = 640.0f;
-    model.pos_y = 380.0f;
-    model.scl_y = 80.0f;
-    p_app->drawString(p_app->getStr(kStrOption, 16), &model, kIdxNormal, 0);
-    model.pos_y = 500.0f;
-    model.scl_y = 60.0f;
-    drawOption(0, 17);
-    drawOption(1, 18);
-    drawOption(2, 19);
-}
-
-void SceneGame::drawFrameBuffer() {
-    if (is_pause)
+    // ============= FrameBuffer ============= //
+    p_app->drawBeginWithFrameBuffer(nullptr);
+    if (is_pause) {
         p_app->enableMosaic(true);
-    Model model = Model();
+        ModelColorCode2RGBA(&model, 0xff555555);
+    }
+    model.pos_x = 0.0f;
+    model.pos_y = 0.0f;
     model.scl_x = 1280.0f;
     model.scl_y = 960.0f;
     p_app->applyModel(&model);
     p_app->applyFrameBuffer(p_fbuf);
     p_app->drawIdea();
-    if (is_pause) {
-        p_app->enableMosaic(false);
-        ModelColorCode2RGBA(&model, 0x44000000);
-        p_app->applyModel(&model);
-        p_app->applyImage(0);
-        p_app->drawIdea();
-    }
-}
-
-void SceneGame::drawFrame() {
-    Model model = Model();
+    p_app->enableMosaic(false);
+    // ============= UI ============= //
+    // Frame
+    ModelColorCode2RGBA(&model, 0xffffffff);
     model.pos_x = 0.0f;
     model.pos_y = 0.0f;
     model.scl_x = 1280.0f;
@@ -117,29 +97,53 @@ void SceneGame::drawFrame() {
     p_app->applyModelUI(&model);
     p_app->applyImage(IMG_UI_FRAME);
     p_app->drawIdea();
-}
-
-void SceneGame::updatePausing() {
-    int ud = p_app->getKey(KEY_CODE::Down, KEY_STATE::Down) - p_app->getKey(KEY_CODE::Up, KEY_STATE::Down);
-    if (ud == 1)
-        ++cur;
-    else if (ud == -1)
-        cur += 2;
-    if (p_app->getKey(KEY_CODE::Z, KEY_STATE::Down)) {
-        if (cur % 3 == 0)
-            is_pause = false;
-        else if (cur % 3 == 1)
-            p_app->changeScene(kSceneTitle);
-        else
-            p_app->changeScene(kSceneGame);
-    } else if (p_app->getKey(KEY_CODE::X, KEY_STATE::Down)) {
-        is_pause = false;
+    // Pause option
+    if (is_pause) {
+        auto drawOption = [&](unsigned int mod_cur, unsigned int idx_str) {
+            if (cur % 3 == mod_cur)
+                ModelColorCode2RGBA(&model, 0xffffffff);
+            else
+                ModelColorCode2RGBA(&model, 0xff888888);
+            p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal, 0);
+            model.pos_y += 60.0f;
+        };
+        model.pos_x = 640.0f;
+        model.pos_y = 380.0f;
+        model.scl_y = 80.0f;
+        p_app->drawString(p_app->getStr(kStrOption, 16), &model, kIdxNormal, 0);
+        model.pos_y = 500.0f;
+        model.scl_y = 60.0f;
+        drawOption(0, 17);
+        drawOption(1, 18);
+        drawOption(2, 19);
+        return;
     }
+    // Logue
+    if (idx_log_1 == -1)
+        return;
+    model.pos_x = 0.0f;
+    model.pos_y = -320.0f;
+    model.scl_x = 700.0f;
+    model.scl_y = 120.0f;
+    ModelColorCode2RGBA(&model, 0x88000000);
+    p_app->applyModel(&model);
+    p_app->applyImage(0);
+    p_app->drawIdea();
+    model.pos_x = 320.0f;
+    model.pos_y = 750.0f;
+    model.scl_y = 42.0f;
+    ModelColorCode2RGBA(&model, 0xffffffff);
+    p_app->drawString(p_app->getStr(kStrLogue, idx_log_1), &model, kIdxNormal);
+    if (idx_log_2 == -1)
+        return;
+    model.pos_y += 42.0f;
+    p_app->drawString(p_app->getStr(kStrLogue, idx_log_2), &model, kIdxNormal);
 }
 
 void SceneGame::updateGaming() {
     bool is_log = false;
     const unsigned int kChapter = p_app->getChapter();
+    // Chapter 1 [0-] : moving
     if (kChapter == 0) {
         idx_log_1 = 0;
         idx_log_2 = -1;
@@ -172,24 +176,31 @@ void SceneGame::updateGaming() {
     p_app->setInputInf(&iinf);
     p_app->getPlayer()->update();
     p_app->updateBulletPlayer();
+    ++cnt;
 }
 
-void SceneGame::update() {
-    if (p_app->getKey(KEY_CODE::Escape, KEY_STATE::Down)) {
-        is_pause = !is_pause;
+void SceneGame::drawBackGround() {
+    Model model = Model();
+    const unsigned int kChapter = p_app->getChapter();
+    if (kChapter < 50) {
+        if (!is_pause) {
+            camera.pos_y += 2.0f;
+            if (camera.pos_y > 900.0f)
+                camera.pos_y = 0.0f;
+            camera.pos_x = 100.0f * (float)cos(Deg2Rad((double)cnt / 10.0));
+        }
+        p_app->applyCamera(&camera);
+        p_app->applyImage(IMG_BG_MOUNTAIN);
+        model.scl_x = 1000.0f;
+        model.scl_y = 1000.0f;
+        p_app->applyModel(&model);
+        p_app->drawIdea();
+        model.pos_y = 900.0f;
+        p_app->applyModel(&model);
+        p_app->drawIdea();
+        model.pos_y = 1800.0f;
+        p_app->applyModel(&model);
+        p_app->drawIdea();
+        p_app->applyCamera(nullptr);
     }
-    if (is_pause)
-        updatePausing();
-    else
-        updateGaming();
-    p_app->drawBeginWithFrameBuffer(p_fbuf);
-    drawGame();
-    drawUI();
-    p_app->drawBeginWithFrameBuffer(nullptr);
-    drawFrameBuffer();
-    if (is_pause)
-        drawOption();
-    drawFrame();
-    if (!is_pause)
-        drawLogue();
 }

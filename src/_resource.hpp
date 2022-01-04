@@ -10,6 +10,7 @@
 #define IMG_BG_TITLE 101
 #define IMG_BG_CSELECT 102
 #define IMG_BG_CS_SCROLL 103
+#define IMG_BG_MOUNTAIN 104
 
 #define IMG_UI_CSBOX 200
 #define IMG_UI_FRAME 201
