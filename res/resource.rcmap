@@ -25,11 +25,11 @@ IMG_BU_LAZER bu_lazer.png
 #MYFONT
 FNT_NORMAL SourceHanSerif-Heavy.otf
 FNT_OPTION ELEPHNT.TTF
-FNT_DIGIT consolab.ttf
+FNT_DIGIT STENCIL.TTF
 #TEXT
 IDS_OPTION txt_option.txt
 IDS_LOGUE txt_logue.txt
 #STRING
 $FNT_NAME_NORMAL:{"源ノ明朝 Heavy\0"}
 $FNT_NAME_OPTION:{"Elephant\0"}
-$FNT_NAME_DIGIT:{"Consolas\0"}
+$FNT_NAME_DIGIT:{"Stencil\0"}

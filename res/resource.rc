@@ -25,9 +25,9 @@ IMG_BU_JIKI_BIGHARI IMAGE "bu_jiki_bighari.png"
 IMG_BU_LAZER IMAGE "bu_lazer.png"
 FNT_NORMAL MYFONT "SourceHanSerif-Heavy.otf"
 FNT_OPTION MYFONT "ELEPHNT.TTF"
-FNT_DIGIT MYFONT "consolab.ttf"
+FNT_DIGIT MYFONT "STENCIL.TTF"
 IDS_OPTION TEXT "txt_option.txt"
 IDS_LOGUE TEXT "txt_logue.txt"
 FNT_NAME_NORMAL STRING {"Œ¹ƒm–¾’© Heavy\0"}
 FNT_NAME_OPTION STRING {"Elephant\0"}
-FNT_NAME_DIGIT STRING {"Consolas\0"}
+FNT_NAME_DIGIT STRING {"Stencil\0"}

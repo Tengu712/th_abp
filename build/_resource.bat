@@ -1,2 +1,2 @@
 @echo off
-rc /fo resource.res ../res/resource.rc
+rc /fo ./objs/resource.res ../res/resource.rc

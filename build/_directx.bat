@@ -30,6 +30,6 @@ if exist ".\*.obj" (
     )
 )
 
-lib /out:mydx.lib !pathFilesObj!
+lib /out:.\objs\mydx.lib !pathFilesObj!
 del *.obj
 pause
