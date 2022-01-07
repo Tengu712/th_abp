@@ -2,6 +2,7 @@
 /build/*.lib
 /build/*.dll
 /build/*.res
+/res/*.exe
 /res/*.res
 /res/*.png
 /res/*.txt

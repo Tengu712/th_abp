@@ -24,9 +24,9 @@ void ManagerLogue::draw() {
     model.pos_y = 750.0f;
     model.scl_y = 42.0f;
     SetModelColor(&model, 0xffffffff);
-    p_app->drawString(p_app->getStr(kStrLogue, idx1), &model, kIdxNormal);
+    p_app->drawString(p_app->getStr(kStrLogue, idx1), &model, kFontNormal);
     if (idx2 == -1)
         return;
     model.pos_y += 42.0f;
-    p_app->drawString(p_app->getStr(kStrLogue, idx2), &model, kIdxNormal);
+    p_app->drawString(p_app->getStr(kStrLogue, idx2), &model, kFontNormal);
 }

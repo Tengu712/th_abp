@@ -26,6 +26,6 @@ if "!pathFiles!"=="" (
     exit /B
 )
 
-cl /EHsc /Fe:th_abp.exe resource_private.res !kOptInclude! !pathFiles! !kOptLibrary!
+cl /EHsc /Fe:th_abp.exe resource.res !kOptInclude! !pathFiles! !kOptLibrary!
 del *.obj
 pause

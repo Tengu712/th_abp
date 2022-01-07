@@ -90,10 +90,10 @@ void SceneCSelect::update() {
     model.pos_x = 640.0f;
     model.pos_y = 30.0f;
     model.scl_y = 80.0f;
-    p_app->drawString(p_app->getStr(kStrOption, 5), &model, kIdxOption, 0);
+    p_app->drawString(p_app->getStr(kStrOption, 5), &model, kFontOption, 0);
     model.pos_y = 100.0f;
     model.scl_y = 50.0f;
-    p_app->drawString(p_app->getStr(kStrOption, 6), &model, kIdxNormal, 0);
+    p_app->drawString(p_app->getStr(kStrOption, 6), &model, kFontNormal, 0);
     model.pos_x = 100.0f;
     model.pos_y = 250.0f;
     auto drawOption = [&](unsigned int mod_cur, unsigned int idx_str) {
@@ -115,13 +115,13 @@ void SceneCSelect::update() {
         else
             SetModelColor(&model, 0xff666666);
         model.scl_y = 70.0f;
-        p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kFontNormal);
         model.scl_y = 40.0f;
         model.pos_x += 30.0f;
         model.pos_y += 60.0f;
-        p_app->drawString(p_app->getStr(kStrOption, idx_str + 1), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str + 1), &model, kFontNormal);
         model.pos_y += 30.0f;
-        p_app->drawString(p_app->getStr(kStrOption, idx_str + 2), &model, kIdxNormal);
+        p_app->drawString(p_app->getStr(kStrOption, idx_str + 2), &model, kFontNormal);
         model.pos_x -= 30.0f;
         model.pos_y += 110.0f;
     };

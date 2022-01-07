@@ -1,0 +1,35 @@
+#IMAGE
+IMG_BG_LOAD bg_load.png
+IMG_BG_TITLE bg_title.png
+IMG_BG_CSELECT bg_cselect.png
+IMG_BG_CS_SCROLL bg_cs_scroll.png
+IMG_BG_MOUNTAIN bg_mountain.png
+IMG_UI_CSBOX ui_csbox.png
+IMG_UI_FRAME ui_frame.png
+IMG_CH_ATARI ch_atari.png
+IMG_CH_SLOWCIRCLE ch_slowcircle.png
+IMG_CH_OPTION0 ch_option0.png
+IMG_CH_OPTION1 ch_option1.png
+IMG_CH_KOSUZU_B0 ch_kosuzu_b0.png
+IMG_CH_KOSUZU_B1 ch_kosuzu_b1.png
+IMG_CH_KOSUZU_B2 ch_kosuzu_b2.png
+IMG_CH_KOSUZU_B3 ch_kosuzu_b3.png
+IMG_CH_KOSUZU_L0 ch_kosuzu_l0.png
+IMG_CH_KOSUZU_L1 ch_kosuzu_l1.png
+IMG_CH_KOSUZU_R0 ch_kosuzu_r0.png
+IMG_CH_KOSUZU_R1 ch_kosuzu_r1.png
+IMG_CH_ENEMY ch_enemy.png
+IMG_BU_JIKI_HARI bu_jiki_hari.png
+IMG_BU_JIKI_BIGHARI bu_jiki_bighari.png
+IMG_BU_LAZER bu_lazer.png
+#MYFONT
+FNT_NORMAL SourceHanSerif-Heavy.otf
+FNT_OPTION ELEPHNT.TTF
+FNT_DIGIT consolab.ttf
+#TEXT
+IDS_OPTION txt_option.txt
+IDS_LOGUE txt_logue.txt
+#STRING
+$FNT_NAME_NORMAL:{"源ノ明朝 Heavy\0"}
+$FNT_NAME_OPTION:{"Elephant\0"}
+$FNT_NAME_DIGIT:{"Consolas\0"}

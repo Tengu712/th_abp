@@ -7,8 +7,11 @@
 //                                          Generals                                                                 //
 // ================================================================================================================= //
 
-constexpr unsigned int kNumFontBank = 2U;
-constexpr unsigned int kNumStringBank = 3U;
+#define DEBUG(p)             \
+    {                        \
+        if (p_inf->is_debug) \
+            (p);             \
+    }
 
 void SetModelColor(Model* p_model, unsigned int col) {
     p_model->col_r = (float)(col & 0x000000ff) / 255.0f;
@@ -41,21 +44,44 @@ unsigned int GetCode(const char* str, int* cnt) {
         return (unsigned int)str[*cnt];
 }
 
-HANDLE AddFontFromPrivateResource(unsigned int code) {
-    HRSRC h_font_res = FindResourceA(nullptr, MAKEINTRESOURCEA(code), "IMAGE");
+HANDLE AddFontFromResource(HMODULE h_module, unsigned int code) {
+    HRSRC h_font_res = FindResourceA(h_module, MAKEINTRESOURCEA(code), "MYFONT");
     if (!h_font_res)
         return nullptr;
-    HGLOBAL h_font_data = LoadResource(nullptr, h_font_res);
+    HGLOBAL h_font_data = LoadResource(h_module, h_font_res);
     if (!h_font_data)
         return nullptr;
     void* p_lock = LockResource(h_font_data);
     if (!p_lock)
         return nullptr;
-    DWORD size_res = SizeofResource(nullptr, h_font_res);
+    DWORD size_res = SizeofResource(h_module, h_font_res);
     if (size_res == 0)
         return nullptr;
     DWORD cnt_font = 0;
     return AddFontMemResourceEx(p_lock, size_res, NULL, &cnt_font);
+}
+
+HMODULE CheckModuleHasResource(HMODULE h_module, unsigned int id, const char* str_ftype) {
+    if (!FindResourceA(h_module, MAKEINTRESOURCEA(id), str_ftype))
+        return nullptr;
+    return h_module;
+}
+
+bool CopyStringFromResource(HMODULE h_module, unsigned int id, char* str) {
+    HRSRC h_res = FindResourceA(h_module, MAKEINTRESOURCEA(id), "STRING");
+    if (!h_res)
+        return false;
+    HGLOBAL h_data = LoadResource(h_module, h_res);
+    if (!h_data)
+        return false;
+    void* p_lock = LockResource(h_data);
+    if (!p_lock)
+        return false;
+    DWORD size_res = SizeofResource(h_module, h_res);
+    if (size_res == 0)
+        return false;
+    strcpy_s(str, 32, (char*)p_lock);
+    return true;
 }
 
 // ================================================================================================================= //
@@ -247,12 +273,14 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
 
         p_inf->dmanager.drawBegin(nullptr);
         HMODULE h_module = LoadLibraryA("./resource.dll");
-        if (h_module == nullptr)
-            throw "Failed to load resource.dll.";
+        if (h_module != nullptr)
+            debug("Additional resource found.\n");
+
         Image img_load = Image();
         memset(&img_load, 0, sizeof(Image));
-        if (!p_inf->dmanager.createImage(h_module, IMG_BG_LOAD, &img_load))
-            throw "Failed to load an image.";
+        if (!p_inf->dmanager.createImage(
+                CheckModuleHasResource(h_module, IMG_BG_LOAD, "IMAGE"), IMG_BG_LOAD, &img_load))
+            throw "Failed to load an image for loading.";
         p_inf->dmanager.applyImage(&img_load);
         Model model_load = Model();
         model_load.scl_x = 1280.0f;
@@ -263,7 +291,6 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         applyModelUI(&model_load);
         drawIdea();
         p_inf->dmanager.drawEnd();
-        debug(" - DLLResource : Success\n");
 
         debug("Load begins ...\n");
 
@@ -271,46 +298,18 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         if (p_inf->imgs == nullptr)
             throw "Failed to create array of images.";
         memset(p_inf->imgs, 0, sizeof(Image) * kNumImage);
-        auto loadImage = [&](unsigned int id) {
+        for (int idx = RES_IDX_IMAGE_START + 1; idx <= RES_IDX_IMAGE_END; ++idx) {
             for (int i = 0; i < kNumImage; ++i) {
                 if (p_inf->imgs[i].id != 0U)
                     continue;
-                bool res = p_inf->dmanager.createImage(h_module, id, &p_inf->imgs[i]);
-                if (!res) {
-                    debug("\n");
-                    debug(id);
-                    debug(" image resource not loaded.\n");
-                    return false;
+                if (!p_inf->dmanager.createImage(
+                        CheckModuleHasResource(h_module, idx, "IMAGE"), idx, &p_inf->imgs[i])) {
+                    DEBUG(printf("Failed to an image whose id is %d.", idx));
+                    throw "Failed to load an image.";
                 }
-                return true;
+                break;
             }
-            return false;
-        };
-        bool flg = true;
-        flg = flg && loadImage(IMG_BG_TITLE);
-        flg = flg && loadImage(IMG_BG_CSELECT);
-        flg = flg && loadImage(IMG_BG_CS_SCROLL);
-        flg = flg && loadImage(IMG_BG_MOUNTAIN);
-        flg = flg && loadImage(IMG_UI_CSBOX);
-        flg = flg && loadImage(IMG_UI_FRAME);
-        flg = flg && loadImage(IMG_CH_ATARI);
-        flg = flg && loadImage(IMG_CH_SLOWCIRCLE);
-        flg = flg && loadImage(IMG_CH_OPTION0);
-        flg = flg && loadImage(IMG_CH_OPTION1);
-        flg = flg && loadImage(IMG_CH_KOSUZU_B0);
-        flg = flg && loadImage(IMG_CH_KOSUZU_B1);
-        flg = flg && loadImage(IMG_CH_KOSUZU_B2);
-        flg = flg && loadImage(IMG_CH_KOSUZU_B3);
-        flg = flg && loadImage(IMG_CH_KOSUZU_L0);
-        flg = flg && loadImage(IMG_CH_KOSUZU_L1);
-        flg = flg && loadImage(IMG_CH_KOSUZU_R0);
-        flg = flg && loadImage(IMG_CH_KOSUZU_R1);
-        flg = flg && loadImage(IMG_CH_ENEMY);
-        flg = flg && loadImage(IMG_BU_JIKI_HARI);
-        flg = flg && loadImage(IMG_BU_JIKI_BIGHARI);
-        flg = flg && loadImage(IMG_BU_LAZER);
-        if (!flg)
-            throw "Failed to load some images.";
+        }
         debug(" - Images : Success\n");
 
         p_inf->strs = new StringBank[kNumStringBank];
@@ -321,29 +320,15 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
             throw "Failed to load option texts.";
         if (p_inf->strs[kStrLogue].load(h_module, IDS_LOGUE) < 2)
             throw "Failed to load logue texts.";
-        debug(" - Strings : Success\n");
+        debug(" - Texts : Success\n");
 
         p_inf->fnts = new FontBank[kNumFontBank];
         if (p_inf->fnts == nullptr)
             throw "Failed to create array of fonts.";
         memset(p_inf->fnts, 0, sizeof(FontBank) * kNumFontBank);
-        HANDLE h_normal = AddFontFromPrivateResource(FNT_NORMAL);
-        if (!h_normal)
-            throw "Failed to load '源ノ明朝' font.";
-        HANDLE h_option = AddFontFromPrivateResource(FNT_OPTION);
-        if (!h_option)
-            throw "Failed to load 'Copperplate' font.";
-        auto loadString = [&](LOGFONTA* logfont, unsigned int idx_bank, std::set<unsigned int>* set_code) {
-            for (auto itr = set_code->begin(); itr != set_code->end(); ++itr) {
-                flg = flg && p_inf->dmanager.createFontImage(logfont, *itr, p_inf->fnts[idx_bank].getFontNext());
-            }
-        };
-        LOGFONTA logfont_msg = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "源ノ明朝 Heavy"};
         std::set<unsigned int> set_code_normal{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115, 46, 32};
-        LOGFONTA logfont_elp = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
-            PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, "Elephant"};
-        std::set<unsigned int> set_code_elp{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 102, 112, 115};
+        std::set<unsigned int> set_code_elp{};
+        std::set<unsigned int> set_code_cns{48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 46};
         p_inf->strs[kStrOption].addNecCode(&set_code_elp, 0);
         p_inf->strs[kStrOption].addNecCode(&set_code_elp, 1);
         p_inf->strs[kStrOption].addNecCode(&set_code_elp, 2);
@@ -367,13 +352,35 @@ bool App::init(HINSTANCE h_inst, LPSTR p_cmd, int cmd_show) {
         for (int i = 0; i < 80; ++i) {
             p_inf->strs[kStrLogue].addNecCode(&set_code_normal, i);
         }
-        p_inf->fnts[kIdxNormal].init(set_code_normal.size() + 1);
-        p_inf->fnts[kIdxOption].init(set_code_elp.size() + 1);
-        loadString(&logfont_msg, kIdxNormal, &set_code_normal);
-        loadString(&logfont_elp, kIdxOption, &set_code_elp);
-        flg = flg && RemoveFontMemResourceEx(h_normal);
-        if (!flg)
-            throw "Failed to load some fonts";
+        auto createFontImage = [&](unsigned int idx_bank, unsigned int id, unsigned int name,
+                                   std::set<unsigned int>* set_code) {
+            char tname[32];
+            memset(tname, 0, 32);
+            if (!CopyStringFromResource(CheckModuleHasResource(h_module, name, "STRING"), name, tname)) {
+                DEBUG(printf("Failed to get font name of %d.", name));
+                throw "Failed to get font name";
+            }
+            HANDLE h_font = AddFontFromResource(CheckModuleHasResource(h_module, id, "MYFONT"), id);
+            if (!h_font) {
+                DEBUG(printf("Failed to add '%s' font.", tname));
+                throw "Failed to add a font.";
+            }
+            LOGFONTA logfont = {64, 0, 0, 0, 0, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+                PROOF_QUALITY, DEFAULT_PITCH | FF_MODERN, ""};
+            strcpy(logfont.lfFaceName, tname);
+            if (!p_inf->fnts[idx_bank].init(set_code->size() + 1))
+                throw "Failed to init font bank.";
+            for (auto itr = set_code->begin(); itr != set_code->end(); ++itr) {
+                if (!p_inf->dmanager.createFontImage(&logfont, *itr, p_inf->fnts[idx_bank].getFontNext())) {
+                    DEBUG(printf("Failed to create %c(%d) image of '%s'", *itr, *itr, tname));
+                    throw "Failed to create a font image.";
+                }
+            }
+            RemoveFontMemResourceEx(h_font);
+        };
+        createFontImage(kFontNormal, FNT_NORMAL, FNT_NAME_NORMAL, &set_code_normal);
+        createFontImage(kFontOption, FNT_OPTION, FNT_NAME_OPTION, &set_code_elp);
+        createFontImage(kFontDigit, FNT_DIGIT, FNT_NAME_DIGIT, &set_code_cns);
         debug(" - Fonts : Success\n");
 
         FILE* p_file_cfg = fopen("./keyconfig.cfg", "r");
@@ -694,7 +701,7 @@ bool App::update() {
     model.scl_y = 30.0f;
     char buf[16] = "";
     snprintf(buf, 64, "%3.1ffps", p_inf->fps);
-    drawString(buf, &model, kIdxNormal, 1);
+    drawString(buf, &model, kFontNormal, 1);
     p_inf->dmanager.drawEnd();
     return false;
 }
@@ -773,7 +780,7 @@ void App::updateBulletPlayer() {
         if (flg_hit == 1) {
             buls_p[i].del = true;
             enemy.transHP(buls_p[i].getDamage() * -1);
-            smanager.transScore(100); //! SCORE
+            smanager.transScore(100);  //! SCORE
         }
     }
 }

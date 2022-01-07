@@ -74,13 +74,13 @@ void SceneGame::update() {
                 SetModelColor(&model, 0xffffffff);
             else
                 SetModelColor(&model, 0xff888888);
-            p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kIdxNormal, 0);
+            p_app->drawString(p_app->getStr(kStrOption, idx_str), &model, kFontNormal, 0);
             model.pos_y += 60.0f;
         };
         model.pos_x = 640.0f;
         model.pos_y = 380.0f;
         model.scl_y = 80.0f;
-        p_app->drawString(p_app->getStr(kStrOption, 16), &model, kIdxNormal, 0);
+        p_app->drawString(p_app->getStr(kStrOption, 16), &model, kFontNormal, 0);
         model.pos_y = 500.0f;
         model.scl_y = 60.0f;
         drawOption(0, 17);

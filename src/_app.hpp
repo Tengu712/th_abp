@@ -9,7 +9,6 @@
 #define PI 3.141592653589793238462643
 
 #include "./_resource.hpp"
-#include "./_resource_private.hpp"
 
 #pragma comment(lib, "mydx.lib")
 #pragma comment(lib, "user32.lib")
@@ -17,12 +16,19 @@
 
 constexpr unsigned int kSceWidth = 1280U;
 constexpr unsigned int kSceHeight = 960U;
+
 constexpr unsigned int kNumImage = 30U;
+constexpr unsigned int kNumStringBank = 2U;
+constexpr unsigned int kNumFontBank = 3U;
 constexpr unsigned int kNumBulletPlayer = 128U;
-constexpr unsigned int kIdxNormal = 0U;
-constexpr unsigned int kIdxOption = 1U;
+
+constexpr unsigned int kFontNormal = 0U;
+constexpr unsigned int kFontOption = 1U;
+constexpr unsigned int kFontDigit = 2U;
+
 constexpr unsigned int kStrOption = 0U;
 constexpr unsigned int kStrLogue = 1U;
+
 constexpr unsigned int kSceneTitle = 0U;
 constexpr unsigned int kSceneCSelect = 1U;
 constexpr unsigned int kSceneGame = 2U;

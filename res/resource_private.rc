@@ -1,4 +1,0 @@
-#include "../src/_resource_private.hpp"
-
-FNT_NORMAL IMAGE "SourceHanSerif-Heavy.otf"
-FNT_OPTION IMAGE "ELEPHNT.TTF"
