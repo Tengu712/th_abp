@@ -14,24 +14,24 @@ void ManagerScore::draw() {
     model.scl_y = 45.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%011lld", score);
-    p_app->drawString(buf, &model, kFontNormal);
+    p_app->drawString(buf, &model, kFontDigit);
     // Hiscore
     model.pos_x = 1030.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%011lld", hiscore);
-    p_app->drawString(buf, &model, kFontNormal, 1);
+    p_app->drawString(buf, &model, kFontDigit, 1);
     // Rank
     model.pos_x = 250.0f;
     model.pos_y += 40.0f;
     model.scl_y = 40.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%04.1lf", rank);
-    p_app->drawString(buf, &model, kFontNormal);
+    p_app->drawString(buf, &model, kFontDigit);
     // Graze
     model.pos_x = 1030.0f;
     memset(buf, 0, sizeof(char) * 64);
     snprintf(buf, 64, "%d", graze);
-    p_app->drawString(buf, &model, kFontNormal, 1);
+    p_app->drawString(buf, &model, kFontDigit, 1);
 }
 
 unsigned long long ManagerScore::getHiScore() {
