@@ -17,10 +17,8 @@ struct NameTime {
 void AddNeeds(
     std::vector<std::string>* needs, std::vector<NameTime>* nts, std::string filename, unsigned long long filetime) {
     for (int i = 0; i < nts->size(); ++i) {
-        if (nts->at(i).name == filename && nts->at(i).time >= filetime) {
-            std::cout << filename << " " << nts->at(i).time << " " << filetime << std::endl;
+        if (nts->at(i).name == filename && nts->at(i).time >= filetime)
             return;
-        }
     }
     std::string filename_new = " ..\\..\\src\\" + filename;
     needs->push_back(filename_new);
